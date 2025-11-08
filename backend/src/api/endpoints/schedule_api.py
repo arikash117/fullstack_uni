@@ -1,18 +1,18 @@
 from fastapi import APIRouter
 
-router = APIRouter()
+schedule_router = APIRouter()
 
 # POST
-@router.post("/schedule/{training_id}/training")
-async def post_training():
+@schedule_router.post('/schedule/trainings/{training_id}')
+async def post_training(training_id: int):
     return
 
 
 # GET
-@router.get("/schedule/trainings")
+@schedule_router.get('/schedule/trainings')
 async def get_trainings():
     return
 
-@router.get("/schedule/{training_id}/training")
-async def get_training():
+@schedule_router.get('/schedule/trainings/{training_id}')
+async def get_training(training_id: int):
     return

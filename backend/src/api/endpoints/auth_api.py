@@ -1,13 +1,13 @@
 from fastapi import APIRouter
 
 
-router = APIRouter()
+auth_router = APIRouter()
 
 # Регистрация
-@router.post("/signup")
+@auth_router.post('/signup')
 async def signup():
     return
 
-@router.post("/login")
+@auth_router.post('/login')
 async def login():
     return

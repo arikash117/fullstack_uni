@@ -1,18 +1,18 @@
 from fastapi import APIRouter
 
-router = APIRouter()
+trainee_router = APIRouter()
 
 # POST
-@router.post("/trainee")
-async def post_trainee():
+@trainee_router.post('/trainies/{trainee_id}')
+async def post_trainee(trainee_id: int):
     return
 
 
 # GET
-@router.get("/trainee")
-async def get_trainee():
+@trainee_router.get('/trainies/{trainee_id}')
+async def get_trainee(trainee_id: int):
     return
 
-@router.get("/profile/trainees")
+@trainee_router.get('/profile/trainees')
 async def get_trainees():
     return

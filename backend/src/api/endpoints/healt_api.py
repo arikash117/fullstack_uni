@@ -1,46 +1,46 @@
 from fastapi import APIRouter
 
-router = APIRouter()
+health_router = APIRouter()
 
 # POST
-@router.post("/health/cpf")
+@health_router.post('/health/cpf')
 async def post_cpf():
     return
 
-@router.post("/health/calories")
+@health_router.post('/health/calories')
 async def post_calories():
     return
 
-@router.post("/health/steps")
+@health_router.post('/health/steps')
 async def post_steps():
     return
 
-@router.post("/health/water")
+@health_router.post('/health/water')
 async def post_water():
     return
 
-@router.post("/health/injuries")
+@health_router.post('/health/injuries')
 async def post_injuries():
     return
 
 
 # GET
-@router.get("/health/cpf")
+@health_router.get('/health/cpf')
 async def get_cpf():
     return
 
-@router.get("/health/calories")
+@health_router.get('/health/calories')
 async def get_calories():
     return
 
-@router.get("/health/steps")
+@health_router.get('/health/steps')
 async def get_steps():
     return
 
-@router.get("/health/water")
+@health_router.get('/health/water')
 async def get_water():
     return
 
-@router.get("/health/injuries")
+@health_router.get('/health/injuries')
 async def get_injuries():
     return
