@@ -1,6 +1,6 @@
 from models import trainee
 from database.db import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, CheckConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, CheckConstraint, Date
 from sqlalchemy.orm import relationship
 
 class Health(Base):
@@ -9,6 +9,7 @@ class Health(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     trainee_id = Column(Integer, ForeignKey(trainee.id), nullable=False)
 
+    todays_date = Column(Date, nullable=False)
     carbohydrates = Column(Integer,  CheckConstraint('carbohydrates <= 9999'), nullable=True)
     fat = Column(Integer,  CheckConstraint('fat <= 9999'), nullable=True)
     protein = Column(Integer,  CheckConstraint('protein <= 9999'), nullable=True)
