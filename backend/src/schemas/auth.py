@@ -9,7 +9,6 @@ class UserResponse(User):
     id: int
     username: str
     created_at: datetime
-    # model_config = ConfigDict(from_attributes=True) # для mysqlalchemy
 
 # LOGIN
 class LoginRequest(BaseModel):
@@ -53,14 +52,11 @@ class RegisterRequest(User):
         if "password" in info.data and value != info.data["password"]:
             raise ValueError("Пароли не совпадают")
         return value
-    
-    # model_config = ConfigDict(from_attributes=True) # для mysqlalchemy
+
 
 class RegisterResponse(User):
     id: int
     created_at: datetime
-    
-    # model_config = ConfigDict(from_attributes=True) # для mysqlalchemy
 
 
 #TOKENS
