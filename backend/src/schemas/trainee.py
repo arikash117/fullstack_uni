@@ -67,10 +67,7 @@ class UpdateTrainee(BaseModel):
             raise ValueError("Дата следующей тренировки не может быть в прошлом")
         return value
 
-
-class DeleteTrainee(BaseModel):
-    trainee_id: int
-
+# DELETE
 class DeleteTraineeResponse(BaseModel):
     success: bool
     message: str

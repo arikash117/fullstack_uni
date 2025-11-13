@@ -7,10 +7,12 @@ from schemas.trainee import (
     TraineesResponse,
     TraineeResponse,
     CreateTrainee,
+    DeleteTraineeResponse,
 )
 from crud.trainee import (
     get_list_trainees,
     create_trainee,
+    delete_trainee,
 )
 
 
@@ -39,3 +41,17 @@ async def create(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Ошибка при создании тренирующегося")
+
+# DELETE
+@trainee_router.delete("/{trainee_id}", response_model=DeleteTraineeResponse)
+async def delete(
+    trainee_id: int,
+    db: Session = Depends(get_db)
+):
+    try:
+        result = delete_trainee(db=db, trainee_id=trainee_id)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Ошибка при удалении тренирующегося")

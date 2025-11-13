@@ -54,3 +54,25 @@ async def create_trainee(
     db.refresh(new_trainee)
 
     return new_trainee
+
+# Удаление trainee (только одного за раз!)
+def delete_trainee(
+    db: Session,
+    trainee_id: int
+) -> DeleteTraineeResponse:
+    
+    trainee = db.query(Trainee).filter(Trainee.id == trainee_id).first()
+
+    if not trainee:
+        raise ValueError(f"Тренирующийся с ID {trainee_id} не найден")
+    
+    deleted_id = trainee.id
+
+    db.delete(trainee)
+    db.commit()
+
+    return DeleteTraineeResponse(
+        success=True,
+        message=f"Тренирующийся с ID {deleted_id} успешно удален",
+        deleted_trainee_id=deleted_id
+    )
