@@ -3,21 +3,14 @@ from typing import List, Optional
 from datetime import date, datetime
 import re
 
-class TraineeResponse(BaseModel):
-    id: int
+class TraineeBase(BaseModel):
     name: str
     phone: str
     goal: str
     subscription_end: date
     next_training: datetime
 
-class CreateTrainee(BaseModel):
-    name: str
-    phone: str
-    goal: str
-    subscription_end: date
-    next_training: datetime
-
+class CreateTrainee(TraineeBase):
     @field_validator("name")
     @classmethod
     def validate_name(cls, value: str) -> str:
@@ -42,8 +35,19 @@ class CreateTrainee(BaseModel):
             raise ValueError("Дата окончания подписки не может быть в прошлом")
         return value
 
-class SubordinateUpdate(BaseModel):
+class TraineeResponse(TraineeBase):
+    id: int
+
+# для отображения списком 
+class TraineesResponse(BaseModel):
+    id: int
+    name: str
+    next_training: datetime
+
+class UpdateTrainee(BaseModel):
     phone: Optional[str] = None
+    goal: Optional[str] = None
+    subscription_end: Optional[date] = None
     next_training: Optional[datetime] = None
 
     @field_validator("phone")
@@ -63,11 +67,6 @@ class SubordinateUpdate(BaseModel):
             raise ValueError("Дата следующей тренировки не может быть в прошлом")
         return value
 
-# для отображения списком 
-class TraineesResponse(BaseModel):
-    id: int
-    name: str
-    next_training: datetime
 
 class DeleteTrainee(BaseModel):
     trainee_id: int
