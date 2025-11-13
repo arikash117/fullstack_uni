@@ -1,6 +1,6 @@
 from models import user
 from database.db import Base
-from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Index
 from sqlalchemy.orm import relationship
 
 class Trainee(Base):
@@ -19,3 +19,7 @@ class Trainee(Base):
 
     health_data = relationship("Health", back_populates="health_owner")
     workouts = relationship("Workout", back_populates="workout_owner")
+
+    __tableargs__ = (
+        Index('idx_trainee_coach_name', 'coach_id', 'name'),
+    )

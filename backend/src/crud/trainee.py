@@ -20,7 +20,7 @@ async def get_list_trainees(
     query = db.query(Trainee)
 
     if name:
-        query = query.filter(Trainee.name.ilike(f"%{name}%"))
+        query = query.filter(Trainee.name.ilike(f"{name}%"))
     
     trainees = query.offset(skip).limit(limit).all()
 
