@@ -66,7 +66,7 @@ async def update_trainee(
     db: Session = Depends(get_db)
 ):
     try:
-        trainee = update_trainee(db=db, trainee_id=trainee_id, update_data=update_data)
+        trainee = update_trainee_by_id(db=db, trainee_id=trainee_id, update_data=update_data)
         return trainee
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
