@@ -7,11 +7,11 @@ class Trainee(Base):
 
     __tablename__ = "trainees"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    coach_id = Column(Integer, ForeignKey(user.id), nullable=False)
+    coach_id = Column(Integer, ForeignKey('user.id'), nullable=False)
 
-    name = Column(String(20), nullable=False)
+    name = Column(String(20), nullable=False, index=True)
     phone = Column(String(20), nullable=False, unique=True)
-    goal = Column(String(20), nullable=False)
+    goal = Column(String(255), nullable=False)
     subscription_end = Column(Date, nullable=False)
     next_training = Column(DateTime(timezone=True), nullable=False)
 
