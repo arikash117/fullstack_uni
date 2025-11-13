@@ -4,7 +4,6 @@ from models.trainee import Trainee
 from schemas.trainee import (
     TraineesResponse,
     CreateTrainee,
-    DeleteTrainee,
     DeleteTraineeResponse,
     TraineeResponse,
     UpdateTrainee,
@@ -76,3 +75,46 @@ def delete_trainee(
         message=f"Тренирующийся с ID {deleted_id} успешно удален",
         deleted_trainee_id=deleted_id
     )
+
+# Информация о конкретном trainee
+def get_trainee_by_id(
+    db: Session,
+    trainee_id: int
+) -> Trainee:
+    
+    trainee = db.query(Trainee).filter(Trainee.id == trainee_id).first()
+    
+    if not trainee:
+        raise ValueError(f"Тренирующийся с ID {trainee_id} не найден")
+    
+    return trainee
+
+# изменение конкретного trainee
+def update_trainee_by_id(
+    db: Session,
+    trainee_id: int,
+    update_data: UpdateTrainee
+) -> Trainee:
+     
+    trainee = db.query(Trainee).filter(Trainee.id == trainee_id).first()
+    
+    if not trainee:
+        raise ValueError(f"Тренирующийся с ID {trainee_id} не найден")
+    
+    if update_data.phone and update_data.phone != trainee.phone:
+        existing_trainee = db.query(Trainee).filter(
+            Trainee.phone == update_data.phone,
+            Trainee.id != trainee_id
+        ).first()
+        if existing_trainee:
+            raise ValueError("Тренирующийся с таким номером телефона уже существует")
+        
+    update_dict = update_data.model_dump(exclude_unset=True)
+    
+    for field, value in update_dict.items():
+        setattr(trainee, field, value)
+    
+    db.commit()
+    db.refresh(trainee)
+    
+    return trainee

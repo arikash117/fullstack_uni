@@ -10,6 +10,7 @@ class TraineeBase(BaseModel):
     subscription_end: date
     next_training: datetime
 
+# Создание trainee
 class CreateTrainee(TraineeBase):
     @field_validator("name")
     @classmethod
@@ -44,7 +45,9 @@ class TraineesResponse(BaseModel):
     name: str
     next_training: datetime
 
-class UpdateTrainee(BaseModel):
+# изменение конкретного trainee
+class UpdateTrainee(TraineeBase):
+    name: Optional[str] = None
     phone: Optional[str] = None
     goal: Optional[str] = None
     subscription_end: Optional[date] = None
@@ -67,7 +70,7 @@ class UpdateTrainee(BaseModel):
             raise ValueError("Дата следующей тренировки не может быть в прошлом")
         return value
 
-# DELETE
+# Удаление одного trainee
 class DeleteTraineeResponse(BaseModel):
     success: bool
     message: str
