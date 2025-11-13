@@ -1,6 +1,6 @@
 from models import trainee
 from database.db import Base
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Date, ForeignKey, Float, CheckConstraint
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Index
 from sqlalchemy.orm import relationship
 
 class Workout(Base):
@@ -13,3 +13,7 @@ class Workout(Base):
     description = Column(String, nullable=False)
 
     workout_owner = relationship("Trainee", back_populates="workouts")
+
+    __table_args__ = (
+        Index('idx_workouts_trainee_date', 'trainee_id', 'date'),
+    )
