@@ -10,6 +10,20 @@
   --labelColor: #00BD8F; 
 }
 
+.centeredLogo {
+  display: inline-flex;
+  align-items: center;
+  font-size: 24px;
+  color: var(--labelColor);
+  text-decoration: none;
+  margin: 0 auto;
+}
+
+.centeredLogo:hover {
+  color: var(--labelColor);
+  transform: translateY(1px);
+}
+
 .link {
     display: inline-flex;
     align-items: flex-end;
