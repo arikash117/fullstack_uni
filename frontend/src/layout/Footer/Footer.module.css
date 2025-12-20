@@ -1,6 +1,9 @@
 .footer {
-  background-color: dimgray;
-  color: white;
+  background-color: var(--header-footer-bg-color);
+  min-height: 50px;
+  padding: 10px;
+  text-align: center;
+  align-content: center;
 }
 
 .link {

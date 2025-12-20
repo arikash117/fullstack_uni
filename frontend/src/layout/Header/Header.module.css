@@ -43,6 +43,7 @@
 .cover {
   background-color: var(--labelColor);
   color: black;
+  font-family: 'Ubuntu', Arial, sans-serif;
   font-size: 16px;
   padding: 10px 16px;
   border: 1px solid transparent;
