@@ -3,23 +3,25 @@ import TraineeCard from '../../components/TraineeCard/TraineeCard';
 
 function Home() {
 
-    const trainees = Array.from({ length: 20 }, (_, i) => (
+    const trainees = Array.from({ length: 10 }, (_, i) => (
         <TraineeCard key={i} />
     ));
 
     return (
         <main className={styles.main}>
-            <div className={styles.aside}>
-                <div className={styles.calendar}>
-
+            <span>-----------------------Мои трейни-----------------------</span>
+            <div className={styles.content}>
+                <div className={styles.aside}>
+                    <div className={styles.calendar}></div>
+                    <button className={styles.button}>
+                        Добавить трейни
+                    </button>
                 </div>
-                <button className={styles.button}>
-                    Добавить трейни
-                </button>
+                <div className={styles.trainees}>
+                    {trainees}
+                </div>
             </div>
-            <div className={styles.trainees}>
-                {trainees}
-            </div>
+            
         </main>
     )
 }
