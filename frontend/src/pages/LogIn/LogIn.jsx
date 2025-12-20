@@ -1,32 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Register.module.css';
+import styles from './Login.module.css';
 
 
-export default function Register() {
+export default function LogIn() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (password !== confirmPassword) {
-            alert('Пароли не совпадают');
-            return;
-        }
 
-        // Позже — отправка на бэкенд
-        console.log('Регистрация:', { email, password });
-    
-        // После успешной регистрации — редирект на dashboard
+        console.log('Вход:', { email, password });
+
         navigate('/dashboard');
     };
 
     return (
         <main className={styles.container}>
             <div className={styles.formBox}>
-                <h2 className={styles.title}>Регистрация</h2>
+                <h2 className={styles.title}>Вход</h2>
                 <form onSubmit={handleSubmit}>
                 <div className={styles.inputGroup}>
                     <label htmlFor="email">Email</label>
@@ -50,30 +43,19 @@ export default function Register() {
                     />
                 </div>
 
-                <div className={styles.inputGroup}>
-                    <label htmlFor="confirm">Подтвердите пароль</label>
-                    <input
-                    id="confirm"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    />
-                </div>
-
                 <button type="submit" className={styles.submitButton}>
-                    Зарегистрироваться
+                    Войти
                 </button>
                 </form>
 
                 <p className={styles.footerText}>
-                Уже есть аккаунт?{' '}
-                <span
-                    className={styles.link}
-                    onClick={() => navigate('/login')}
-                >
-                    Войти
-                </span>
+                    Нет аккаунта?{' '}
+                    <span
+                        className={styles.link}
+                        onClick={() => navigate('/register')}
+                    >
+                        Зарегистрироваться
+                    </span>
                 </p>
             </div>
         </main>
