@@ -1,11 +1,12 @@
 import styles from './TraineeCard.module.css';
+import clsx from 'clsx';
 
-function TraineeCard() {
+function TraineeCard({ name, date, isNew = false}) {
     return (
         <div className={styles.trainees}>
-            <div className={styles.container}>
-                <p>Name</p>
-                <p>01.01.26</p>
+            <div className={clsx(styles.container, {[styles.animated]: isNew})}>
+                <p>{name}</p>
+                <p>{date}</p>
             </div>
         </div>
     )
