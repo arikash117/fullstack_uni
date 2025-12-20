@@ -1,10 +1,10 @@
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   font-weight: 400;
-
-  background-color: #ffffff;
   --link-color: black; 
-  --link-hover-color: #535bf2; 
+  --link-hover-color: #535bf2;
+  --bg-color: #525252; 
+  --header-footer-bg-color: #313131;
 }
 
 a {

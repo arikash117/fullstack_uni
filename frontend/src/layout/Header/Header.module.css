@@ -1,14 +1,27 @@
 .header {
-  min-height: 70px;
-  background-color: dimgray;
-  color: white;
+  background-color: var(--header-footer-bg-color);
+  min-height: 50px;
   padding: 10px;
   align-content: center;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-end;
+  justify-content: space-between;
+  --labelColor: #00BD8F; 
+}
 
-  --label-color: #00BD8F; 
+.link {
+    display: inline-flex;
+    align-items: flex-end;
+    font-size: 50px;
+    color: var(--labelColor);
+    text-decoration: inherit;
+    transition: all 0.2s ease-in-out;
+}
+
+.link:hover {
+  color: var(--labelColor);
+  transform: translateY(1px);
 }
 
 .logo {
@@ -16,19 +29,31 @@
   height: 50px;
 }
 
-.link {
-    display: inline-flex;
-    align-items: flex-end;
-    font-size: 50px;
-    color: var(--label-color);
-    text-decoration: inherit;
-}
-
-.link:hover {
-    color: var(--label-color);
-}
-
 .text {
   line-height: 1;
   display: inline-block;
 }
+
+.container {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 5px;
+}
+
+.cover {
+  background-color: var(--labelColor);
+  color: black;
+  font-size: 16px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cover:hover {
+  background-color: #00A57C;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(1px);
+}
+

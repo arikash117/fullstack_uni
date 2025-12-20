@@ -1,0 +1,13 @@
+.footer {
+  background-color: dimgray;
+  color: white;
+}
+
+.link {
+    color: var(--link-color);
+    text-decoration: inherit;
+}
+
+.link:hover {
+    color: var(--link-color);
+}
