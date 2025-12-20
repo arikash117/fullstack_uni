@@ -50,7 +50,6 @@ async def create_trainee(
 
     db.add(new_trainee)
     db.commit()
-    db.refresh(new_trainee)
 
     return new_trainee
 

@@ -1,6 +1,6 @@
 from models import trainee
 from database.db import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, CheckConstraint, Date
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, CheckConstraint, Date, Index
 from sqlalchemy.orm import relationship
 
 class Health(Base):
@@ -20,3 +20,9 @@ class Health(Base):
     obtained_calories = Column(Integer, CheckConstraint('obtained_calories <= 9999'), nullable=True)
 
     health_owner = relationship("Trainee", back_populates="health_data")
+
+    __table_args__ = (
+        Index('idx_health_trainee_id', 'trainee_id'),
+        Index('idx_health_date', 'todays_date'),
+        Index('idx_health_trainee_date', 'trainee_id', todays_date.desc()),
+    )
