@@ -7,6 +7,7 @@ function Header() {
     const navigate = useNavigate();
 
     const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+    const isHomePage = location.pathname === '/';
 
     const handleRegisterClick = () => {
         navigate('/register');
@@ -14,6 +15,10 @@ function Header() {
 
     const handleLoginClick = () => {
         navigate('/login');
+    };
+
+    const handleLogoutClick = () => {
+        navigate('/');
     };
 
     if (isAuthPage) {
@@ -27,15 +32,13 @@ function Header() {
         );
     }
 
-    const isDashboard = location.pathname === '/dashboard';
-
     return (
         <div className={styles.header}>
             <a className={styles.link} href="/">
                 <img className={styles.logo} src="/label.svg" alt="Main logo" />
                 <span className={styles.text}>Train!</span>
             </a>
-            {!isDashboard &&(
+            {isHomePage &&(
                 <div className={styles.container}>
                 <button className={styles.cover} onClick={handleLoginClick}>
                     Войти
@@ -44,6 +47,13 @@ function Header() {
                     Зарегестрироваться
                 </button>
             </div>
+            )}
+            {!isHomePage && !isAuthPage && (
+                <div className={styles.container}>
+                    <button className={styles.cover} onClick={handleLogoutClick}>
+                        Выйти
+                    </button>
+                </div>
             )}
         </div>
     )
