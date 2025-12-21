@@ -4,6 +4,7 @@ import styles from './DashBoard.module.css';
 import TraineeCard from '../../components/TraineeCard/TraineeCard';
 
 function DashBoard() {
+    const navigate = useNavigate();
 
     const [trainees, setTrainees] = useState(
         Array.from({ length: 1 }, (_, i) => ({
@@ -18,12 +19,13 @@ function DashBoard() {
         navigate('/trainee/add');
     };
 
-    const navigate = useNavigate();
-
     const handleTraineeClick = (id) => {
         navigate(`/trainee/${id}`);
     };
 
+    const handleRemoveTrainee = (id) => {
+        setTrainees(prev => prev.filter(t => t.id !== id));
+    };
 
     return (
         <main className={styles.main}>
@@ -43,8 +45,11 @@ function DashBoard() {
                             onClick={() => handleTraineeClick(trainee.id)}
                         >
                             <TraineeCard
+                                id={trainee.id}
                                 name={trainee.name}
                                 date={trainee.date}
+                                isNew={trainee.isNew}
+                                onRemove={handleRemoveTrainee}
                             />
                         </div>
                     ))}
