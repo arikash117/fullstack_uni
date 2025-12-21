@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from './Schedule.module.css'
-
+import AddWorkoutModal from '../../components/AddWorkoutModal/AddWorkoutModal';
 import WorkoutCard from '../../components/WorkoutCard/WorkoutCard';
 
 export default function Schedule() {
@@ -12,16 +12,24 @@ export default function Schedule() {
         { id: 2, time: '20:00', name: 'Растяжка', type: 'Гибкость' },
     ]);
 
-    const handleAddWorkout = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleAddWorkout = (newWorkoutData) => {
         const newId = Math.max(...workouts.map(w => w.id), -1) + 1;
         const newWorkout = {
             id: newId,
-            time: '12:00',
-            name: `Новая тренировка ${newId}`,
-            type: 'Заглушка',
+            ...newWorkoutData,
+            isNew: true,
         };
-        setWorkouts(prev => [...prev, { ...newWorkout, isNew: true }]);
+        setWorkouts(prev => [...prev, newWorkout]);
     };
+
+    const handleRemoveWorkout = (id) => {
+        setWorkouts(prev => prev.filter(workout => workout.id !== id));
+    };
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     return (
         <main className={styles.main}>
@@ -49,13 +57,15 @@ export default function Schedule() {
                     {workouts.map((workout) => (
                         <WorkoutCard
                             key={workout.id}
+                            id={workout.id}
                             time={workout.time}
                             name={workout.name}
                             type={workout.type}
                             isNew={workout.isNew}
+                            onRemove={handleRemoveWorkout}
                         />
                     ))}
-                    <button className={styles.addWorkoutCard} onClick={handleAddWorkout}>
+                    <button className={styles.addWorkoutCard} onClick={openModal}>
                         + Добавить тренировку
                     </button>
                 </div>
@@ -67,6 +77,12 @@ export default function Schedule() {
                     <p>Пока заглушка — функционал добавим позже.</p>
                 </div>
             )}
+
+            <AddWorkoutModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                onAdd={handleAddWorkout}
+            />
         </main>
     )
 }
