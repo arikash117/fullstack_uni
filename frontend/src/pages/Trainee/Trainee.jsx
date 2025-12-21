@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from './Trainee.module.css'
 import pfp from '../../assets/pfp.jpg'
 import Progress from '../../assets/progress.svg'
@@ -10,6 +10,7 @@ import InfoCard from '../../components/InfoCard/InfoCard'
 export default function Trainee() {
 
     const { id } = useParams();
+    const navigate = useNavigate();
 
     // заглушка
     const trainee = {
@@ -20,6 +21,10 @@ export default function Trainee() {
         membershipPeriod: '01.01.2026 - 01.01.2027',
         nextTrainingDay: '05.01.2026',
     };
+
+    const goToHealth = () => navigate(`/trainee/${id}/health`);
+    const goToSchedule = () => navigate(`/trainee/${id}/schedule`);
+    const goToProgress = () => navigate(`/trainee/${id}/progress`);
 
     return (
         <main className={styles.main}>
@@ -39,9 +44,9 @@ export default function Trainee() {
                     </span>
                 </div>
                 <div className={styles.cards}>
-                    <InfoCard icon={Health} text="Трекинг здоровья"/>
-                    <InfoCard icon={Schedule} text="Расписание тренировок"/>
-                    <InfoCard icon={Progress} text="Отследить прогресс"/>
+                    <InfoCard icon={Health} text="Трекинг здоровья" onClick={goToHealth} />
+                    <InfoCard icon={Schedule} text="Расписание тренировок" onClick={goToSchedule} />
+                    <InfoCard icon={Progress} text="Отследить прогресс" onClick={goToProgress} />
                 </div>
             </div>
             
