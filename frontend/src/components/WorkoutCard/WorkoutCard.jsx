@@ -11,27 +11,20 @@ export default function WorkoutCard({ id, time, name, type, isNew = false, onRem
             onMouseEnter={() => setShowDelete(true)}
             onMouseLeave={() => setShowDelete(false)}
         >
+            <p>{time}</p>
+            <p>{name}</p>
+            <p>{type}</p>
 
             {onRemove && (
                 <div
                     className={styles.deleteArea}
                     style={{ opacity: showDelete ? 1 : 0 }}
-                >
-                    <button
-                        className={styles.deleteBtn}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onRemove(id);
-                        }}
-                    >
-                        ✕
-                    </button>
-                </div>
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove(id);
+                    }}
+                />
             )}
-
-            <p>{time}</p>
-            <p>{name}</p>
-            <p>{type}</p>
         </div>
     );
 }

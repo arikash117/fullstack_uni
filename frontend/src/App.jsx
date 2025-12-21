@@ -7,6 +7,7 @@ import LogIn from './pages/LogIn/LogIn'
 import Dashboard from './pages/DashBoard/DashBoard'
 import Home from './pages/Home/Home'
 import Trainee from './pages/Trainee/Trainee'
+import AddTrainee from './pages/AddTrainee/AddTrainee'
 import Health from './pages/Health/Health'
 import Schedule from './pages/Schedule/Schedule'
 import Progress from './pages/Progress/Progress'
@@ -22,6 +23,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<LogIn />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/trainee/add" element={<AddTrainee />} />
 
           <Route path="/trainee/:id" element={<Trainee />} />
           <Route path="/trainee/:id/health" element={<Health />} />

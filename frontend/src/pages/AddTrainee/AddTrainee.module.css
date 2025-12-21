@@ -1,0 +1,119 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 20px 20px 20px;
+    flex: 1;
+}
+
+.main h1 {
+    color: var(--main-text-color);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: #222;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.formGroup label {
+    font-family: 'Ubuntu', Arial, sans-serif;
+    color: var(--main-text-color);
+    font-size: 14px;
+}
+
+.formGroup input,
+.formGroup select {
+    padding: 8px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    border-color: var(--main-text-color);
+    background: #333;
+    color: white;
+    font-family: 'Ubuntu', Arial, sans-serif;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.hiddenFileInput {
+    display: none;
+}
+
+.fileButton {
+    padding: 8px 16px;
+    background: #333;
+    border: 1px solid #444;
+    border-radius: 5px;
+    color: white;
+    font-family: 'Ubuntu', Arial, sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-block;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.fileButton:hover {
+    background: #444;
+    border-color: var(--main-text-color);
+}
+
+.dateRange {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dateRange span {
+    color: var(--main-text-color);
+}
+
+.dateRange input {
+    flex: 1;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: space-between;
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Ubuntu', Arial, sans-serif;
+    transition: all 0.2s ease;
+}
+
+button[type="button"] {
+    background: #555;
+    color: white;
+}
+
+button[type="button"]:hover {
+    background: #666;
+}
+
+button[type="submit"] {
+    background: var(--main-text-color);
+    color: black;
+}
+
+button[type="submit"]:hover {
+    background: #00A57C;
+}

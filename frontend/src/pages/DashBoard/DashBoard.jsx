@@ -15,20 +15,13 @@ function DashBoard() {
     );
 
     const handleAddTrainee = () => {
-        const newId = trainees.length + 1;
-        const newTrainee = {
-            id: newId,
-            name: `Трейни ${newId}`,
-            date: '01.01.26', // можно сделать динамически позже
-            isNew: true,
-        };
-        setTrainees((prev) => [...prev, newTrainee]);
+        navigate('/trainee/add');
     };
 
     const navigate = useNavigate();
 
     const handleTraineeClick = (id) => {
-        navigate(`/trainee/${id}`); // ← переход на страницу деталей
+        navigate(`/trainee/${id}`);
     };
 
 
