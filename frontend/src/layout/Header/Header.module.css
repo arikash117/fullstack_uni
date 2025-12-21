@@ -25,12 +25,12 @@
 }
 
 .link {
-    display: inline-flex;
-    align-items: flex-end;
-    font-size: 50px;
-    color: var(--labelColor);
-    text-decoration: inherit;
-    transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: flex-end;
+  font-size: 50px;
+  color: var(--labelColor);
+  text-decoration: inherit;
+  transition: all 0.2s ease-in-out;
 }
 
 .link:hover {

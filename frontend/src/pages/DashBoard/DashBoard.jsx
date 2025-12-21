@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './DashBoard.module.css';
 import TraineeCard from '../../components/TraineeCard/TraineeCard';
 
@@ -24,6 +25,12 @@ function DashBoard() {
         setTrainees((prev) => [...prev, newTrainee]);
     };
 
+    const navigate = useNavigate();
+
+    const handleTraineeClick = (id) => {
+        navigate(`/trainee/${id}`); // ← переход на страницу деталей
+    };
+
 
     return (
         <main className={styles.main}>
@@ -37,12 +44,16 @@ function DashBoard() {
                 </div>
                 <div className={styles.trainees}>
                     {trainees.map((trainee) => (
-                        <TraineeCard
-                        key={trainee.id}
-                        name={trainee.name}
-                        date={trainee.date}
-                        isNew={trainee.isNew}
-                        />
+                        <div
+                            key={trainee.id}
+                            className={styles.traineeCardWrapper}
+                            onClick={() => handleTraineeClick(trainee.id)}
+                        >
+                            <TraineeCard
+                                name={trainee.name}
+                                date={trainee.date}
+                            />
+                        </div>
                     ))}
                 </div>
             </div>
