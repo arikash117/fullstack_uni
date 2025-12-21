@@ -1,6 +1,10 @@
 import { useParams } from 'react-router-dom';
 import styles from './Trainee.module.css'
 import pfp from '../../assets/pfp.jpg'
+import Progress from '../../assets/progress.svg'
+import Schedule from '../../assets/schedule.svg'
+import Health from '../../assets/health.svg'
+
 import InfoCard from '../../components/InfoCard/InfoCard'
 
 export default function Trainee() {
@@ -24,8 +28,8 @@ export default function Trainee() {
                     <img src={pfp} alt="pfp" className={styles.photo}/>
                     <div className={styles.infoText}>
                         <p>{trainee.name}</p>
-                        <p>{trainee.phone}</p>
-                        <p>{trainee.goal}</p>
+                        <p>т. {trainee.phone}</p>
+                        <p>Цель: {trainee.goal}</p>
                     </div>
                 </div>
                 <div className={styles.textContainer}>
@@ -35,9 +39,9 @@ export default function Trainee() {
                     </span>
                 </div>
                 <div className={styles.cards}>
-                    <InfoCard />
-                    <InfoCard />
-                    <InfoCard />
+                    <InfoCard icon={Health} text="Трекинг здоровья"/>
+                    <InfoCard icon={Schedule} text="Расписание тренировок"/>
+                    <InfoCard icon={Progress} text="Отследить прогресс"/>
                 </div>
             </div>
             
