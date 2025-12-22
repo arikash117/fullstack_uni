@@ -5,10 +5,10 @@ import re
 class User(BaseModel):
     email: EmailStr
 
-class UserResponse(User):
-    id: int
-    username: str
-    created_at: datetime
+# class UserResponse(User):
+#     id: int
+#     username: str
+#     created_at: datetime
 
 # REGISTER
 class RegisterRequest(User):

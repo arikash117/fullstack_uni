@@ -4,13 +4,11 @@ from sqlalchemy.orm import Session
 from src.database.db import get_db
 from src.schemas.auth import (
     RegisterRequest,
-    LoginRequest,
     TokenRefreshRequest,
     TokenResponse,
     RegisterResponse,
-    UserResponse
 )
-from src.crud.user import get_user_by_email, create_user
+from src.crud.user import get_user_by_email_or_username, get_user_by_email, get_user_by_username, create_user
 from src.core.security import verify_password, create_access_token, create_refresh_token, verify_refresh_token
 
 auth_router = APIRouter(prefix="/auth")
@@ -24,6 +22,12 @@ async def signup(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Пользователь с таким email уже существует"
+        )
+    
+    if get_user_by_username(db, user_data.username):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Пользователь с таким именем уже существует"
         )
     
     user = create_user(
@@ -44,7 +48,7 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    user = get_user_by_email(db, form_data.username)
+    user = get_user_by_email_or_username(db, form_data.username)
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
