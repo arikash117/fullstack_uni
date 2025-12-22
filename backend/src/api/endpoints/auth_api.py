@@ -5,12 +5,13 @@ from src.database.db import get_db
 from src.schemas.auth import (
     RegisterRequest,
     LoginRequest,
+    TokenRefreshRequest,
     TokenResponse,
     RegisterResponse,
     UserResponse
 )
 from src.crud.user import get_user_by_email, create_user
-from src.core.security import verify_password, create_access_token, create_refresh_token
+from src.core.security import verify_password, create_access_token, create_refresh_token, verify_refresh_token
 
 auth_router = APIRouter(prefix="/auth")
 
@@ -60,5 +61,33 @@ async def login(
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
+        expires_in=30 * 60
+    )
+
+@auth_router.post("/refresh", response_model=TokenResponse)
+async def refresh_token(
+    refresh_request: TokenRefreshRequest,
+    db: Session = Depends(get_db)
+):
+    email = verify_refresh_token(refresh_request.refresh_token)
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Неверный или просроченный refresh token"
+        )
+    
+    user = get_user_by_email(db, email)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Пользователь не найден"
+        )
+    
+    new_access_token = create_access_token(user.email)
+    new_refresh_token = create_refresh_token(user.email)
+    
+    return TokenResponse(
+        access_token=new_access_token,
+        refresh_token=new_refresh_token,
         expires_in=30 * 60
     )

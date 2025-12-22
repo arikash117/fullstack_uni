@@ -11,6 +11,19 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return ph.verify(hashed_password, plain_password)
     except:
         return False
+    
+def verify_refresh_token(refresh_token: str) -> str | None:
+    try:
+        payload = jwt.decode(
+            refresh_token, 
+            settings.SECRET_KEY, 
+            algorithms=[settings.ALGORITHM]
+        )
+        if payload.get("type") != "refresh":
+            return None
+        return payload.get("sub")  # email
+    except:
+        return None    
 
 def get_password_hash(password: str) -> str:
     return ph.hash(password)
