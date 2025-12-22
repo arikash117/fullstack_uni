@@ -23,7 +23,7 @@ trainee_router = APIRouter(prefix="/trainees")
 
 # GET
 @trainee_router.get("/", response_model=List[TraineesResponse])
-async def get_trainees(
+def get_trainees(
     db: Session = Depends(get_db),
     name: Optional[str] = Query(None),
 ):
@@ -31,7 +31,7 @@ async def get_trainees(
     return trainees
 
 @trainee_router.get("/{trainee_id}", response_model=TraineeResponse)
-async def get_trainee(
+def get_trainee(
     trainee_id: int,
     db: Session = Depends(get_db)
 ):
@@ -45,7 +45,7 @@ async def get_trainee(
 
 # POST
 @trainee_router.post("/", response_model=TraineeResponse)
-async def create(
+def create(
     trainee_data: CreateTrainee,
     coach_id: int,
     db: Session = Depends(get_db),
@@ -60,7 +60,7 @@ async def create(
 
 # PATCH
 @trainee_router.patch("/{trainee_id}", response_model=TraineeResponse)
-async def update_trainee(
+def update_trainee(
     trainee_id: int,
     update_data: UpdateTrainee,
     db: Session = Depends(get_db)
@@ -75,7 +75,7 @@ async def update_trainee(
 
 # DELETE
 @trainee_router.delete("/{trainee_id}", response_model=DeleteTraineeResponse)
-async def delete(
+def delete(
     trainee_id: int,
     db: Session = Depends(get_db)
 ):

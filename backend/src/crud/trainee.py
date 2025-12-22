@@ -10,7 +10,7 @@ from src.schemas.trainee import (
 )
 
 # Список trainees
-async def get_list_trainees(
+def get_list_trainees(
         db: Session, 
         skip: int = 0, 
         limit: int = 10,
@@ -33,7 +33,7 @@ async def get_list_trainees(
     ]
 
 # Создание нового trainee
-async def create_trainee(
+def create_trainee(
     db: Session, 
     trainee_data: CreateTrainee,
     coach_id: int

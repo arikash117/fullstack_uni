@@ -7,7 +7,7 @@ class Trainee(Base):
 
     __tablename__ = "trainees"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    coach_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    coach_id = Column(Integer, ForeignKey(User.id), nullable=False)
 
     name = Column(String(20), nullable=False, index=True)
     phone = Column(String(20), nullable=False, unique=True)
@@ -20,6 +20,6 @@ class Trainee(Base):
     health_data = relationship("Health", back_populates="health_owner")
     workouts = relationship("Workout", back_populates="workout_owner")
 
-    __tableargs__ = (
+    __table_args__ = (
         Index('idx_trainee_coach_name', 'coach_id', 'name'),
     )
