@@ -10,7 +10,8 @@ class Workout(Base):
     trainee_id = Column(Integer, ForeignKey(Trainee.id), nullable=False)
     
     date = Column(DateTime, nullable=False)
-    description = Column(String, nullable=False)
+    name = Column(String(255), nullable=False)
+    type = Column(String(50), nullable=False, default="Силовая")
 
     workout_owner = relationship("Trainee", back_populates="workouts")
 

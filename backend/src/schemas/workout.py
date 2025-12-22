@@ -5,14 +5,16 @@ from typing import Optional, List
 
 class WorkoutBase(BaseModel):
     date: datetime
-    description: str
+    name: str
+    type: str = "Силовая"
 
 class CreateWorkout(WorkoutBase):
     pass
 
 class UpdateWorkout(BaseModel):
     date: Optional[datetime] = None
-    description: Optional[str] = None
+    name: Optional[str] = None
+    type: Optional[str] = None
 
 class WorkoutResponse(WorkoutBase):
     id: int
@@ -21,7 +23,8 @@ class WorkoutResponse(WorkoutBase):
 class WorkoutsResponse(BaseModel):
     id: int
     date: datetime
-    description: str
+    name: str
+    type: str
 
 class DeleteWorkoutResponse(BaseModel):
     success: bool
