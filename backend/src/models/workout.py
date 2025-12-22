@@ -1,5 +1,5 @@
-from models import trainee
-from database.db import Base
+from src.models import trainee
+from src.database.db import Base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Index
 from sqlalchemy.orm import relationship
 

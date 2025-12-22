@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from models.trainee import Trainee
-from schemas.trainee import (
+from src.models.trainee import Trainee
+from src.schemas.trainee import (
     TraineesResponse,
     CreateTrainee,
     DeleteTraineeResponse,

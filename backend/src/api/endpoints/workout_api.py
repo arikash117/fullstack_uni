@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
 
-from database.db import get_db
-from models.workout import Workout
-from schemas.workout import (
+from src.database.db import get_db
+from src.models.workout import Workout
+from src.schemas.workout import (
     WorkoutResponse, 
     WorkoutsResponse, 
     CreateWorkout, 

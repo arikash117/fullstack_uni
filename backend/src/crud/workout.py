@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
-from models.workout import Workout
-from schemas.workout import (
+from src.models.workout import Workout
+from src.schemas.workout import (
     WorkoutResponse,
     WorkoutsResponse,
     CreateWorkout,
