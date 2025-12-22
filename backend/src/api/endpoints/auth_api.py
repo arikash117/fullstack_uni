@@ -15,13 +15,11 @@ from src.core.security import verify_password, create_access_token, create_refre
 
 auth_router = APIRouter(prefix="/auth")
 
-# Регистрация
 @auth_router.post('/signup', response_model=RegisterResponse)
 async def signup(
     user_data: RegisterRequest,
     db: Session = Depends(get_db)
 ):
-    # Проверка, существует ли email
     if get_user_by_email(db, user_data.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -41,13 +39,12 @@ async def signup(
         created_at=user.created_at
     )
 
-# Логин
 @auth_router.post('/login', response_model=TokenResponse)
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),  # ← вот это!
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    user = get_user_by_email(db, form_data.username)  # ← username = email
+    user = get_user_by_email(db, form_data.username)
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

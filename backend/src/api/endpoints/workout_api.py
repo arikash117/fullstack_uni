@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
 
+from src.crud import trainee
+from src.core.auth import get_current_user
+from src.models.user import User
 from src.database.db import get_db
 from src.models.workout import Workout
 from src.schemas.workout import (
@@ -19,6 +22,7 @@ from src.crud.workout import (
     update_workout,
     delete_workout
 )
+from src.crud.trainee import get_trainee_by_id
 
 workout_router = APIRouter(prefix="/workouts")
 
@@ -29,8 +33,14 @@ async def get_workouts_list(
     trainee_id: int,
     date_from: Optional[datetime],
     date_to: Optional[datetime],
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+    
+    trainee = get_trainee_by_id(db=db, trainee_id=trainee_id)
+    if trainee.coach_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
+    
     try:
         workouts = get_workouts_by_trainee(
             db=db,
@@ -46,9 +56,13 @@ async def get_workouts_list(
 async def get_workout(
     workout_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     try:
         workout = get_workout_by_id(db=db, workout_id=workout_id)
+        trainee = get_trainee_by_id(db=db, trainee_id=workout.trainee_id)
+        if trainee.coach_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
         return workout
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -61,8 +75,12 @@ async def get_workout(
 async def create(
     workout_data: CreateWorkout,
     trainee_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+    if trainee.coach_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
+
     try:
         workout = create_workout(
             db=db,
@@ -78,11 +96,17 @@ async def create(
 async def update(
     update_data: UpdateWorkout,
     workout_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     try:
-        workout = update_workout(db=db, workout_id=workout_id, update_data=update_data)
-        return workout
+        workout = get_workout_by_id(db=db, workout_id=workout_id)
+        trainee = get_trainee_by_id(db=db, trainee_id=workout.trainee_id)
+        if trainee.coach_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
+        
+        updated_workout = update_workout(db=db, workout_id=workout_id, update_data=update_data)
+        return updated_workout
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
@@ -92,9 +116,15 @@ async def update(
 @workout_router.delete("/{workout_id}", response_model=DeleteWorkoutResponse)
 async def delete(
     workout_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     try:
+        workout = get_workout_by_id(db=db, workout_id=workout_id)
+        trainee = get_trainee_by_id(db=db, trainee_id=workout.trainee_id)
+        if trainee.coach_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
+        
         result = delete_workout(db=db, workout_id=workout_id)
         return result
     except ValueError as e:

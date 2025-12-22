@@ -15,9 +15,12 @@ def get_list_trainees(
         skip: int = 0, 
         limit: int = 10,
         name: Optional[str] = None,
+        coach_id: int = None,
 ) -> List[TraineesResponse]:
-    
     query = db.query(Trainee)
+
+    if coach_id is not None:
+        query = query.filter(Trainee.coach_id == coach_id)
 
     if name:
         query = query.filter(Trainee.name.ilike(f"{name}%"))
@@ -36,7 +39,7 @@ def get_list_trainees(
 def create_trainee(
     db: Session, 
     trainee_data: CreateTrainee,
-    coach_id: int
+    coach_id: int = None,
 ) -> TraineeResponse:
     
     existing_trainee = db.query(Trainee).filter(Trainee.phone == trainee_data.phone).first()

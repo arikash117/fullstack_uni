@@ -7,7 +7,7 @@ from .api.endpoints.trainee_api import trainee_router
 app = FastAPI()
 
 app.include_router(auth_router)
-app.include_router(health_router)
+# app.include_router(health_router)
 app.include_router(workout_router)
 app.include_router(trainee_router)
 

@@ -10,11 +10,6 @@ class UserResponse(User):
     username: str
     created_at: datetime
 
-# LOGIN
-class LoginRequest(BaseModel):
-    email: EmailStr 
-    password: str
-
 # REGISTER
 class RegisterRequest(User):
     username: str

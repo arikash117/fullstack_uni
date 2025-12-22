@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -28,17 +28,21 @@ trainee_router = APIRouter(prefix="/trainees")
 def get_trainees(
     db: Session = Depends(get_db),
     name: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
 ):
-    trainees = get_list_trainees(db=db, name=name)
+    trainees = get_list_trainees(db=db, name=name, coach_id=current_user.id)
     return trainees
 
 @trainee_router.get("/{trainee_id}", response_model=TraineeResponse)
 def get_trainee(
     trainee_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     try:
         trainee = get_trainee_by_id(db=db, trainee_id=trainee_id)
+        if trainee.coach_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
         return trainee
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -65,11 +69,16 @@ def create(
 def update_trainee(
     trainee_id: int,
     update_data: UpdateTrainee,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     try:
-        trainee = update_trainee_by_id(db=db, trainee_id=trainee_id, update_data=update_data)
-        return trainee
+        trainee = get_trainee_by_id(db=db, trainee_id=trainee_id)
+        if trainee.coach_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
+        
+        updated_trainee = update_trainee_by_id(db=db, trainee_id=trainee_id, update_data=update_data)
+        return updated_trainee
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -79,9 +88,14 @@ def update_trainee(
 @trainee_router.delete("/{trainee_id}", response_model=DeleteTraineeResponse)
 def delete(
     trainee_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     try:
+        trainee = get_trainee_by_id(db=db, trainee_id=trainee_id)
+        if trainee.coach_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
+        
         result = delete_trainee(db=db, trainee_id=trainee_id)
         return result
     except ValueError as e:
