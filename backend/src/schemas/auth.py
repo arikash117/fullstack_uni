@@ -12,6 +12,7 @@ class UserResponse(User):
 
 # LOGIN
 class LoginRequest(BaseModel):
+    email: EmailStr 
     password: str
 
 # REGISTER
@@ -37,6 +38,9 @@ class RegisterRequest(User):
         
         if len(value) < 6:
             raise ValueError("Пароль должен содержать минимум 6 символов")
+        
+        if len(value) > 72:
+            raise ValueError("Пароль не может быть длиннее 72 символов")
         
         if not re.search(r'[A-Za-z]', value):
             raise ValueError("Пароль должен содержать хотя бы одну букву")

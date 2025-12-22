@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
+from src.models.user import User
+from src.core.auth import get_current_user
 from src.database.db import get_db
 from src.schemas.trainee import (
     TraineesResponse,
@@ -47,11 +49,11 @@ def get_trainee(
 @trainee_router.post("/", response_model=TraineeResponse)
 def create(
     trainee_data: CreateTrainee,
-    coach_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     try:
-        trainee = create_trainee(db=db, trainee_data=trainee_data, coach_id=coach_id)
+        trainee = create_trainee(db=db, trainee_data=trainee_data, coach_id=current_user.id)
         return trainee
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

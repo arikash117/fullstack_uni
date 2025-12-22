@@ -1,4 +1,5 @@
 from src.models.user import User
+# from src.models.health import Health
 from src.database.db import Base
 from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Index
 from sqlalchemy.orm import relationship
@@ -17,7 +18,7 @@ class Trainee(Base):
 
     coach = relationship("User", back_populates="trainees") #coach_id
 
-    health_data = relationship("Health", back_populates="health_owner")
+    # health_data = relationship(Health, back_populates="health_owner")
     workouts = relationship("Workout", back_populates="workout_owner")
 
     __table_args__ = (
