@@ -10,7 +10,7 @@ from src.schemas.trainee import (
     UpdateTrainee,
     DeleteTraineeResponse,
 )
-from crud.trainee import (
+from src.crud.trainee import (
     get_list_trainees,
     create_trainee,
     delete_trainee,

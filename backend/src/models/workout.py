@@ -1,4 +1,4 @@
-from src.models import trainee
+from src.models.trainee import Trainee
 from src.database.db import Base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Index
 from sqlalchemy.orm import relationship
@@ -7,7 +7,7 @@ class Workout(Base):
 
     __tablename__ = "workouts"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    trainee_id = Column(Integer, ForeignKey(trainee.id), nullable=False)
+    trainee_id = Column(Integer, ForeignKey(Trainee.id), nullable=False)
     
     date = Column(DateTime, nullable=False)
     description = Column(String, nullable=False)

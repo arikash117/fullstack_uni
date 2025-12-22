@@ -12,7 +12,7 @@ from src.schemas.workout import (
     UpdateWorkout,
     DeleteWorkoutResponse,
 )
-from crud.workout import (
+from src.crud.workout import (
     get_workouts_by_trainee,
     get_workout_by_id,
     create_workout,

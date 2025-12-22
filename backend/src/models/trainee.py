@@ -1,4 +1,4 @@
-from src.models import user
+from src.models.user import User
 from src.database.db import Base
 from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Index
 from sqlalchemy.orm import relationship
