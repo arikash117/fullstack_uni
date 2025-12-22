@@ -16,6 +16,8 @@ class Trainee(Base):
     subscription_end = Column(Date, nullable=False)
     next_training = Column(DateTime(timezone=True), nullable=False)
 
+    photo_path = Column(String, nullable=True)
+
     coach = relationship("User", back_populates="trainees") #coach_id
 
     # health_data = relationship(Health, back_populates="health_owner")

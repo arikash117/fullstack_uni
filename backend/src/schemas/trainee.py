@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, computed_field, field_validator, model_validator
 from typing import List, Optional
 from datetime import date, datetime
 import re
@@ -12,6 +12,7 @@ class TraineeBase(BaseModel):
 
 # Создание trainee
 class CreateTrainee(TraineeBase):
+    photo_path: Optional[str] = None 
     @field_validator("name")
     @classmethod
     def validate_name(cls, value: str) -> str:
@@ -38,6 +39,14 @@ class CreateTrainee(TraineeBase):
 
 class TraineeResponse(TraineeBase):
     id: int
+    photo_path: Optional[str] = None
+
+    @computed_field
+    @property
+    def photo_url(self) -> Optional[str]:
+        if self.photo_path:
+            return f"/uploads/{self.photo_path}"
+        return None
 
 # для отображения списком 
 class TraineesResponse(BaseModel):

@@ -1,6 +1,10 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+import uuid
+from fastapi import APIRouter, Depends, File, Path, Query, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
+
+UPLOAD_DIR = Path("uploads/trainees")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 from src.models.user import User
 from src.core.auth import get_current_user
@@ -63,6 +67,38 @@ def create(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Ошибка при создании тренирующегося")
+    
+@trainee_router.post("/{trainee_id}/photo", response_model=TraineeResponse)
+async def upload_trainee_photo(
+    trainee_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Проверка: trainee принадлежит пользователю
+    trainee = get_trainee_by_id(db, trainee_id)
+    if trainee.coach_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Нет доступа")
+
+    # Валидация типа файла (опционально)
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="Можно загружать только изображения")
+
+    # Генерируем уникальное имя: trainees/{uuid}.jpg
+    file_ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    safe_filename = f"{uuid.uuid4()}.{file_ext}"
+    file_path = UPLOAD_DIR / safe_filename
+
+    # Сохраняем файл
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+
+    # Обновляем путь в БД
+    trainee.photo_path = f"trainees/{safe_filename}"
+    db.commit()
+    db.refresh(trainee)
+
+    return trainee    
 
 # PATCH
 @trainee_router.patch("/{trainee_id}", response_model=TraineeResponse)

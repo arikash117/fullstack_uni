@@ -13,7 +13,7 @@ from src.schemas.trainee import (
 def get_list_trainees(
         db: Session, 
         skip: int = 0, 
-        limit: int = 10,
+        limit: int = 100,
         name: Optional[str] = None,
         coach_id: int = None,
 ) -> List[TraineesResponse]:
