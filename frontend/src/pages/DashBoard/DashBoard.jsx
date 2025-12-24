@@ -1,19 +1,44 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/client';
 import styles from './DashBoard.module.css';
 import TraineeCard from '../../components/TraineeCard/TraineeCard';
 
 function DashBoard() {
     const navigate = useNavigate();
+    const [trainees, setTrainees] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const [trainees, setTrainees] = useState(
-        Array.from({ length: 1 }, (_, i) => ({
-            id: i,
-            name: `Трейни ${i + 1}`,
-            date: '01.01.26',
-            isNew: false,
-        }))
-    );
+    useEffect(() => {
+        const fetchTrainees = async () => {
+            try {
+                const response = await api.get('/trainees');
+                setTrainees(response.data);
+            } catch (err) {
+                setError('Ошибка загрузки тренирующихся');
+                console.error('Fetch trainees error:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTrainees();
+    }, []);
+
+    const formatDateTime = (isoString) => {
+        try {
+            const date = new Date(isoString);
+            if (isNaN(date.getTime())) return '—';
+            return date.toLocaleDateString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: '2-digit'
+            });
+        } catch {
+            return '—';
+        }
+    };
 
     const handleAddTrainee = () => {
         navigate('/trainee/add');
@@ -47,7 +72,7 @@ function DashBoard() {
                             <TraineeCard
                                 id={trainee.id}
                                 name={trainee.name}
-                                date={trainee.date}
+                                date={formatDateTime(trainee.next_training)} 
                                 isNew={trainee.isNew}
                                 onRemove={handleRemoveTrainee}
                             />
