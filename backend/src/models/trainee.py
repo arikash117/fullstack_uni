@@ -8,7 +8,7 @@ class Trainee(Base):
 
     __tablename__ = "trainees"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    coach_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    coach_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     name = Column(String(20), nullable=False, index=True)
     phone = Column(String(20), nullable=False, unique=True)

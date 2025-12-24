@@ -1,5 +1,6 @@
 import uuid
-from fastapi import APIRouter, Depends, File, Path, Query, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Query, HTTPException, UploadFile, status
+from pathlib import Path
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
