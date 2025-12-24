@@ -10,6 +10,10 @@ class User(BaseModel):
 #     username: str
 #     created_at: datetime
 
+class LoginRequest(BaseModel):
+    identifier: str  # может быть email или username
+    password: str
+
 # REGISTER
 class RegisterRequest(User):
     username: str

@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from src.database.db import get_db
 from src.schemas.auth import (
+    LoginRequest,
     RegisterRequest,
     TokenRefreshRequest,
     TokenResponse,
@@ -45,14 +46,14 @@ async def signup(
 
 @auth_router.post('/login', response_model=TokenResponse)
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    login_data: LoginRequest,
     db: Session = Depends(get_db)
 ):
-    user = get_user_by_email_or_username(db, form_data.username)
-    if not user or not verify_password(form_data.password, user.password_hash):
+    user = get_user_by_email_or_username(db, login_data.identifier)
+    if not user or not verify_password(login_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Неверный email или пароль",
+            detail="Неверный логин/email или пароль",
             headers={"WWW-Authenticate": "Bearer"},
         )
     

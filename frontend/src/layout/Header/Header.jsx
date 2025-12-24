@@ -5,6 +5,8 @@ import styles from './Header.module.css';
 function Header() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { isLoggedIn } = useAuth();
+    const { logout } = useAuth();
 
     const pathSegments = location.pathname.split('/').filter(Boolean);
     const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
@@ -20,6 +22,7 @@ function Header() {
     };
 
     const handleLogoutClick = () => {
+        logout();
         navigate('/');
     };
 
@@ -34,10 +37,10 @@ function Header() {
                 <button className={styles.cover} onClick={goBackToTrainee}>
                     Назад
                 </button>
-                <Link to="/" className={styles.centeredLogo}>
+                <a className={styles.centeredLogo} href="/">
                     <img className={styles.logo} src="/label.svg" alt="Main logo" />
                     <span className={styles.text}>Train!</span>
-                </Link>
+                </a>
                 <button className={styles.cover} onClick={handleLogoutClick}>
                     Выйти
                 </button>
@@ -48,10 +51,10 @@ function Header() {
     if (isAuthPage) {
         return (
             <div className={styles.header}>
-                <Link to="/" className={styles.centeredLogo}>
-                <img className={styles.logo} src="/label.svg" alt="Main logo" />
-                <span className={styles.text}>Train!</span>
-                </Link>
+                <a className={styles.link} href="/">
+                    <img className={styles.logo} src="/label.svg" alt="Main logo" />
+                    <span className={styles.text}>Train!</span>
+                </a>
             </div>
         );
     }
@@ -62,7 +65,7 @@ function Header() {
                 <img className={styles.logo} src="/label.svg" alt="Main logo" />
                 <span className={styles.text}>Train!</span>
             </a>
-            {isHomePage &&(
+            {isHomePage && !isLoggedIn && (
                 <div className={styles.container}>
                 <button className={styles.cover} onClick={handleLoginClick}>
                     Войти

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from .api.endpoints import admin_api
 from .api.endpoints.auth_api import auth_router
@@ -8,6 +9,14 @@ from .api.endpoints.workout_api import workout_router
 from .api.endpoints.trainee_api import trainee_router
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # ← твой фронт
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth_router)
 # app.include_router(health_router)

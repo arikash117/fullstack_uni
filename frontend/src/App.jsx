@@ -1,4 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
+import { useAuth } from './hooks/useAuth'
+import ProtectedRoute from './components/ProtectedRoute';
 import Header from './layout/Header/Header'
 import Footer from './layout/Footer/Footer'
 
@@ -15,6 +17,12 @@ import Progress from './pages/Progress/Progress'
 import './App.css'
 
 function App() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return <div>Загрузка...</div>;
+  }
+
   return (
     <div className="app">
       <Header />
@@ -22,10 +30,35 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<LogIn />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/trainee/add" element={<AddTrainee />} />
 
-          <Route path="/trainee/:id" element={<Trainee />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/trainee/add" 
+            element={
+              <ProtectedRoute>
+                <AddTrainee />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/trainee/:id" 
+            element={
+              <ProtectedRoute>
+                <Trainee />
+              </ProtectedRoute>
+            }
+          />
+
+
           <Route path="/trainee/:id/health" element={<Health />} />
           <Route path="/trainee/:id/schedule" element={<Schedule />} />
           <Route path="/trainee/:id/progress" element={<Progress />} />

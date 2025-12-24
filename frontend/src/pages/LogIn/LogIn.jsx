@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
+import { useAuth } from '../../hooks/useAuth'
 
 
 export default function LogIn() {
-    const [email, setEmail] = useState('');
+    const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
+    const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
-        console.log('Вход:', { email, password });
-
-        navigate('/dashboard');
+        const success = await login(identifier, password);
+        if (success) {
+            navigate('/dashboard');
+        }
     };
 
     return (
@@ -22,12 +24,12 @@ export default function LogIn() {
                 <h2 className={styles.title}>Вход</h2>
                 <form onSubmit={handleSubmit}>
                 <div className={styles.inputGroup}>
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="identifier">Email</label>
                     <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="identifier"
+                    type="text"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
                     required
                     />
                 </div>
