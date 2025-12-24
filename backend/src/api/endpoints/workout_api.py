@@ -31,8 +31,8 @@ workout_router = APIRouter(prefix="/workouts")
 @workout_router.get("/", response_model=List[WorkoutsResponse])
 async def get_workouts_list(
     trainee_id: int,
-    date_from: Optional[datetime],
-    date_to: Optional[datetime],
+    date_from: Optional[datetime] = Query(None),
+    date_to: Optional[datetime] = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):

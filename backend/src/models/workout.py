@@ -7,7 +7,7 @@ class Workout(Base):
 
     __tablename__ = "workouts"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    trainee_id = Column(Integer, ForeignKey(Trainee.id), nullable=False)
+    trainee_id = Column(Integer, ForeignKey("trainees.id", ondelete="CASCADE"), nullable=False)
     
     date = Column(DateTime, nullable=False)
     name = Column(String(255), nullable=False)

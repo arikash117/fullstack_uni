@@ -39,7 +39,8 @@ def get_workouts_by_trainee(
         WorkoutsResponse(
             id=workout.id,
             date=workout.date,
-            description=workout.description
+            name=workout.name,
+            type=workout.type,
         ) for workout in workouts
     ]
 
@@ -57,7 +58,8 @@ def get_workout_by_id(
         id=workout.id,
         trainee_id=workout.trainee_id,
         date=workout.date,
-        description=workout.description
+        name=workout.name,
+        type=workout.type,
     )
 
 # создание тренировки
@@ -80,7 +82,8 @@ def create_workout(
         id=new_workout.id,
         trainee_id=new_workout.trainee_id,
         date=new_workout.date,
-        description=new_workout.description
+        name=new_workout.name,
+        type=new_workout.type,
     )
 
 # изменение тренировки

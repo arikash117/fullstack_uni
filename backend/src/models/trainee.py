@@ -21,7 +21,7 @@ class Trainee(Base):
     coach = relationship("User", back_populates="trainees") #coach_id
 
     # health_data = relationship(Health, back_populates="health_owner")
-    workouts = relationship("Workout", back_populates="workout_owner")
+    workouts = relationship("Workout", back_populates="workout_owner", passive_deletes=True)
 
     __table_args__ = (
         Index('idx_trainee_coach_name', 'coach_id', 'name'),
