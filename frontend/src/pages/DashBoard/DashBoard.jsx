@@ -48,8 +48,19 @@ function DashBoard() {
         navigate(`/trainee/${id}`);
     };
 
-    const handleRemoveTrainee = (id) => {
-        setTrainees(prev => prev.filter(t => t.id !== id));
+    const handleRemoveTrainee = async (id) => {
+        if (!window.confirm('Вы уверены, что хотите удалить этого тренирующегося?')) {
+            return;
+        }
+
+        try {
+            await api.delete(`/trainees/${id}`);
+
+            setTrainees(prev => prev.filter(t => t.id !== id));
+        } catch (err) {
+            alert('Ошибка при удалении тренирующегося');
+            console.error('Delete error:', err);
+        }
     };
 
     return (

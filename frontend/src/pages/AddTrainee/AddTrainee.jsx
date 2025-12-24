@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/client';
 import styles from './AddTrainee.module.css';
 
 
@@ -10,9 +11,9 @@ export default function AddTrainee() {
         name: '',
         phone: '',
         goal: 'Набрать мышечную массу',
-        membershipStart: '2026-01-01',
-        membershipEnd: '2027-01-01',
-        photo: null, // ← пока просто храним файл
+        subscriptionEnd: '2027-01-01',
+        nextTraining: new Date().toISOString().split('T')[0] + 'T18:00:00',
+        photo: null, 
     });
 
     const handleChange = (e) => {
@@ -24,7 +25,7 @@ export default function AddTrainee() {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!formData.name.trim() || !formData.phone.trim()) {
@@ -32,21 +33,36 @@ export default function AddTrainee() {
             return;
         }
 
-        // Формируем данные для передачи
-        const traineeData = {
-            name: formData.name,
-            phone: formData.phone,
-            goal: formData.goal,
-            membershipPeriod: `${formData.membershipStart} - ${formData.membershipEnd}`,
-            nextTrainingDay: formData.membershipStart, // заглушка
-            photo: formData.photo, // ← передаём файл (или null)
-        };
+        try {
+            const traineeData = {
+                name: formData.name,
+                phone: formData.phone,
+                goal: formData.goal,
+                subscription_end: formData.subscriptionEnd,
+                next_training: formData.nextTraining,
+            };
 
-        // Генерируем временный ID (для URL)
-        const tempId = Date.now();
+            const response = await api.post('/trainees', traineeData);
+            const newTraineeId = response.data.id;
 
-        // Передаём данные через state роутера
-        navigate(`/trainee/${tempId}`, { state: traineeData });
+            if (formData.photo) {
+                const formDataForPhoto = new FormData();
+                formDataForPhoto.append('file', formData.photo);
+
+                await api.post(`/trainees/${newTraineeId}/photo`, formDataForPhoto, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+            }
+
+            navigate(`/trainee/${newTraineeId}`);
+
+        } catch (err) {
+            const detail = err.response?.data?.detail || 'Ошибка при создании тренирующегося';
+            alert(detail);
+            console.error('Create trainee error:', err);
+        }
     };
 
     return (
@@ -106,26 +122,28 @@ export default function AddTrainee() {
                     </select>
                 </div>
 
-                {/* Дата действия абонемента */}
+                {/* Дата окончания подписки */}
                 <div className={styles.formGroup}>
-                    <label>Действие абонемента:</label>
-                    <div className={styles.dateRange}>
-                        <input
-                            type="date"
-                            name="membershipStart"
-                            value={formData.membershipStart}
-                            onChange={handleChange}
-                            required
-                        />
-                        <span>—</span>
-                        <input
-                            type="date"
-                            name="membershipEnd"
-                            value={formData.membershipEnd}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+                    <label>Дата окончания подписки:</label>
+                    <input
+                        type="date"
+                        name="subscriptionEnd"
+                        value={formData.subscriptionEnd}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                {/* Время следующей тренировки */}
+                <div className={styles.formGroup}>
+                    <label>Время следующей тренировки:</label>
+                    <input
+                        type="datetime-local"
+                        name="nextTraining"
+                        value={formData.nextTraining}
+                        onChange={handleChange}
+                        required
+                    />
                 </div>
 
                 {/* Кнопки */}
