@@ -5,22 +5,31 @@ import styles from './Register.module.css';
 
 export default function Register() {
     const [email, setEmail] = useState('');
+     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
             alert('Пароли не совпадают');
             return;
         }
 
-        // Позже — отправка на бэкенд
-        console.log('Регистрация:', { email, password });
-    
-        // После успешной регистрации — редирект на dashboard
-        navigate('/dashboard');
+        try {
+            const response = await api.post('/auth/signup', {
+                email,
+                username,   
+                password,
+                confirm_password: confirmPassword, 
+            });
+
+            navigate('/login');
+        } catch (error) {
+            const detail = error.response?.data?.detail || 'Ошибка регистрации';
+            alert(detail);
+        }
     };
 
     return (
@@ -28,6 +37,7 @@ export default function Register() {
             <div className={styles.formBox}>
                 <h2 className={styles.title}>Регистрация</h2>
                 <form onSubmit={handleSubmit}>
+                {/* Email */}
                 <div className={styles.inputGroup}>
                     <label htmlFor="email">Email</label>
                     <input
@@ -39,6 +49,22 @@ export default function Register() {
                     />
                 </div>
 
+                {/* Username */}
+                <div className={styles.inputGroup}>
+                    <label htmlFor="username">Логин</label>
+                    <input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    minLength="3"
+                    pattern="[a-zA-Z0-9_]+"
+                    title="Только буквы, цифры и подчеркивания, минимум 3 символа"
+                    />
+                </div>
+
+                {/* Password */}
                 <div className={styles.inputGroup}>
                     <label htmlFor="password">Пароль</label>
                     <input
@@ -50,6 +76,7 @@ export default function Register() {
                     />
                 </div>
 
+                {/* Confirm */}
                 <div className={styles.inputGroup}>
                     <label htmlFor="confirm">Подтвердите пароль</label>
                     <input
