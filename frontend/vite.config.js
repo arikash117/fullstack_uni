@@ -10,4 +10,29 @@ export default defineConfig({
       },
     }),
   ],
-})
+  server: {
+    proxy: {
+      '/uploads': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/auth': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/trainees': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/workouts': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/admin': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
+  },
+});
+
