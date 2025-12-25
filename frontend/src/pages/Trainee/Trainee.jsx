@@ -57,7 +57,7 @@ export default function Trainee() {
             <div className={styles.content}>
                 <div className={styles.infoContainer}>
                     <img
-                        src={trainee.photo_url || pfp} // ← фото из API (или заглушка)
+                        src={trainee.photo_url || pfp}
                         alt="Фото тренирующегося"
                         className={styles.photo}
                     />

@@ -7,7 +7,6 @@ function Header() {
   const navigate = useNavigate();
   const { isLoggedIn, logout } = useAuth();
 
-  // Проверяем, находимся ли мы на странице трейни или его подстраницах
   const isTraineePage = location.pathname.startsWith('/trainee/');
 
   const handleRegisterClick = () => {

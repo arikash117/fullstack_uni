@@ -10,7 +10,6 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (token) {
-      // Проверка токена
       api.get('/trainees')
         .then(() => setUser({}))
         .catch(() => setUser(null))
@@ -34,7 +33,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem('access_token');
-    setUser(null); // ← это триггерит перерисовку!
+    setUser(null);
   };
 
   const value = {
