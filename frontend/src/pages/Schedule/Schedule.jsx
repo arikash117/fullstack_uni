@@ -1,31 +1,93 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import api from '../../api/client';
 import styles from './Schedule.module.css'
 import AddWorkoutModal from '../../components/AddWorkoutModal/AddWorkoutModal';
 import WorkoutCard from '../../components/WorkoutCard/WorkoutCard';
 
 export default function Schedule() {
-
+    const { id } = useParams();
     const [viewMode, setViewMode] = useState('day');
-    const [workouts, setWorkouts] = useState([
-        { id: 0, time: '09:00', name: 'Утренняя тренировка', type: 'Силовая' },
-        { id: 1, time: '18:30', name: 'Вечерняя тренировка', type: 'Кардио' },
-        { id: 2, time: '20:00', name: 'Растяжка', type: 'Гибкость' },
-    ]);
-
+    const [workouts, setWorkouts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleAddWorkout = (newWorkoutData) => {
-        const newId = Math.max(...workouts.map(w => w.id), -1) + 1;
-        const newWorkout = {
-            id: newId,
-            ...newWorkoutData,
-            isNew: true,
+    useEffect(() => {
+        const fetchWorkouts = async () => {
+        try {
+            const response = await api.get('/workouts', {
+                params: {
+                    trainee_id: id,
+                },
+            });
+            setWorkouts(response.data);
+        } catch (err) {
+            setError('Ошибка загрузки тренировок');
+            console.error('Fetch workouts error:', err);
+        } finally {
+            setLoading(false);
+        }
         };
-        setWorkouts(prev => [...prev, newWorkout]);
+
+        fetchWorkouts();
+    }, [id]);
+
+    if (loading) return <div>Загрузка...</div>;
+    if (error) return <div>{error}</div>;
+
+    const formatTime = (isoString) => {
+        try {
+            const date = new Date(isoString);
+            if (isNaN(date.getTime())) return '—';
+            return date.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+        } catch {
+            return '—';
+        }
     };
 
-    const handleRemoveWorkout = (id) => {
-        setWorkouts(prev => prev.filter(workout => workout.id !== id));
+    const handleAddWorkout = async (newWorkoutData) => {
+        try {
+            const today = new Date();
+            const [hours, minutes] = newWorkoutData.time.split(':');
+
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+
+            const localIsoString = `${year}-${month}-${day}T${hours}:${minutes}:00`;
+
+            const apiData = {
+                date: localIsoString,
+                name: newWorkoutData.name,
+                type: newWorkoutData.type,
+            };
+
+            const response = await api.post(`/workouts/trainee/${id}`, apiData);
+            setWorkouts(prev => [...prev, response.data]);
+            setIsModalOpen(false);
+        } catch (err) {
+            const detail = err.response?.data?.detail || 'Ошибка при создании тренировки';
+            alert(detail);
+            console.error('Create workout error:', err);
+        }
+    };
+
+    const handleRemoveWorkout = async (workoutId) => {
+        if (!window.confirm('Вы уверены, что хотите удалить эту тренировку?')) {
+            return;
+        }
+
+        try {
+            await api.delete(`/workouts/${workoutId}`);
+            setWorkouts(prev => prev.filter(w => w.id !== workoutId));
+        } catch (err) {
+            alert('Ошибка при удалении тренировки');
+            console.error('Delete workout error:', err);
+        }
     };
 
     const openModal = () => setIsModalOpen(true);
@@ -58,10 +120,10 @@ export default function Schedule() {
                         <WorkoutCard
                             key={workout.id}
                             id={workout.id}
-                            time={workout.time}
+                            time={formatTime(workout.date)}
                             name={workout.name}
                             type={workout.type}
-                            isNew={workout.isNew}
+                            isNew={false}
                             onRemove={handleRemoveWorkout}
                         />
                     ))}
