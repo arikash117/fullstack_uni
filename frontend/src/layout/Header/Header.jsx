@@ -3,87 +3,82 @@ import { useAuth } from '../../hooks/useAuth';
 import styles from './Header.module.css';
 
 function Header() {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { isLoggedIn } = useAuth();
-    const { logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isLoggedIn, logout } = useAuth();
 
-    const pathSegments = location.pathname.split('/').filter(Boolean);
-    const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
-    const isHomePage = location.pathname === '/';
-    const isTraineeChildPage = pathSegments.length === 3 && pathSegments[0] === 'trainee';
+  // Проверяем, находимся ли мы на странице трейни или его подстраницах
+  const isTraineePage = location.pathname.startsWith('/trainee/');
 
-    const handleRegisterClick = () => {
-        navigate('/register');
-    };
+  const handleRegisterClick = () => {
+    navigate('/register');
+  };
 
-    const handleLoginClick = () => {
-        navigate('/login');
-    };
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
 
-    const handleLogoutClick = () => {
-        logout();
-        navigate('/');
-    };
+  const handleLogoutClick = () => {
+    logout();
+    navigate('/');
+  };
 
-    if (isTraineeChildPage) {
-        const traineeId = pathSegments[1];
-        const goBackToTrainee = () => {
-            navigate(`/trainee/${traineeId}`);
-        };
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const isHomePage = location.pathname === '/';
 
-        return (
-            <div className={styles.header}>
-                <button className={styles.cover} onClick={goBackToTrainee}>
-                    Назад
-                </button>
-                <a className={styles.centeredLogo} href="/">
-                    <img className={styles.logo} src="/label.svg" alt="Main logo" />
-                    <span className={styles.text}>Train!</span>
-                </a>
-                <button className={styles.cover} onClick={handleLogoutClick}>
-                    Выйти
-                </button>
-            </div>
-        );
-    }
-
-    if (isAuthPage) {
-        return (
-            <div className={styles.header}>
-                <a className={styles.link} href="/">
-                    <img className={styles.logo} src="/label.svg" alt="Main logo" />
-                    <span className={styles.text}>Train!</span>
-                </a>
-            </div>
-        );
-    }
-
+  if (isTraineePage) {
     return (
-        <div className={styles.header}>
-            <a className={styles.link} href="/">
-                <img className={styles.logo} src="/label.svg" alt="Main logo" />
-                <span className={styles.text}>Train!</span>
-            </a>
-            {isHomePage && !isLoggedIn && (
-                <div className={styles.container}>
-                <button className={styles.cover} onClick={handleLoginClick}>
-                    Войти
-                </button>
-                <button className={styles.cover} onClick={handleRegisterClick}>
-                    Зарегестрироваться
-                </button>
-            </div>
-            )}
-            {!isHomePage && !isAuthPage && (
-                <div className={styles.container}>
-                    <button className={styles.cover} onClick={handleLogoutClick}>
-                        Выйти
-                    </button>
-                </div>
-            )}
+      <div className={styles.header}>
+        <button className={styles.cover} onClick={() => navigate(-1)}>
+          Назад
+        </button>
+        <a className={styles.centeredLogo} href="/">
+          <img className={styles.logo} src="/label.svg" alt="Main logo" />
+          <span className={styles.text}>Train!</span>
+        </a>
+        <button className={styles.cover} onClick={handleLogoutClick}>
+          Выйти
+        </button>
+      </div>
+    );
+  }
+
+  if (isAuthPage) {
+    return (
+      <div className={styles.header}>
+        <a className={styles.link} href="/">
+          <img className={styles.logo} src="/label.svg" alt="Main logo" />
+          <span className={styles.text}>Train!</span>
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.header}>
+      <a className={styles.link} href="/">
+        <img className={styles.logo} src="/label.svg" alt="Main logo" />
+        <span className={styles.text}>Train!</span>
+      </a>
+      {isHomePage && !isLoggedIn && (
+        <div className={styles.container}>
+          <button className={styles.cover} onClick={handleLoginClick}>
+            Войти
+          </button>
+          <button className={styles.cover} onClick={handleRegisterClick}>
+            Зарегестрироваться
+          </button>
         </div>
-    )
+      )}
+      {!isHomePage && !isAuthPage && isLoggedIn && (
+        <div className={styles.container}>
+          <button className={styles.cover} onClick={handleLogoutClick}>
+            Выйти
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default Header;
