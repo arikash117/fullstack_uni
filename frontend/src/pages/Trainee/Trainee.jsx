@@ -69,7 +69,7 @@ export default function Trainee() {
                             <p>Цель: {trainee.goal}</p>
                         </div>
                     </div>
-                    <Link to="/edit" className={styles.edit}>
+                    <Link to={`/trainee/${id}/edit`} className={styles.edit}>
                         <span>Изменить</span>
                         <img src={editIcon} alt="Редактировать профиль" />
                     </Link>

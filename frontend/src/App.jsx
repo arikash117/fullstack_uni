@@ -9,6 +9,7 @@ import LogIn from './pages/LogIn/LogIn'
 import Dashboard from './pages/DashBoard/DashBoard'
 import Home from './pages/Home/Home'
 import Trainee from './pages/Trainee/Trainee'
+import Edit from './pages/Trainee/Edit';
 import AddTrainee from './pages/AddTrainee/AddTrainee'
 import Health from './pages/Health/Health'
 import Schedule from './pages/Schedule/Schedule'
@@ -56,6 +57,15 @@ function App() {
                 <Trainee />
               </ProtectedRoute>
             }
+          />
+          
+          <Route 
+            path="/trainee/:id/edit" 
+            element={
+              <ProtectedRoute>
+                <Edit />
+              </ProtectedRoute>
+            } 
           />
 
 

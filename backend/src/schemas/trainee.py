@@ -74,8 +74,8 @@ class UpdateTrainee(TraineeBase):
     
     @field_validator("next_training")
     @classmethod
-    def validate_next_training(cls, value: date) -> date:
-        if value < date.today():
+    def validate_next_training(cls, value: datetime) -> datetime:
+        if value < datetime.today():
             raise ValueError("Дата следующей тренировки не может быть в прошлом")
         return value
 
