@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/client';
 import styles from './DashBoard.module.css';
+import Schedule from '../../assets/schedule.svg'
 import TraineeCard from '../../components/TraineeCard/TraineeCard';
 
 function DashBoard() {
@@ -68,7 +69,9 @@ function DashBoard() {
             <span>-----------------------Мои трейни-----------------------</span>
             <div className={styles.content}>
                 <div className={styles.aside}>
-                    <div className={styles.calendar}></div>
+                    <div className={styles.calendar}>
+                        <img src={Schedule} alt="icon" className={styles.icon}/>
+                    </div>
                     <button className={styles.button} onClick={handleAddTrainee}>
                         Добавить трейни
                     </button>

@@ -1,8 +1,9 @@
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import styles from './Trainee.module.css'
 import api from '../../api/client';
 import pfp from '../../assets/pfp.jpg'
+import editIcon from '../../assets/edit-icon.svg'
 import Progress from '../../assets/progress.svg'
 import Schedule from '../../assets/schedule.svg'
 import Health from '../../assets/health.svg'
@@ -56,16 +57,22 @@ export default function Trainee() {
         <main className={styles.main}>
             <div className={styles.content}>
                 <div className={styles.infoContainer}>
-                    <img
-                        src={trainee.photo_url || pfp}
-                        alt="Фото тренирующегося"
-                        className={styles.photo}
-                    />
-                    <div className={styles.infoText}>
-                        <p>{trainee.name}</p>
-                        <p>т. {trainee.phone}</p>
-                        <p>Цель: {trainee.goal}</p>
+                    <div className={styles.left}>
+                        <img
+                            src={trainee.photo_url || pfp}
+                            alt="Фото тренирующегося"
+                            className={styles.photo}
+                        />
+                        <div className={styles.infoText}>
+                            <p>{trainee.name}</p>
+                            <p>т. {trainee.phone}</p>
+                            <p>Цель: {trainee.goal}</p>
+                        </div>
                     </div>
+                    <Link to="/edit" className={styles.edit}>
+                        <span>Изменить</span>
+                        <img src={editIcon} alt="Редактировать профиль" />
+                    </Link>
                 </div>
 
                 <div className={styles.textContainer}>
