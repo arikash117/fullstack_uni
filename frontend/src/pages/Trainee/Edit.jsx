@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/client';
 import styles from './Edit.module.css';
-import pfp from '../../assets/pfp.jpg';
+import editPhoto from '../../assets/edit-photo.svg';
+import pfp from '../../assets/pfp.jpg'
 
 export default function Edit() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [trainee, setTrainee] = useState(null); // ← добавь это
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
@@ -22,21 +24,43 @@ export default function Edit() {
         const fetchTrainee = async () => {
             try {
                 const response = await api.get(`/trainees/${id}`);
-                const trainee = response.data;
-                
-                // Форматируем даты для инпутов
+                const t = response.data;
+                setTrainee(t);
                 setFormData({
-                    name: trainee.name,
-                    phone: trainee.phone,
-                    goal: trainee.goal,
-                    subscriptionEnd: new Date(trainee.subscription_end).toISOString().split('T')[0],
-                    nextTraining: new Date(trainee.next_training).toISOString().slice(0, 16),
+                    name: t.name,
+                    phone: t.phone,
+                    goal: t.goal,
+                    subscriptionEnd: new Date(t.subscription_end).toISOString().split('T')[0],
+                    nextTraining: new Date(t.next_training).toISOString().slice(0, 16),
                     photo: null,
                 });
             } catch (err) {
-                setError('Ошибка при загрузке данных тренирующегося');
-                console.error('Fetch trainee error:', err);
-            } finally {
+        let message = 'Ошибка при обновлении тренирующегося';
+        
+        if (err.response?.data) {
+            const data = err.response.data;
+            
+            // Если detail — строка
+            if (typeof data.detail === 'string') {
+                message = data.detail;
+            }
+            // Если detail — массив (как при валидации FastAPI)
+            else if (Array.isArray(data.detail)) {
+                message = data.detail.map(e => e.msg).join('; ');
+            }
+            // Если весь ответ — строка
+            else if (typeof data === 'string') {
+                message = data;
+            }
+            // Иначе — сериализуем
+            else {
+                message = JSON.stringify(data, null, 2);
+            }
+        }
+
+        alert(message);
+        console.error('Update trainee error:', err);
+    } finally {
                 setLoading(false);
             }
         };
@@ -81,6 +105,10 @@ export default function Edit() {
             if (formData.photo) {
                 const formDataForPhoto = new FormData();
                 formDataForPhoto.append('file', formData.photo);
+
+                for (let [key, value] of formDataForPhoto.entries()) {
+                    console.log('FormData entry:', key, value);
+                }
 
                 await api.post(`/trainees/${id}/photo`, formDataForPhoto, {
                     headers: {
@@ -127,20 +155,44 @@ export default function Edit() {
                     />
                 </div>
 
-                {/* Фото */}
-                <div className={styles.formGroup}>
-                    <label>Фото (опционально):</label>
+                <div className={styles.pfp}>
+                    <label htmlFor="photoInput" className={styles.avatarLabel}>
+                        {formData.photo ? (
+                        <img
+                            src={URL.createObjectURL(formData.photo)}
+                            alt="preview"
+                            className={styles.avatarImg}
+                        />
+                        ) : trainee?.photo_url ? (
+                        <img
+                            src={trainee.photo_url}
+                            alt="current photo"
+                            className={styles.avatarImg}
+                            onError={(e) => {
+                            e.target.src = pfp;
+                            }}
+                        />
+                        ) : (
+                        <img
+                            src={pfp}
+                            alt="no photo"
+                            className={styles.avatarImg}
+                        />
+                        )}
+
+                        {/* Иконка редактирования */}
+                        <img src={editPhoto} alt="edit-photo" className={styles.photoIcon} />
+                    </label>
+
+                    {/* Скрытый инпут */}
                     <input
+                        id="photoInput"
                         type="file"
                         name="photo"
                         accept="image/*"
                         onChange={handleChange}
-                        id="photoInput"
-                        className={styles.hiddenFileInput}
+                        style={{ display: 'none' }}
                     />
-                    <label htmlFor="photoInput" className={styles.fileButton}>
-                        Выбрать файл
-                    </label>
                 </div>
 
                 {/* Цель */}
