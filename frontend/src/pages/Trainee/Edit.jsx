@@ -40,19 +40,15 @@ export default function Edit() {
         if (err.response?.data) {
             const data = err.response.data;
             
-            // Если detail — строка
             if (typeof data.detail === 'string') {
                 message = data.detail;
             }
-            // Если detail — массив (как при валидации FastAPI)
             else if (Array.isArray(data.detail)) {
                 message = data.detail.map(e => e.msg).join('; ');
             }
-            // Если весь ответ — строка
             else if (typeof data === 'string') {
                 message = data;
             }
-            // Иначе — сериализуем
             else {
                 message = JSON.stringify(data, null, 2);
             }
@@ -89,7 +85,6 @@ export default function Edit() {
         }
 
         try {
-            // Подготавливаем данные для обновления
             const traineeData = {
                 name: formData.name,
                 phone: formData.phone,
@@ -98,10 +93,8 @@ export default function Edit() {
                 next_training: formData.nextTraining,
             };
 
-            // Отправляем PUT запрос
             await api.patch(`/trainees/${id}`, traineeData);
 
-            // Обновляем фото, если выбран новый файл
             if (formData.photo) {
                 const formDataForPhoto = new FormData();
                 formDataForPhoto.append('file', formData.photo);
@@ -129,7 +122,45 @@ export default function Edit() {
         <main className={styles.main}>
             <h1>Изменить тренирующегося</h1>
             <form onSubmit={handleSubmit} className={styles.form}>
-                {/* Имя */}
+                <label>Изменить фото:</label>
+                <div className={styles.wrap}>
+                    <div className={styles.pfp}>
+                        <label htmlFor="photoInput" className={styles.avatarLabel}>
+                            {formData.photo ? (
+                            <img
+                                src={URL.createObjectURL(formData.photo)}
+                                alt="preview"
+                                className={styles.avatarImg}
+                            />
+                            ) : trainee?.photo_url ? (
+                            <img
+                                src={trainee.photo_url}
+                                alt="current photo"
+                                className={styles.avatarImg}
+                                onError={(e) => {
+                                e.target.src = pfp;
+                                }}
+                            />
+                            ) : (
+                            <img
+                                src={pfp}
+                                alt="no photo"
+                                className={styles.avatarImg}
+                            />
+                            )}
+                            <img src={editPhoto} alt="edit-photo" className={styles.photoIcon} />
+                        </label>
+                        <input
+                            id="photoInput"
+                            type="file"
+                            name="photo"
+                            accept="image/*"
+                            onChange={handleChange}
+                            style={{ display: 'none' }}
+                        />
+                    </div>
+                </div>
+                
                 <div className={styles.formGroup}>
                     <label>Имя:</label>
                     <input
@@ -142,7 +173,6 @@ export default function Edit() {
                     />
                 </div>
 
-                {/* Телефон */}
                 <div className={styles.formGroup}>
                     <label>Телефон:</label>
                     <input
@@ -155,47 +185,6 @@ export default function Edit() {
                     />
                 </div>
 
-                <div className={styles.pfp}>
-                    <label htmlFor="photoInput" className={styles.avatarLabel}>
-                        {formData.photo ? (
-                        <img
-                            src={URL.createObjectURL(formData.photo)}
-                            alt="preview"
-                            className={styles.avatarImg}
-                        />
-                        ) : trainee?.photo_url ? (
-                        <img
-                            src={trainee.photo_url}
-                            alt="current photo"
-                            className={styles.avatarImg}
-                            onError={(e) => {
-                            e.target.src = pfp;
-                            }}
-                        />
-                        ) : (
-                        <img
-                            src={pfp}
-                            alt="no photo"
-                            className={styles.avatarImg}
-                        />
-                        )}
-
-                        {/* Иконка редактирования */}
-                        <img src={editPhoto} alt="edit-photo" className={styles.photoIcon} />
-                    </label>
-
-                    {/* Скрытый инпут */}
-                    <input
-                        id="photoInput"
-                        type="file"
-                        name="photo"
-                        accept="image/*"
-                        onChange={handleChange}
-                        style={{ display: 'none' }}
-                    />
-                </div>
-
-                {/* Цель */}
                 <div className={styles.formGroup}>
                     <label>Цель:</label>
                     <select name="goal" value={formData.goal} onChange={handleChange}>
@@ -206,7 +195,6 @@ export default function Edit() {
                     </select>
                 </div>
 
-                {/* Дата окончания подписки */}
                 <div className={styles.formGroup}>
                     <label>Дата окончания подписки:</label>
                     <input
@@ -218,7 +206,6 @@ export default function Edit() {
                     />
                 </div>
 
-                {/* Время следующей тренировки */}
                 <div className={styles.formGroup}>
                     <label>Время следующей тренировки:</label>
                     <input
@@ -230,7 +217,6 @@ export default function Edit() {
                     />
                 </div>
 
-                {/* Кнопки */}
                 <div className={styles.buttonGroup}>
                     <button type="button" onClick={() => navigate(-1)}>
                         Отмена

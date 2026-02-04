@@ -15,7 +15,12 @@ function DashBoard() {
         const fetchTrainees = async () => {
             try {
                 const response = await api.get('/trainees');
-                setTrainees(response.data);
+                const sortedTrainees = [...response.data].sort((a, b) => {
+                    const dateA = new Date(a.next_training);
+                    const dateB = new Date(b.next_training);
+                    return dateA - dateB;
+                });
+                setTrainees(sortedTrainees);
             } catch (err) {
                 setError('Ошибка загрузки тренирующихся');
                 console.error('Fetch trainees error:', err);
