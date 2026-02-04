@@ -7,7 +7,13 @@ function Header() {
   const navigate = useNavigate();
   const { isLoggedIn, logout } = useAuth();
 
-  const isTraineePage = location.pathname.startsWith('/trainee/');
+  const pathname = location.pathname;
+
+  const isEditPage = pathname.startsWith('/trainee/') && pathname.endsWith('/edit');
+  const isAddPage = pathname === '/trainee/add';
+  const isTraineeSubPage = pathname.match(/\/trainee\/\d+\/(health|schedule|progress)/);
+  const isTraineePage = pathname.match(/\/trainee\/\d+$/) !== null;
+  const isDashboardPage = pathname === '/dashboard';
 
   const handleRegisterClick = () => {
     navigate('/register');
@@ -22,13 +28,48 @@ function Header() {
     navigate('/');
   };
 
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
-  const isHomePage = location.pathname === '/';
+  const isAuthPage = pathname === '/login' || pathname === '/register';
+  const isHomePage = pathname === '/';
+
+  if (isEditPage || isAddPage) {
+    return (
+      <div className={styles.header}>
+        <button className={styles.cover} onClick={() => navigate('/dashboard')}>
+          Назад
+        </button>
+        <a className={styles.centeredLogo} href="/">
+          <img className={styles.logo} src="/label.svg" alt="Main logo" />
+          <span className={styles.text}>Train!</span>
+        </a>
+        <button className={styles.cover} onClick={handleLogoutClick}>
+          Выйти
+        </button>
+      </div>
+    );
+  }
+
+  if (isTraineeSubPage) {
+    const traineeId = pathname.split('/')[2];
+    return (
+      <div className={styles.header}>
+        <button className={styles.cover} onClick={() => navigate(`/trainee/${traineeId}`)}>
+          Назад
+        </button>
+        <a className={styles.centeredLogo} href="/">
+          <img className={styles.logo} src="/label.svg" alt="Main logo" />
+          <span className={styles.text}>Train!</span>
+        </a>
+        <button className={styles.cover} onClick={handleLogoutClick}>
+          Выйти
+        </button>
+      </div>
+    );
+  }
 
   if (isTraineePage) {
     return (
       <div className={styles.header}>
-        <button className={styles.cover} onClick={() => navigate(-1)}>
+        <button className={styles.cover} onClick={() => navigate('/dashboard')}>
           Назад
         </button>
         <a className={styles.centeredLogo} href="/">
