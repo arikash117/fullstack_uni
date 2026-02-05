@@ -4,7 +4,7 @@ from src.database.db import Base
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Index
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import select, func
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import relationship
 
 class Trainee(Base):
@@ -34,7 +34,10 @@ class Trainee(Base):
         if not self.workouts:
             return None
 
-        future_workouts = [w for w in self.workouts if w.date > datetime.utcnow()]
+        future_workouts = [
+            w for w in self.workouts
+            if w.date.replace(tzinfo=timezone.utc) > datetime.now(timezone.utc)
+        ]
 
         if not future_workouts:
             return None
@@ -45,7 +48,7 @@ class Trainee(Base):
     def next_training(cls):
         return select(Workout.date).where(
             Workout.trainee_id == cls.id,
-            Workout.date > func.now()
+            Workout.date > datetime.now(timezone.utc),
         ).order_by(Workout.date).limit(1).scalar_subquery()
 
     __table_args__ = (

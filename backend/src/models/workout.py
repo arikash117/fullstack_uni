@@ -8,7 +8,7 @@ class Workout(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     trainee_id = Column(Integer, ForeignKey("trainees.id", ondelete="CASCADE"), nullable=False)
     
-    date = Column(DateTime, nullable=False)
+    date = Column(DateTime(timezone=True), nullable=False)
     name = Column(String(255), nullable=False)
     type = Column(String(50), nullable=False, default="Силовая")
 
