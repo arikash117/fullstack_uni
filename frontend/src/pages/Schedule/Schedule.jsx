@@ -36,6 +36,20 @@ export default function Schedule() {
     if (loading) return <div>Загрузка...</div>;
     if (error) return <div>{error}</div>;
 
+    const formatDate = (isoString) => {
+        try {
+            const date = new Date(isoString);
+            if (isNaN(date.getTime())) return '—';
+            return date.toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit'
+            });
+        } catch {
+            return '—';
+        }
+    };
+
     const formatTime = (isoString) => {
         try {
             const date = new Date(isoString);
@@ -51,23 +65,19 @@ export default function Schedule() {
 
     const handleAddWorkout = async (newWorkoutData) => {
         try {
-            const today = new Date();
-            const [hours, minutes] = newWorkoutData.time.split(':');
-
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-
-            const localIsoString = `${year}-${month}-${day}T${hours}:${minutes}:00`;
+            const isoString = `${newWorkoutData.date}T${newWorkoutData.time}:00`;
 
             const apiData = {
-                date: localIsoString,
+                date: isoString,
                 name: newWorkoutData.name,
                 type: newWorkoutData.type,
             };
 
             const response = await api.post(`/workouts/trainee/${id}`, apiData);
             setWorkouts(prev => [...prev, response.data]);
+            
+            window.dispatchEvent(new Event('traineesUpdated'));
+            
             setIsModalOpen(false);
         } catch (err) {
             const detail = err.response?.data?.detail || 'Ошибка при создании тренировки';
@@ -103,7 +113,7 @@ export default function Schedule() {
                         className={`${styles.switchBtn} ${viewMode === 'day' ? styles.active : ''}`}
                         onClick={() => setViewMode('day')}
                     >
-                        Сегодня
+                        Ближайщие
                     </button>
                     <button
                         className={`${styles.switchBtn} ${viewMode === 'month' ? styles.active : ''}`}
@@ -120,6 +130,7 @@ export default function Schedule() {
                         <WorkoutCard
                             key={workout.id}
                             id={workout.id}
+                            date={formatDate(workout.date)}
                             time={formatTime(workout.date)}
                             name={workout.name}
                             type={workout.type}

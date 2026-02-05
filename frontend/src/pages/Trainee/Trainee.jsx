@@ -17,20 +17,31 @@ export default function Trainee() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchTrainee = async () => {
-            try {
-                const response = await api.get(`/trainees/${id}`);
-                setTrainee(response.data);
-            } catch (err) {
-                setError('Тренирующийся не найден');
-                console.error('Fetch trainee error:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchTrainee = async () => {
+        try {
+            const response = await api.get(`/trainees/${id}`);
+            setTrainee(response.data);
+        } catch (err) {
+            setError('Тренирующийся не найден');
+            console.error('Fetch trainee error:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchTrainee();
+        
+        // Слушатель для обновления данных
+        const handleTraineesUpdated = () => {
+            fetchTrainee();
+        };
+        
+        window.addEventListener('traineesUpdated', handleTraineesUpdated);
+        
+        return () => {
+            window.removeEventListener('traineesUpdated', handleTraineesUpdated);
+        };
     }, [id]);
 
     if (loading) return <div>Загрузка...</div>;
@@ -40,14 +51,31 @@ export default function Trainee() {
     const formattedSubscriptionEnd = new Date(trainee.subscription_end)
         .toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
-    const formattedNextTraining = new Date(trainee.next_training)
-        .toLocaleString('ru-RU', {
-            day: '2-digit',
-            month: '2-digit',
-            year: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+    const formatDateTime = (isoString) => {
+        if (!isoString) {
+            return '--.--.-- --:--';
+        }
+        
+        try {
+            const date = new Date(isoString);
+            
+            if (isNaN(date.getTime()) || date.getFullYear() < 1971) {
+                return '--.--.-- --:--';
+            }
+            
+            return date.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch {
+            return '--.--.-- --:--';
+        }
+    };
+
+    const formattedNextTraining = formatDateTime(trainee.next_training);
 
     const goToHealth = () => navigate(`/trainee/${id}/health`);
     const goToSchedule = () => navigate(`/trainee/${id}/schedule`);
@@ -91,4 +119,3 @@ export default function Trainee() {
         </main>
     );
 }
-

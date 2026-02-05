@@ -8,7 +8,6 @@ class TraineeBase(BaseModel):
     phone: str
     goal: str
     subscription_end: date
-    next_training: datetime
 
 # Создание trainee
 class CreateTrainee(TraineeBase):
@@ -39,6 +38,7 @@ class CreateTrainee(TraineeBase):
 
 class TraineeResponse(TraineeBase):
     id: int
+    next_training: Optional[datetime] = None
     photo_path: Optional[str] = None
 
     @computed_field
@@ -52,7 +52,7 @@ class TraineeResponse(TraineeBase):
 class TraineesResponse(BaseModel):
     id: int
     name: str
-    next_training: datetime
+    next_training: Optional[datetime] = None
 
 # изменение конкретного trainee
 class UpdateTrainee(TraineeBase):
@@ -60,7 +60,6 @@ class UpdateTrainee(TraineeBase):
     phone: Optional[str] = None
     goal: Optional[str] = None
     subscription_end: Optional[date] = None
-    next_training: Optional[datetime] = None
 
     @field_validator("phone")
     @classmethod
@@ -71,13 +70,6 @@ class UpdateTrainee(TraineeBase):
         if len(cleaned_phone) < 10:
             raise ValueError("Номер телефона слишком короткий")
         return cleaned_phone
-    
-    @field_validator("next_training")
-    @classmethod
-    def validate_next_training(cls, value: datetime) -> datetime:
-        if value < datetime.today():
-            raise ValueError("Дата следующей тренировки не может быть в прошлом")
-        return value
 
 # Удаление одного trainee
 class DeleteTraineeResponse(BaseModel):

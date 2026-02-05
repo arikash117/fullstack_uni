@@ -11,38 +11,61 @@ function DashBoard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchTrainees = async () => {
-            try {
-                const response = await api.get('/trainees');
-                const sortedTrainees = [...response.data].sort((a, b) => {
-                    const dateA = new Date(a.next_training);
-                    const dateB = new Date(b.next_training);
-                    return dateA - dateB;
-                });
-                setTrainees(sortedTrainees);
-            } catch (err) {
-                setError('Ошибка загрузки тренирующихся');
-                console.error('Fetch trainees error:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchTrainees = async () => {
+        try {
+            const response = await api.get('/trainees');
+            
+            const sortedTrainees = [...response.data].sort((a, b) => {
+                if (!a.next_training) return 1;
+                if (!b.next_training) return -1;
+                
+                const dateA = new Date(a.next_training);
+                const dateB = new Date(b.next_training);
+                return dateA - dateB;
+            });
+            
+            setTrainees(sortedTrainees);
+        } catch (err) {
+            setError('Ошибка загрузки тренирующихся');
+            console.error('Fetch trainees error:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchTrainees();
+        
+        const handleTraineesUpdated = () => {
+            fetchTrainees();
+        };
+        
+        window.addEventListener('traineesUpdated', handleTraineesUpdated);
+        
+        return () => {
+            window.removeEventListener('traineesUpdated', handleTraineesUpdated);
+        };
     }, []);
 
     const formatDateTime = (isoString) => {
+
+        if (!isoString) {
+            return '--.--.--';
+        }
+        
         try {
             const date = new Date(isoString);
-            if (isNaN(date.getTime())) return '—';
+            if (isNaN(date.getTime()) || date.getFullYear() < 1970) {
+                return '--.--.--';
+            }
+            
             return date.toLocaleDateString('ru-RU', {
-            day: '2-digit',
-            month: '2-digit',
-            year: '2-digit'
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit'
             });
         } catch {
-            return '—';
+            return '--.--.--';
         }
     };
 

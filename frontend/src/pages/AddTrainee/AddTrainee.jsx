@@ -12,7 +12,6 @@ export default function AddTrainee() {
         phone: '',
         goal: 'Набрать мышечную массу',
         subscriptionEnd: '2027-01-01',
-        nextTraining: new Date().toISOString().split('T')[0] + 'T18:00:00',
         photo: null, 
     });
 
@@ -39,7 +38,6 @@ export default function AddTrainee() {
                 phone: formData.phone,
                 goal: formData.goal,
                 subscription_end: formData.subscriptionEnd,
-                next_training: formData.nextTraining,
             };
 
             const response = await api.post('/trainees', traineeData);
@@ -129,18 +127,6 @@ export default function AddTrainee() {
                         type="date"
                         name="subscriptionEnd"
                         value={formData.subscriptionEnd}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                {/* Время следующей тренировки */}
-                <div className={styles.formGroup}>
-                    <label>Время следующей тренировки:</label>
-                    <input
-                        type="datetime-local"
-                        name="nextTraining"
-                        value={formData.nextTraining}
                         onChange={handleChange}
                         required
                     />

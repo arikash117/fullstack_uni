@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from './WorkoutCard.module.css';
 import clsx from 'clsx';
 
-export default function WorkoutCard({ id, time, name, type, isNew = false, onRemove }) {
+export default function WorkoutCard({ id, date, time, name, type, isNew = false, onRemove }) {
     const [showDelete, setShowDelete] = useState(false);
 
     return (
@@ -11,6 +11,7 @@ export default function WorkoutCard({ id, time, name, type, isNew = false, onRem
             onMouseEnter={() => setShowDelete(true)}
             onMouseLeave={() => setShowDelete(false)}
         >
+            <p>{date}</p>
             <p>{time}</p>
             <p>{name}</p>
             <p>{type}</p>

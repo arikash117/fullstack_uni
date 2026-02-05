@@ -7,7 +7,7 @@ class Health(Base):
 
     __tablename__ = "health"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    trainee_id = Column(Integer, ForeignKey(Trainee.id), nullable=False)
+    trainee_id = Column(Integer, ForeignKey("trainees.id", ondelete="CASCADE"), nullable=False)
 
     todays_date = Column(Date, nullable=False)
     carbohydrates = Column(Integer,  CheckConstraint('carbohydrates <= 9999'), nullable=True)

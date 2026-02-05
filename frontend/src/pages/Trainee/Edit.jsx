@@ -8,13 +8,12 @@ import pfp from '../../assets/pfp.jpg'
 export default function Edit() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [trainee, setTrainee] = useState(null); // ← добавь это
+    const [trainee, setTrainee] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
         goal: '',
         subscriptionEnd: '',
-        nextTraining: '',
         photo: null,
     });
     const [loading, setLoading] = useState(true);
@@ -31,7 +30,6 @@ export default function Edit() {
                     phone: t.phone,
                     goal: t.goal,
                     subscriptionEnd: new Date(t.subscription_end).toISOString().split('T')[0],
-                    nextTraining: new Date(t.next_training).toISOString().slice(0, 16),
                     photo: null,
                 });
             } catch (err) {
@@ -90,7 +88,6 @@ export default function Edit() {
                 phone: formData.phone,
                 goal: formData.goal,
                 subscription_end: formData.subscriptionEnd,
-                next_training: formData.nextTraining,
             };
 
             await api.patch(`/trainees/${id}`, traineeData);
@@ -201,17 +198,6 @@ export default function Edit() {
                         type="date"
                         name="subscriptionEnd"
                         value={formData.subscriptionEnd}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className={styles.formGroup}>
-                    <label>Время следующей тренировки:</label>
-                    <input
-                        type="datetime-local"
-                        name="nextTraining"
-                        value={formData.nextTraining}
                         onChange={handleChange}
                         required
                     />

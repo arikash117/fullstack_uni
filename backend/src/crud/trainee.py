@@ -1,5 +1,6 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
+from src.models.workout import Workout
 from src.models.trainee import Trainee
 from src.schemas.trainee import (
     TraineesResponse,
@@ -25,7 +26,9 @@ def get_list_trainees(
     if name:
         query = query.filter(Trainee.name.ilike(f"{name}%"))
     
-    trainees = query.offset(skip).limit(limit).all()
+    trainees = query.options(
+        joinedload(Trainee.workouts)
+    ).offset(skip).limit(limit).all()
 
     return [
         TraineesResponse(
@@ -53,6 +56,7 @@ def create_trainee(
 
     db.add(new_trainee)
     db.commit()
+    db.refresh(new_trainee)
 
     return new_trainee
 
@@ -69,6 +73,8 @@ def delete_trainee(
     
     deleted_id = trainee.id
 
+    db.query(Workout).filter(Workout.trainee_id == trainee_id).delete()
+    db.flush()
     db.delete(trainee)
     db.commit()
 
@@ -84,7 +90,9 @@ def get_trainee_by_id(
     trainee_id: int
 ) -> Trainee:
     
-    trainee = db.query(Trainee).filter(Trainee.id == trainee_id).first()
+    trainee = db.query(Trainee).options(
+        joinedload(Trainee.workouts)
+    ).filter(Trainee.id == trainee_id).first()
     
     if not trainee:
         raise ValueError(f"Тренирующийся с ID {trainee_id} не найден")
@@ -98,7 +106,9 @@ def update_trainee_by_id(
     update_data: UpdateTrainee
 ) -> Trainee:
      
-    trainee = db.query(Trainee).filter(Trainee.id == trainee_id).first()
+    trainee = db.query(Trainee).options(
+        joinedload(Trainee.workouts)
+    ).filter(Trainee.id == trainee_id).first()
     
     if not trainee:
         raise ValueError(f"Тренирующийся с ID {trainee_id} не найден")

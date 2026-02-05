@@ -2,7 +2,8 @@ import { useState } from 'react';
 import styles from './AddWorkoutModal.module.css';
 
 export default function AddWorkoutModal({ isOpen, onClose, onAdd }) {
-    const [time, setTime] = useState('00:00');
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [time, setTime] = useState('09:00');
     const [name, setName] = useState('');
     const [type, setType] = useState('Силовая');
 
@@ -14,6 +15,7 @@ export default function AddWorkoutModal({ isOpen, onClose, onAdd }) {
         }
 
         onAdd({
+            date,
             time,
             name: name.trim(),
             type,
@@ -31,6 +33,17 @@ export default function AddWorkoutModal({ isOpen, onClose, onAdd }) {
             <div className={styles.modal}>
                 <h2>Добавить тренировку</h2>
                 <form onSubmit={handleSubmit}>
+                    
+                    <div className={styles.formGroup}>
+                        <label>Дата:</label>
+                        <input
+                            type="date"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            required
+                        />
+                    </div>
+
                     <div className={styles.formGroup}>
                         <label>Время:</label>
                         <input
