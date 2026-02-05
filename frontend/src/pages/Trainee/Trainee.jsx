@@ -53,14 +53,14 @@ export default function Trainee() {
 
     const formatDateTime = (isoString) => {
         if (!isoString) {
-            return '--.--.-- --:--';
+            return 'Нет ближайших тренировок';
         }
         
         try {
             const date = new Date(isoString);
             
             if (isNaN(date.getTime()) || date.getFullYear() < 1971) {
-                return '--.--.-- --:--';
+                return 'Нет ближайших тренировок';
             }
             
             return date.toLocaleString('ru-RU', {
@@ -71,7 +71,7 @@ export default function Trainee() {
                 minute: '2-digit'
             });
         } catch {
-            return '--.--.-- --:--';
+            return 'Нет ближайших тренировок';
         }
     };
 

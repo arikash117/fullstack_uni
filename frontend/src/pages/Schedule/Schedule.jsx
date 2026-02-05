@@ -21,7 +21,13 @@ export default function Schedule() {
                     trainee_id: id,
                 },
             });
-            setWorkouts(response.data);
+            const sortedWorkouts = [...response.data].sort((a, b) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+                    return dateA - dateB;
+                });
+                
+                setWorkouts(sortedWorkouts);
         } catch (err) {
             setError('Ошибка загрузки тренировок');
             console.error('Fetch workouts error:', err);
