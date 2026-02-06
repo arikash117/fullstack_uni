@@ -1,25 +1,22 @@
-from pydantic import BaseModel
-from datetime import date, datetime
-from typing import List, Optional
+from pydantic import BaseModel, EmailStr
+from datetime import datetime
 
-class AdminTraineeResponse(BaseModel):
+class UserBase(BaseModel):
     id: int
-    name: str
-    phone: str
-    goal: str
-    subscription_end: date
-    next_training: datetime
-    coach_email: str
-    coach_username: str
-
-class AdminUserResponse(BaseModel):
-    id: int
-    email: str
     username: str
+    email: EmailStr
+
+#конкретный пользователь
+class UserResponse(UserBase):
     role: str
     created_at: datetime
 
-class AdminDeleteUserResponse(BaseModel):
+# для отображения списком 
+class UsersResponse(UserBase):
+    role: str
+
+# удаление юзера
+class DeleteUserResponse(BaseModel):
     success: bool
     message: str
     deleted_user_id: int
