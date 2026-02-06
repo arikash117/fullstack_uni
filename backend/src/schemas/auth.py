@@ -68,6 +68,7 @@ class TokenResponse(BaseModel):
     refresh_token: str
     token_type: str = "bearer"
     expires_in: int # in seconds
+    role: str
 
 class TokenRefreshRequest(BaseModel):
     refresh_token: str

@@ -1,6 +1,7 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import Header from './layout/Header/Header'
 import Footer from './layout/Footer/Footer'
 
@@ -15,10 +16,12 @@ import Health from './pages/Health/Health'
 import Schedule from './pages/Schedule/Schedule'
 import Progress from './pages/Progress/Progress'
 
+import AdminMain from './pages/AdminMain/AdminMain'
+
 import './App.css'
 
 function App() {
-  const { loading } = useAuth();
+  const { loading, isLoggedIn } = useAuth();
 
   if (loading) {
     return <div>Загрузка...</div>;
@@ -31,6 +34,15 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<LogIn />} />
+
+          <Route 
+            path="/admin" 
+            element={
+              <AdminRoute>
+                <AdminMain />
+              </AdminRoute>
+            }
+          />
 
           <Route 
             path="/dashboard" 

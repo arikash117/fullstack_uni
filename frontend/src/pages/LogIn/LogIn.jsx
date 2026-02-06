@@ -12,9 +12,14 @@ export default function LogIn() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const success = await login(identifier, password);
-        if (success) {
-            navigate('/dashboard');
+        const result = await login(identifier, password);
+        
+        if (result.success) {
+            if (result.role === 'admin') {
+                navigate('/admin', { replace: true });
+            } else {
+                navigate('/dashboard', { replace: true });
+            }
         }
     };
 

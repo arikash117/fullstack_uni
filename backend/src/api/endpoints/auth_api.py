@@ -63,7 +63,8 @@ async def login(
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
-        expires_in=30 * 60
+        expires_in=30 * 60,
+        role=user.role,
     )
 
 @auth_router.post("/refresh", response_model=TokenResponse)
