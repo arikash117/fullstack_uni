@@ -5,6 +5,7 @@ from src.crud.admin import (
     delete_user,
     get_all_users_for_admin,
     get_user_by_id,
+    update_user_role,
 )
 from src.database.db import get_db
 from src.models.user import User
@@ -13,6 +14,8 @@ from src.schemas.admin import (
     UserResponse,
     UsersResponse,
     DeleteUserResponse,
+    RoleUpdateResponse,
+    RoleUpdateRequest,
 )
  
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
@@ -40,6 +43,25 @@ def get_user(
         return get_user_by_id(db, user_id=user_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+# PUTCH изменение роли пользователя
+@admin_router.patch("/users/{user_id}/role", response_model=RoleUpdateResponse)
+def change_user_role(
+    user_id: int,
+    role_data: RoleUpdateRequest,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    try:
+        result = update_user_role(
+            db=db,
+            user_id=user_id,
+            new_role=role_data.role,
+            admin_id=admin.id
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 # DELETE /admin/users/{user_id} → удалить
 @admin_router.delete("/users/{user_id}", response_model=DeleteUserResponse)

@@ -5,6 +5,7 @@ from src.schemas.admin import (
     UserResponse,
     UsersResponse,
     DeleteUserResponse,
+    RoleUpdateResponse,
 )
 
 # список пользователей
@@ -22,7 +23,7 @@ def get_all_users_for_admin(
     if role:
         query = query.filter(User.role == role)
 
-    users = query.offset(skip).limit(limit).all()
+    users = query.order_by(User.id).offset(skip).limit(limit).all()
 
     return [
         UsersResponse(
@@ -36,17 +37,9 @@ def get_all_users_for_admin(
 # конкретный пользователь
 def get_user_by_id(
     db: Session,
-    user_id: int,
-    username: Optional[str] = None
+    user_id: int
 ) -> UserResponse:
-    query = db.query(User)
-    
-    if user_id is not None:
-        user = query.filter(User.id == user_id).first()
-    elif username is not None:
-        user = query.filter(User.username == username).first()
-    else:
-        raise ValueError("Нужно указать user_id или username")
+    user = db.query(User).filter(User.id == user_id).first()
     
     if not user:
         raise ValueError("Пользователь не найден")
@@ -59,6 +52,38 @@ def get_user_by_id(
         created_at=user.created_at
     )
 
+def update_user_role(
+    db: Session,
+    user_id: int,
+    new_role: str,
+    admin_id: int
+) -> RoleUpdateResponse:
+    if user_id == admin_id:
+        raise ValueError("Нельзя изменить свою собственную роль")
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise ValueError("Пользователь не найден")
+    
+    if user.role == new_role:
+        raise ValueError(f"Пользователь уже имеет роль '{new_role}'")
+    
+    old_role = user.role
+    
+    user.role = new_role
+    db.commit()
+    db.refresh(user)
+    
+    return RoleUpdateResponse(
+        id=user.id,
+        success=True,
+        message=f"Роль пользователя {user.username} изменена",
+        username=user.username,
+        old_role=old_role,
+        new_role=new_role
+    )
+
+# удаление пользователя
 def delete_user(db: Session, user_id: int, admin_id: int) -> DeleteUserResponse:
     if user_id == admin_id:
         raise ValueError("Нельзя удалить самого себя")
