@@ -13,7 +13,6 @@ function Header() {
   const isAddPage = pathname === '/trainee/add';
   const isTraineeSubPage = pathname.match(/\/trainee\/\d+\/(health|schedule|progress)/);
   const isTraineePage = pathname.match(/\/trainee\/\d+$/) !== null;
-  const isDashboardPage = pathname === '/dashboard';
 
   const handleRegisterClick = () => {
     navigate('/register');

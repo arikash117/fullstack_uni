@@ -5,8 +5,8 @@ import api from '../../api/client';
 
 function AdminMain() {
   useEffect(() => {
-    console.log('[AdminMain] Монтирование');
-    return () => console.log('[AdminMain] Размонтирование');
+    console.log('Текущий baseURL api:', api.defaults.baseURL);
+    api.get('/admin/users').catch(e => console.error('Test request error:', e));
   }, []);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);

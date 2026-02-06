@@ -23,20 +23,10 @@ export function AuthProvider({ children }) {
 
   const login = async (identifier, password) => {
     try {
-      console.log('🔥 [DEBUG] Пытаемся залогиниться...');
-      
       const response = await api.post('/auth/login', { identifier, password });
-
-      console.log('✅ [DEBUG] Успешный ответ:', {
-        access_token: response.data.access_token,
-        role: response.data.role,
-        username: response.data.username
-      });
       
       localStorage.setItem('access_token', response.data.access_token);
       localStorage.setItem('user_role', response.data.role);
-
-      console.log('💾 [DEBUG] Сохранена роль:', response.data.role);
       
       setUser({ role: response.data.role });
       

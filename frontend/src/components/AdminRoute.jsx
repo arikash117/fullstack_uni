@@ -9,7 +9,6 @@ export default function AdminRoute({ children }) {
   }
 
   if (!user?.role || user.role !== 'admin') {
-    console.warn('❌ Не админ! Редирект на /dashboard');
     return <Navigate to="/dashboard" replace />;
   }
 
