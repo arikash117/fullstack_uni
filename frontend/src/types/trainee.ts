@@ -8,3 +8,11 @@ export interface Trainee {
   next_training?: string;
   isNew?: boolean;
 }
+
+export interface TraineeFormData {
+  name: string;
+  phone: string;
+  goal: string;
+  subscriptionEnd: string;
+  photo: File | null;
+}

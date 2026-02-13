@@ -1,35 +1,39 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/client';
+import { TraineeFormData } from '../../types/trainee';
 import styles from './AddTrainee.module.css';
 
 
 export default function AddTrainee() {
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<TraineeFormData>({
         name: '',
         phone: '',
         goal: 'Набрать мышечную массу',
         subscriptionEnd: '2027-01-01',
-        photo: null, 
+        photo: null,
     });
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === 'photo') {
-            setFormData(prev => ({ ...prev, photo: files[0] || null }));
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        if (name === 'photo' && target instanceof HTMLInputElement) {
+            const file = target.files?.[0] ?? null;
+            setFormData(prev => ({ ...prev, photo: file }));
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
 
         if (!formData.name.trim() || !formData.phone.trim()) {
-            alert('Заполните имя и телефон!');
-            return;
+        alert('Заполните имя и телефон!');
+        return;
         }
 
         try {
@@ -40,24 +44,33 @@ export default function AddTrainee() {
                 subscription_end: formData.subscriptionEnd,
             };
 
-            const response = await api.post('/trainees', traineeData);
+            const response = await api.post<{ id: number }>('/trainees', traineeData);
             const newTraineeId = response.data.id;
 
             if (formData.photo) {
-                const formDataForPhoto = new FormData();
-                formDataForPhoto.append('file', formData.photo);
+                const photoFormData = new FormData();
+                photoFormData.append('file', formData.photo);
 
-                await api.post(`/trainees/${newTraineeId}/photo`, formDataForPhoto, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
+                await api.post(`/trainees/${newTraineeId}/photo`, photoFormData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
                 });
             }
 
             navigate(`/trainee/${newTraineeId}`);
-
         } catch (err) {
-            const detail = err.response?.data?.detail || 'Ошибка при создании тренирующегося';
+            let detail: string;
+
+            if (typeof err === 'object' && err !== null && 'response' in err) {
+                const e = err as { response?: { data?: { detail?: string } } };
+                detail = e.response?.data?.detail || 'Ошибка при создании тренирующегося';
+            } else if (err instanceof Error) {
+                detail = err.message;
+            } else {
+                detail = 'Неизвестная ошибка';
+            }
+
             alert(detail);
             console.error('Create trainee error:', err);
         }
@@ -100,7 +113,7 @@ export default function AddTrainee() {
                         type="file"
                         name="photo"
                         accept="image/*"
-                        onChange={handleChange}
+                        onChange={handleChange as React.ChangeEventHandler<HTMLInputElement>}
                         id="photoInput"
                         className={styles.hiddenFileInput}
                     />
@@ -112,7 +125,7 @@ export default function AddTrainee() {
                 {/* Цель */}
                 <div className={styles.formGroup}>
                     <label>Цель:</label>
-                    <select name="goal" value={formData.goal} onChange={handleChange}>
+                    <select name="goal" value={formData.goal} onChange={handleChange as React.ChangeEventHandler<HTMLSelectElement>}>
                         <option value="Набрать мышечную массу">Набрать мышечную массу</option>
                         <option value="Похудеть">Похудеть</option>
                         <option value="Поддержание формы">Поддержание формы</option>

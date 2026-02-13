@@ -1,28 +1,35 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/client';
+import { Trainee, TraineeFormData } from '../../types/trainee';
 import styles from './Edit.module.css';
 import editPhoto from '../../assets/edit-photo.svg';
 import pfp from '../../assets/pfp.jpg'
 
 export default function Edit() {
-    const { id } = useParams();
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [trainee, setTrainee] = useState(null);
-    const [formData, setFormData] = useState({
+    const [trainee, setTrainee] = useState<Trainee | null>(null);
+    const [formData, setFormData] = useState<TraineeFormData>({
         name: '',
         phone: '',
-        goal: '',
-        subscriptionEnd: '',
+        goal: 'Набрать мышечную массу',
+        subscriptionEnd: '2027-01-01',
         photo: null,
     });
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchTrainee = async () => {
+            if (!id) {
+                setError('ID не указан');
+                setLoading(false);
+                return;
+            }
+
             try {
-                const response = await api.get(`/trainees/${id}`);
+                const response = await api.get<Trainee>(`/trainees/${id}`);
                 const t = response.data;
                 setTrainee(t);
                 setFormData({
@@ -33,28 +40,23 @@ export default function Edit() {
                     photo: null,
                 });
             } catch (err) {
-        let message = 'Ошибка при обновлении тренирующегося';
-        
-        if (err.response?.data) {
-            const data = err.response.data;
-            
-            if (typeof data.detail === 'string') {
-                message = data.detail;
-            }
-            else if (Array.isArray(data.detail)) {
-                message = data.detail.map(e => e.msg).join('; ');
-            }
-            else if (typeof data === 'string') {
-                message = data;
-            }
-            else {
-                message = JSON.stringify(data, null, 2);
-            }
-        }
-
-        alert(message);
-        console.error('Update trainee error:', err);
-    } finally {
+                let message = 'Ошибка при загрузке тренирующегося';
+                if (typeof err === 'object' && err !== null && 'response' in err) {
+                    const e = err as { response?: { data?: any } };
+                    const data = e.response?.data;
+                    if (typeof data?.detail === 'string') {
+                        message = data.detail;
+                    } else if (Array.isArray(data?.detail)) {
+                        message = data.detail.map((e: any) => e.msg).join('; ');
+                    } else if (typeof data === 'string') {
+                        message = data;
+                    } else {
+                        message = 'Ошибка сервера';
+                    }
+                }
+                setError(message);
+                console.error('Fetch trainee error:', err);
+            } finally {
                 setLoading(false);
             }
         };
@@ -65,16 +67,19 @@ export default function Edit() {
     if (loading) return <div>Загрузка...</div>;
     if (error) return <div>{error}</div>;
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === 'photo') {
-            setFormData(prev => ({ ...prev, photo: files[0] || null }));
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const target = e.target;
+        const { name, value } = target;
+
+        if (name === 'photo' && target instanceof HTMLInputElement) {
+            const file = target.files?.[0] ?? null;
+            setFormData(prev => ({ ...prev, photo: file }));
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!formData.name.trim() || !formData.phone.trim()) {
@@ -93,14 +98,10 @@ export default function Edit() {
             await api.patch(`/trainees/${id}`, traineeData);
 
             if (formData.photo) {
-                const formDataForPhoto = new FormData();
-                formDataForPhoto.append('file', formData.photo);
+                const photoFormData = new FormData();
+                photoFormData.append('file', formData.photo);
 
-                for (let [key, value] of formDataForPhoto.entries()) {
-                    console.log('FormData entry:', key, value);
-                }
-
-                await api.post(`/trainees/${id}/photo`, formDataForPhoto, {
+                await api.post(`/trainees/${id}/photo`, photoFormData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -109,7 +110,16 @@ export default function Edit() {
 
             navigate(`/trainee/${id}`);
         } catch (err) {
-            const detail = err.response?.data?.detail || 'Ошибка при обновлении тренирующегося';
+            let detail: string;
+            if (typeof err === 'object' && err !== null && 'response' in err) {
+                const e = err as { response?: { data?: { detail?: string } } };
+                detail = e.response?.data?.detail || 'Ошибка при обновлении тренирующегося';
+            } else if (err instanceof Error) {
+                detail = err.message;
+            } else {
+                detail = 'Неизвестная ошибка';
+            }
+
             alert(detail);
             console.error('Update trainee error:', err);
         }
@@ -135,7 +145,7 @@ export default function Edit() {
                                 alt="current photo"
                                 className={styles.avatarImg}
                                 onError={(e) => {
-                                e.target.src = pfp;
+                                    (e.target as HTMLImageElement).src = pfp;
                                 }}
                             />
                             ) : (
