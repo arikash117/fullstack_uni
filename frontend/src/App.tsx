@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -21,7 +21,7 @@ import AdminMain from './pages/AdminMain/AdminMain'
 import './App.css'
 
 function App() {
-  const { loading, isLoggedIn } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
     return <div>Загрузка...</div>;
