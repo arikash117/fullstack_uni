@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AxiosError } from 'axios';
+import api from '../../api/client';
 import styles from './Register.module.css';
 
 
 export default function Register() {
     const [email, setEmail] = useState('');
-     const [username, setUsername] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (password !== confirmPassword) {
             alert('Пароли не совпадают');
@@ -18,16 +20,17 @@ export default function Register() {
         }
 
         try {
-            const response = await api.post('/auth/signup', {
+            await api.post('/auth/signup', {
                 email,
-                username,   
+                username,
                 password,
-                confirm_password: confirmPassword, 
+                confirm_password: confirmPassword,
             });
 
             navigate('/login');
         } catch (error) {
-            const detail = error.response?.data?.detail || 'Ошибка регистрации';
+            const axiosError = error as AxiosError<{ detail?: string }>;
+            const detail = axiosError.response?.data?.detail || 'Ошибка регистрации';
             alert(detail);
         }
     };
@@ -58,7 +61,7 @@ export default function Register() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
-                    minLength="3"
+                    minLength={3}
                     pattern="[a-zA-Z0-9_]+"
                     title="Только буквы, цифры и подчеркивания, минимум 3 символа"
                     />
