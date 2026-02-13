@@ -2,38 +2,52 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api/client';
 import styles from './Schedule.module.css'
+import { Workout } from '../../types/workout';
 import AddWorkoutModal from '../../components/AddWorkoutModal/AddWorkoutModal';
 import WorkoutCard from '../../components/WorkoutCard/WorkoutCard';
+import { AxiosError } from 'axios';
+
+interface NewWorkoutData {
+  date: string;
+  time: string;
+  name: string;
+  type: 'Силовая' | 'Кардио' | 'Гибкость';
+}
 
 export default function Schedule() {
-    const { id } = useParams();
-    const [viewMode, setViewMode] = useState('day');
-    const [workouts, setWorkouts] = useState([]);
+    const { id } = useParams<{ id: string }>();
+    const [viewMode, setViewMode] = useState<'day' | 'month'>('day');
+    const [workouts, setWorkouts] = useState<Workout[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchWorkouts = async () => {
-        try {
-            const response = await api.get('/workouts', {
-                params: {
-                    trainee_id: id,
-                },
-            });
-            const sortedWorkouts = [...response.data].sort((a, b) => {
+            if (!id) {
+                setError('ID тренирующегося не указан');
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const response = await api.get<Workout[]>('/workouts', {
+                    params: { trainee_id: id },
+                });
+
+                const sortedWorkouts = [...response.data].sort((a, b) => {
                     const dateA = new Date(a.date);
                     const dateB = new Date(b.date);
-                    return dateA - dateB;
+                    return dateA.getTime() - dateB.getTime();
                 });
-                
+
                 setWorkouts(sortedWorkouts);
-        } catch (err) {
-            setError('Ошибка загрузки тренировок');
-            console.error('Fetch workouts error:', err);
-        } finally {
-            setLoading(false);
-        }
+            } catch (err) {
+                setError('Ошибка загрузки тренировок');
+                console.error('Fetch workouts error:', err);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchWorkouts();
@@ -42,21 +56,21 @@ export default function Schedule() {
     if (loading) return <div>Загрузка...</div>;
     if (error) return <div>{error}</div>;
 
-    const formatDate = (isoString) => {
+    const formatDate = (isoString: string): string => {
         try {
             const date = new Date(isoString);
             if (isNaN(date.getTime())) return '—';
             return date.toLocaleDateString('ru-RU', {
                 day: '2-digit',
                 month: '2-digit',
-                year: '2-digit'
+                year: '2-digit',
             });
         } catch {
-            return '—';
+        return '—';
         }
     };
 
-    const formatTime = (isoString) => {
+    const formatTime = (isoString: string): string => {
         try {
             const date = new Date(isoString);
             if (isNaN(date.getTime())) return '—';
@@ -69,7 +83,7 @@ export default function Schedule() {
         }
     };
 
-    const handleAddWorkout = async (newWorkoutData) => {
+    const handleAddWorkout = async (newWorkoutData: NewWorkoutData) => {
         try {
             const isoString = `${newWorkoutData.date}T${newWorkoutData.time}:00`;
 
@@ -79,20 +93,20 @@ export default function Schedule() {
                 type: newWorkoutData.type,
             };
 
-            const response = await api.post(`/workouts/trainee/${id}`, apiData);
+            const response = await api.post<Workout>(`/workouts/trainee/${id}`, apiData);
             setWorkouts(prev => [...prev, response.data]);
-            
+
             window.dispatchEvent(new Event('traineesUpdated'));
-            
             setIsModalOpen(false);
         } catch (err) {
-            const detail = err.response?.data?.detail || 'Ошибка при создании тренировки';
+            const axiosErr = err as AxiosError<{ detail?: string }>;
+            const detail = axiosErr.response?.data?.detail || 'Ошибка при создании тренировки';
             alert(detail);
             console.error('Create workout error:', err);
         }
     };
 
-    const handleRemoveWorkout = async (workoutId) => {
+    const handleRemoveWorkout = async (workoutId: number) => {
         if (!window.confirm('Вы уверены, что хотите удалить эту тренировку?')) {
             return;
         }

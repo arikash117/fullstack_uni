@@ -1,12 +1,23 @@
 import { useState, useEffect } from 'react';
 import styles from './AddWorkoutModal.module.css';
 
-export default function AddWorkoutModal({ isOpen, onClose, onAdd }) {
+interface AddWorkoutModalProps {
+        isOpen: boolean;
+        onClose: () => void;
+        onAdd: (data: {
+        date: string;
+        time: string;
+        name: string;
+        type: 'Силовая' | 'Кардио' | 'Гибкость';
+    }) => void;
+}
+
+export default function AddWorkoutModal({ isOpen, onClose, onAdd }: AddWorkoutModalProps) {
     const [formData, setFormData] = useState({
         date: new Date().toISOString().split('T')[0],
         time: '09:00',
         name: '',
-        type: 'Силовая'
+        type: 'Силовая' as const,
     });
     const [error, setError] = useState('');
 
@@ -14,29 +25,22 @@ export default function AddWorkoutModal({ isOpen, onClose, onAdd }) {
         if (isOpen) {
             const now = new Date();
             const date = now.toISOString().split('T')[0];
-            
-            // Автоматически вычисляем время +30 минут
             const nextTime = new Date(now.getTime() + 30 * 60 * 1000);
             const hours = String(nextTime.getHours()).padStart(2, '0');
             const mins = String(nextTime.getMinutes()).padStart(2, '0');
             const time = `${hours}:${mins}`;
-            
-            setFormData({
-                date,
-                time,
-                name: '',
-                type: 'Силовая'
-            });
+
+            setFormData({ date, time, name: '', type: 'Силовая' });
             setError('');
         }
     }, [isOpen]);
 
     useEffect(() => {
         if (!isOpen) return;
-        
+
         const selectedDate = new Date(formData.date);
         const today = new Date();
-        
+
         if (selectedDate.toDateString() === today.toDateString()) {
             const nextTime = new Date(today.getTime() + 30 * 60 * 1000);
             const hours = String(nextTime.getHours()).padStart(2, '0');
@@ -45,7 +49,7 @@ export default function AddWorkoutModal({ isOpen, onClose, onAdd }) {
         }
     }, [formData.date, isOpen]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.SubmitEvent) => {
         e.preventDefault();
         setError('');
 
@@ -73,7 +77,7 @@ export default function AddWorkoutModal({ isOpen, onClose, onAdd }) {
         });
     };
 
-    const handleInputChange = (field, value) => {
+    const handleInputChange = (field: keyof typeof formData, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 

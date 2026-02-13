@@ -2,7 +2,25 @@ import { useState } from 'react';
 import styles from './WorkoutCard.module.css';
 import clsx from 'clsx';
 
-export default function WorkoutCard({ id, date, time, name, type, isNew = false, onRemove }) {
+interface WorkoutCardProps {
+  id: number;
+  date: string;
+  time: string;
+  name: string;
+  type: string;
+  isNew?: boolean;
+  onRemove?: (id: number) => void;
+}
+
+export default function WorkoutCard({
+    id,
+    date,
+    time,
+    name,
+    type,
+    isNew = false,
+    onRemove,
+}: WorkoutCardProps) {
     const [showDelete, setShowDelete] = useState(false);
 
     return (
