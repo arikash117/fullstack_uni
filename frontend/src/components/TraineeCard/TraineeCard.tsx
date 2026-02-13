@@ -2,7 +2,15 @@ import { useState } from 'react';
 import styles from './TraineeCard.module.css';
 import clsx from 'clsx';
 
-export default function TraineeCard({ id, name, date, isNew = false, onRemove }) {
+interface TraineeCardProps {
+  id: number;
+  name: string;
+  date: string;
+  isNew?: boolean;
+  onRemove?: (id: number) => void;
+}
+
+export default function TraineeCard({ id, name, date, isNew = false, onRemove }: TraineeCardProps) {
     const [showDelete, setShowDelete] = useState(false);
 
     return (

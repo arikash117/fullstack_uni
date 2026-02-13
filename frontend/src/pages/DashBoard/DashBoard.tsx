@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/client';
+import { Trainee } from '../../types/trainee';
 import styles from './DashBoard.module.css';
 import Schedule from '../../assets/schedule.svg'
 import TraineeCard from '../../components/TraineeCard/TraineeCard';
 
 function DashBoard() {
     const navigate = useNavigate();
-    const [trainees, setTrainees] = useState([]);
+    const [trainees, setTrainees] = useState<Trainee[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     const fetchTrainees = async () => {
         try {
-            const response = await api.get('/trainees');
+            const response = await api.get<Trainee[]>('/trainees');
             
             const sortedTrainees = [...response.data].sort((a, b) => {
                 if (!a.next_training) return 1;
@@ -21,7 +22,7 @@ function DashBoard() {
                 
                 const dateA = new Date(a.next_training);
                 const dateB = new Date(b.next_training);
-                return dateA - dateB;
+                return dateA.getTime() - dateB.getTime();
             });
             
             setTrainees(sortedTrainees);
@@ -47,8 +48,7 @@ function DashBoard() {
         };
     }, []);
 
-    const formatDateTime = (isoString) => {
-
+    const formatDateTime = (isoString: string | undefined): string => {
         if (!isoString) {
             return '--.--.--';
         }
@@ -62,7 +62,7 @@ function DashBoard() {
             return date.toLocaleDateString('ru-RU', {
                 day: '2-digit',
                 month: '2-digit',
-                year: '2-digit'
+                year: '2-digit',
             });
         } catch {
             return '--.--.--';
@@ -73,11 +73,11 @@ function DashBoard() {
         navigate('/trainee/add');
     };
 
-    const handleTraineeClick = (id) => {
+    const handleTraineeClick = (id: number) => {
         navigate(`/trainee/${id}`);
     };
 
-    const handleRemoveTrainee = async (id) => {
+    const handleRemoveTrainee = async (id: number) => {
         if (!window.confirm('Вы уверены, что хотите удалить этого тренирующегося?')) {
             return;
         }

@@ -2,6 +2,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import styles from './Trainee.module.css'
 import api from '../../api/client';
+import type { Trainee } from '../../types/trainee';
+
 import pfp from '../../assets/pfp.jpg'
 import editIcon from '../../assets/edit-icon.svg'
 import Progress from '../../assets/progress.svg'
@@ -11,15 +13,21 @@ import Health from '../../assets/health.svg'
 import InfoCard from '../../components/InfoCard/InfoCard'
 
 export default function Trainee() {
-    const { id } = useParams();
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [trainee, setTrainee] = useState(null);
+    const [trainee, setTrainee] = useState<Trainee | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     const fetchTrainee = async () => {
+        if (!id) {
+            setError('ID не указан');
+            setLoading(false);
+            return;
+        }
+
         try {
-            const response = await api.get(`/trainees/${id}`);
+            const response = await api.get<Trainee>(`/trainees/${id}`);
             setTrainee(response.data);
         } catch (err) {
             setError('Тренирующийся не найден');
@@ -32,7 +40,6 @@ export default function Trainee() {
     useEffect(() => {
         fetchTrainee();
         
-        // Слушатель для обновления данных
         const handleTraineesUpdated = () => {
             fetchTrainee();
         };
@@ -51,14 +58,14 @@ export default function Trainee() {
     const formattedSubscriptionEnd = new Date(trainee.subscription_end)
         .toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
-    const formatDateTime = (isoString) => {
+    const formatDateTime = (isoString: string | undefined): string => {
         if (!isoString) {
             return 'Нет ближайших тренировок';
         }
         
         try {
             const date = new Date(isoString);
-            
+
             if (isNaN(date.getTime()) || date.getFullYear() < 1971) {
                 return 'Нет ближайших тренировок';
             }
@@ -68,7 +75,7 @@ export default function Trainee() {
                 month: '2-digit',
                 year: '2-digit',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
             });
         } catch {
             return 'Нет ближайших тренировок';
