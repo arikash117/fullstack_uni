@@ -1,5 +1,7 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from src.models.trainee import Trainee
 from src.models.user import User
 from src.schemas.admin import (
     UserResponse,
@@ -35,21 +37,28 @@ def get_all_users_for_admin(
     ]
 
 # конкретный пользователь
-def get_user_by_id(
-    db: Session,
-    user_id: int
-) -> UserResponse:
-    user = db.query(User).filter(User.id == user_id).first()
-    
+def get_user_by_id(db: Session, user_id: int) -> UserResponse:
+    user = db.query(
+        User.id,
+        User.username,
+        User.email,
+        User.role,
+        User.created_at,
+        func.count(Trainee.id).label('trainee_count')
+    ).outerjoin(Trainee, Trainee.coach_id == User.id).filter(User.id == user_id).group_by(
+        User.id, User.username, User.email, User.role, User.created_at
+    ).first()
+
     if not user:
         raise ValueError("Пользователь не найден")
-    
+
     return UserResponse(
         id=user.id,
-        email=user.email,
         username=user.username,
+        email=user.email,
         role=user.role,
-        created_at=user.created_at
+        created_at=user.created_at,
+        trainee_count=user.trainee_count or 0
     )
 
 def update_user_role(

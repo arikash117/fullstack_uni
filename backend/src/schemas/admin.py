@@ -10,6 +10,7 @@ class UserResponse(UserBase):
     role: str
     created_at: datetime
     email: EmailStr
+    trainee_count: int 
 
 # для отображения списком 
 class UsersResponse(UserBase):

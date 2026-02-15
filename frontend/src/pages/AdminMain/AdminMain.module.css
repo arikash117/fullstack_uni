@@ -1,0 +1,26 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 20px 20px 20px;
+  flex: 1;
+}
+
+.main h1 {
+  color: var(--main-text-color);
+}
+
+.usersList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.userCardWrapper {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.userCardWrapper:hover {
+  transform: translateY(-2px);
+}
