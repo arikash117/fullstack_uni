@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import styles from './Home.module.css';
 import Goal from "../../assets/goal.svg";
 import Training from "../../assets/main-training.svg";
@@ -6,9 +7,18 @@ import Tracking from "../../assets/tracking.svg";
 
 function Home() {
     const navigate = useNavigate();
+    const { user, loading, isLoggedIn } = useAuth();
 
     const handleStartClick = () => {
-        navigate('/dashboard');
+        if (loading) return;
+
+        if (!isLoggedIn) {
+            navigate('/register');
+        } else if (user?.role === 'admin') {
+            navigate('/admin');
+        } else {
+            navigate('/dashboard');
+        }
     };
 
     return (
@@ -31,7 +41,7 @@ function Home() {
                         </div>
                     </div>
                     
-                    <button className={styles.startButton} onClick={handleStartClick}>
+                    <button className={styles.startButton} onClick={handleStartClick} disabled={loading}>
                         Начать работу
                     </button>
 

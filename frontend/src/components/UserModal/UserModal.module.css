@@ -53,6 +53,11 @@
   color: #555;
 }
 
+.clickable:hover {
+  background-color: #333;
+  cursor: pointer;
+}
+
 .info {
   color: var(--main-text-color);
 }

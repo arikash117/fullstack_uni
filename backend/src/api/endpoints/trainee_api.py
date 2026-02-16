@@ -31,11 +31,22 @@ trainee_router = APIRouter(prefix="/trainees")
 # GET
 @trainee_router.get("/", response_model=List[TraineesResponse])
 def get_trainees(
-    db: Session = Depends(get_db),
+    coach_id: Optional[int] = Query(None),
     name: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    trainees = get_list_trainees(db=db, name=name, coach_id=current_user.id)
+    if coach_id is not None:
+        if current_user.role != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Только админ может просматривать чужих трейни"
+            )
+        effective_coach_id = coach_id
+    else:
+        effective_coach_id = current_user.id
+
+    trainees = get_list_trainees(db=db, name=name, coach_id=effective_coach_id)
     return trainees
 
 @trainee_router.get("/{trainee_id}", response_model=TraineeResponse)

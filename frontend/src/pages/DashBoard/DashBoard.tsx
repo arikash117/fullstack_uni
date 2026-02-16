@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../api/client';
 import { Trainee } from '../../types/trainee';
 import styles from './DashBoard.module.css';
@@ -8,23 +8,27 @@ import TraineeCard from '../../components/TraineeCard/TraineeCard';
 
 function DashBoard() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const userId = searchParams.get('userId');
     const [trainees, setTrainees] = useState<Trainee[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const fetchTrainees = async () => {
         try {
-            const response = await api.get<Trainee[]>('/trainees');
+            const params: Record<string, string> = {};
+            if (userId) {
+            params.coach_id = userId; // ← фильтр по тренеру
+            }
+
+            const response = await api.get<Trainee[]>('/trainees', { params });
             
             const sortedTrainees = [...response.data].sort((a, b) => {
                 if (!a.next_training) return 1;
                 if (!b.next_training) return -1;
-                
-                const dateA = new Date(a.next_training);
-                const dateB = new Date(b.next_training);
-                return dateA.getTime() - dateB.getTime();
+                return new Date(a.next_training).getTime() - new Date(b.next_training).getTime();
             });
-            
+
             setTrainees(sortedTrainees);
         } catch (err) {
             setError('Ошибка загрузки тренирующихся');
@@ -36,17 +40,12 @@ function DashBoard() {
 
     useEffect(() => {
         fetchTrainees();
-        
-        const handleTraineesUpdated = () => {
-            fetchTrainees();
-        };
-        
+
+        const handleTraineesUpdated = () => fetchTrainees();
+
         window.addEventListener('traineesUpdated', handleTraineesUpdated);
-        
-        return () => {
-            window.removeEventListener('traineesUpdated', handleTraineesUpdated);
-        };
-    }, []);
+        return () => window.removeEventListener('traineesUpdated', handleTraineesUpdated);
+    }, [userId]); 
 
     const formatDateTime = (isoString: string | undefined): string => {
         if (!isoString) {

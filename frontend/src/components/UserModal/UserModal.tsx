@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './UserModal.module.css';
 import api from '../../api/client';
 import { User } from '../../types/user';
@@ -10,6 +11,7 @@ interface UserModalProps {
 }
 
 export default function UserModal({ user, onClose, onUpdateRole }: UserModalProps) {
+  const navigate = useNavigate();
   const [role, setRole] = useState<User['role']>(user.role);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -45,6 +47,11 @@ export default function UserModal({ user, onClose, onUpdateRole }: UserModalProp
     });
   };
 
+  const handleViewTrainees = () => {
+    navigate(`/dashboard?userId=${user.id}`);
+    onClose();
+  };
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -73,7 +80,7 @@ export default function UserModal({ user, onClose, onUpdateRole }: UserModalProp
           <span className={styles.info}>{formatDate(user.created_at)}</span>
         </div>
 
-        <div className={styles.field}>
+        <div className={`${styles.field} ${styles.clickable}`} onClick={handleViewTrainees}>
           <span>Кол-во трейни:</span>
           <span className={styles.info}>{user.trainee_count}</span>
         </div>

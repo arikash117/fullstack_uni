@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../../api/client';
 import styles from './AdminMain.module.css';
 import UserCard from '../../components/UserCard/UserCard';
@@ -35,7 +34,6 @@ function AdminMain() {
 
   const openUserModal = async (id: number) => {
     try {
-      // Запрашиваем полные данные при открытии модалки
       const response = await api.get<User>(`/admin/users/${id}`);
       setSelectedUser(response.data);
     } catch (err) {
