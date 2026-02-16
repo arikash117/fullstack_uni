@@ -1,0 +1,58 @@
+/* src/components/ConfirmModal/ConfirmModal.module.css */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: 18px;
+  color: #333;
+}
+
+.message {
+  margin: 0 0 24px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.buttonGroup button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.buttonGroup .cancel {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.buttonGroup .confirm {
+  background: #d32f2f;
+  color: white;
+}

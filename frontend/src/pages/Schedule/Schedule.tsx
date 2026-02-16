@@ -5,6 +5,7 @@ import { isAxiosError } from 'axios';
 import api from '../../api/client';
 import styles from './Schedule.module.css'
 import { Workout } from '../../types/workout';
+import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 import AddWorkoutModal from '../../components/AddWorkoutModal/AddWorkoutModal';
 import WorkoutCard from '../../components/WorkoutCard/WorkoutCard';
 
@@ -17,6 +18,7 @@ interface NewWorkoutData {
 
 export default function Schedule() {
     const { show } = useNotification();
+    const [confirmDelete, setConfirmDelete] = useState<{ id: number; type: 'workout' } | null>(null);
     const { id } = useParams<{ id: string }>();
     const [viewMode, setViewMode] = useState<'day' | 'month'>('day');
     const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -119,14 +121,17 @@ export default function Schedule() {
         }
     };
 
-    const handleRemoveWorkout = async (workoutId: number) => {
-        if (!window.confirm('Вы уверены, что хотите удалить эту тренировку?')) {
-            return;
-        }
+    const handleRemoveWorkout = (workoutId: number) => {
+        setConfirmDelete({ id: workoutId, type: 'workout' });
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!confirmDelete) return;
 
         try {
-            await api.delete(`/workouts/${workoutId}`);
-            setWorkouts(prev => prev.filter(w => w.id !== workoutId));
+            await api.delete(`/workouts/${confirmDelete.id}`);
+
+            setWorkouts(prev => prev.filter(w => w.id !== confirmDelete.id));
             show({
                 type: 'success',
                 message: 'Тренировка удалена',
@@ -201,6 +206,14 @@ export default function Schedule() {
                 isOpen={isModalOpen}
                 onClose={closeModal}
                 onAdd={handleAddWorkout}
+            />
+            <ConfirmModal
+                isOpen={!!confirmDelete}
+                onClose={() => setConfirmDelete(null)}
+                onConfirm={handleConfirmDelete}
+                title="Удаление тренировки"
+                message="Вы уверены, что хотите удалить эту тренировку?"
+                confirmText="Удалить"
             />
         </main>
     )

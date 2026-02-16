@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useNotification } from '../../components/Notification/NotificationProvider';
 import { isAxiosError } from 'axios';
 import api from '../../api/client';
+import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 import { Trainee } from '../../types/trainee';
 import styles from './DashBoard.module.css';
 import Schedule from '../../assets/schedule.svg'
@@ -10,6 +11,7 @@ import TraineeCard from '../../components/TraineeCard/TraineeCard';
 
 function DashBoard() {
     const { show } = useNotification();
+    const [confirmDelete, setConfirmDelete] = useState<{ id: number; type: 'trainee' } | null>(null);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const userId = searchParams.get('userId');
@@ -79,15 +81,17 @@ function DashBoard() {
         navigate(`/trainee/${id}`);
     };
 
-    const handleRemoveTrainee = async (id: number) => {
-        if (!window.confirm('Вы уверены, что хотите удалить этого тренирующегося?')) {
-            return;
-        }
+    const handleRemoveTrainee = (id: number) => {
+        setConfirmDelete({ id, type: 'trainee' });
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!confirmDelete) return;
 
         try {
-            await api.delete(`/trainees/${id}`);
+            await api.delete(`/trainees/${confirmDelete.id}`);
 
-            setTrainees(prev => prev.filter(t => t.id !== id));
+            setTrainees(prev => prev.filter(t => t.id !== confirmDelete.id));
             show({
                 type: 'success',
                 message: 'Тренирующийся удалён',
@@ -97,7 +101,6 @@ function DashBoard() {
             if (isAxiosError(err)) {
                 detail = err.response?.data?.detail || detail;
             }
-            
             show({
                 type: 'error',
                 title: 'Ошибка',
@@ -137,7 +140,14 @@ function DashBoard() {
                     ))}
                 </div>
             </div>
-            
+            <ConfirmModal
+                isOpen={!!confirmDelete}
+                onClose={() => setConfirmDelete(null)}
+                onConfirm={handleConfirmDelete}
+                title="Удаление тренирующегося"
+                message="Вы уверены, что хотите удалить этого тренирующегося?"
+                confirmText="Удалить"
+            />
         </main>
     )
 }
