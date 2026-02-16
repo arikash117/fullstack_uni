@@ -11,6 +11,7 @@ import Schedule from '../../assets/schedule.svg'
 import Health from '../../assets/health.svg'
 
 import InfoCard from '../../components/InfoCard/InfoCard'
+import TraineeEditModal from '../../components/EditTraineeModal/EditTraineeModal';
 
 export default function Trainee() {
     const { id } = useParams<{ id: string }>();
@@ -18,6 +19,7 @@ export default function Trainee() {
     const [trainee, setTrainee] = useState<Trainee | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     const fetchTrainee = async () => {
         if (!id) {
@@ -104,10 +106,13 @@ export default function Trainee() {
                             <p>Цель: {trainee.goal}</p>
                         </div>
                     </div>
-                    <Link to={`/trainee/${id}/edit`} className={styles.edit}>
+                    <div 
+                        className={styles.edit}
+                        onClick={() => setShowEditModal(true)}
+                        >
                         <span>Изменить</span>
                         <img src={editIcon} alt="Редактировать профиль" />
-                    </Link>
+                    </div>
                 </div>
 
                 <div className={styles.textContainer}>
@@ -123,6 +128,17 @@ export default function Trainee() {
                     <InfoCard icon={Progress} text="Отследить прогресс" onClick={goToProgress} />
                 </div>
             </div>
+
+            {showEditModal && (
+                <TraineeEditModal
+                trainee={trainee}
+                onClose={() => setShowEditModal(false)}
+                onSaved={() => {
+                    fetchTrainee();
+                }}
+                />
+            )}
+
         </main>
     );
 }

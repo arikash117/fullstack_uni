@@ -18,7 +18,7 @@ function DashBoard() {
         try {
             const params: Record<string, string> = {};
             if (userId) {
-            params.coach_id = userId; // ← фильтр по тренеру
+            params.coach_id = userId;
             }
 
             const response = await api.get<Trainee[]>('/trainees', { params });

@@ -1,12 +1,17 @@
-.main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 20px 20px 20px;
-    flex: 1;
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.main h1 {
+.modal h2 {
     color: var(--main-text-color);
     text-align: center;
     margin-bottom: 20px;
@@ -176,4 +181,9 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
     background: #00A57C;
+}
+
+.error {
+  color: red;
+  margin-top: 12px;
 }

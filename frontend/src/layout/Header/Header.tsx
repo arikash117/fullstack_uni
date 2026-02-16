@@ -33,7 +33,7 @@ function Header() {
   if (isEditPage || isAddPage) {
     return (
       <div className={styles.header}>
-        <button className={styles.cover} onClick={() => navigate('/dashboard')}>
+        <button className={styles.cover} onClick={() => navigate(-1)}>
           Назад
         </button>
         <a className={styles.centeredLogo} href="/">
@@ -68,7 +68,7 @@ function Header() {
   if (isTraineePage) {
     return (
       <div className={styles.header}>
-        <button className={styles.cover} onClick={() => navigate('/dashboard')}>
+        <button className={styles.cover} onClick={() => navigate(-1)}>
           Назад
         </button>
         <a className={styles.centeredLogo} href="/">
