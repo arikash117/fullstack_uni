@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useNotification } from '../../components/Notification/NotificationProvider';
+import { isAxiosError } from 'axios';
 import api from '../../api/client';
 import styles from './Schedule.module.css'
 import { Workout } from '../../types/workout';
 import AddWorkoutModal from '../../components/AddWorkoutModal/AddWorkoutModal';
 import WorkoutCard from '../../components/WorkoutCard/WorkoutCard';
-import { AxiosError } from 'axios';
 
 interface NewWorkoutData {
   date: string;
@@ -15,6 +16,7 @@ interface NewWorkoutData {
 }
 
 export default function Schedule() {
+    const { show } = useNotification();
     const { id } = useParams<{ id: string }>();
     const [viewMode, setViewMode] = useState<'day' | 'month'>('day');
     const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -98,10 +100,21 @@ export default function Schedule() {
 
             window.dispatchEvent(new Event('traineesUpdated'));
             setIsModalOpen(false);
+            show({
+                type: 'success',
+                message: 'Тренировка добавлена',
+            });
         } catch (err) {
-            const axiosErr = err as AxiosError<{ detail?: string }>;
-            const detail = axiosErr.response?.data?.detail || 'Ошибка при создании тренировки';
-            alert(detail);
+            let detail = 'Ошибка при создании тренировки';
+            if (isAxiosError(err)) {
+                detail = err.response?.data?.detail || detail;
+            }
+            
+            show({
+                type: 'error',
+                title: 'Ошибка',
+                message: detail,
+            });
             console.error('Create workout error:', err);
         }
     };
@@ -114,8 +127,21 @@ export default function Schedule() {
         try {
             await api.delete(`/workouts/${workoutId}`);
             setWorkouts(prev => prev.filter(w => w.id !== workoutId));
+            show({
+                type: 'success',
+                message: 'Тренировка удалена',
+            });
         } catch (err) {
-            alert('Ошибка при удалении тренировки');
+            let detail = 'Ошибка при удалении тренировки';
+            if (isAxiosError(err)) {
+                detail = err.response?.data?.detail || detail;
+            }
+            
+            show({
+                type: 'error',
+                title: 'Ошибка',
+                message: detail,
+            });
             console.error('Delete workout error:', err);
         }
     };

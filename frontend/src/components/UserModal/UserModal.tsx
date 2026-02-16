@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './UserModal.module.css';
 import api from '../../api/client';
 import { User } from '../../types/user';
+import { useNotification } from '../Notification/NotificationProvider';
 
 interface UserModalProps {
   user: User;
@@ -11,6 +12,7 @@ interface UserModalProps {
 }
 
 export default function UserModal({ user, onClose, onUpdateRole }: UserModalProps) {
+  const { show } = useNotification();
   const navigate = useNavigate();
   const [role, setRole] = useState<User['role']>(user.role);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -21,6 +23,10 @@ export default function UserModal({ user, onClose, onUpdateRole }: UserModalProp
 
   const handleSaveRole = async () => {
     if (role === user.role) {
+      show({
+        type: 'info',
+        message: 'Роль не изменилась',
+      });
       onClose();
       return;
     }
@@ -30,8 +36,12 @@ export default function UserModal({ user, onClose, onUpdateRole }: UserModalProp
       await api.patch(`/admin/users/${user.id}/role`, { role });
       onUpdateRole();
       onClose();
-    } catch (err) {
-      alert('Ошибка при обновлении роли');
+    } catch (err: any) {
+      show({
+        type: 'error',
+        title: 'Ошибка',
+        message: err.response?.data?.detail || 'Не удалось обновить роль',
+      });
       console.error(err);
       setIsUpdating(false);
     }

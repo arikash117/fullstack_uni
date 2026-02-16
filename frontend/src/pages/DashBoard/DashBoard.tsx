@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNotification } from '../../components/Notification/NotificationProvider';
+import { isAxiosError } from 'axios';
 import api from '../../api/client';
 import { Trainee } from '../../types/trainee';
 import styles from './DashBoard.module.css';
@@ -7,6 +9,7 @@ import Schedule from '../../assets/schedule.svg'
 import TraineeCard from '../../components/TraineeCard/TraineeCard';
 
 function DashBoard() {
+    const { show } = useNotification();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const userId = searchParams.get('userId');
@@ -85,8 +88,21 @@ function DashBoard() {
             await api.delete(`/trainees/${id}`);
 
             setTrainees(prev => prev.filter(t => t.id !== id));
+            show({
+                type: 'success',
+                message: 'Тренирующийся удалён',
+            });
         } catch (err) {
-            alert('Ошибка при удалении тренирующегося');
+            let detail = 'Ошибка при удалении тренирующегося';
+            if (isAxiosError(err)) {
+                detail = err.response?.data?.detail || detail;
+            }
+            
+            show({
+                type: 'error',
+                title: 'Ошибка',
+                message: detail,
+            });
             console.error('Delete error:', err);
         }
     };

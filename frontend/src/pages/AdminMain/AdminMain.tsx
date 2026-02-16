@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
+import { isAxiosError } from 'axios';
 import api from '../../api/client';
 import styles from './AdminMain.module.css';
+import { useNotification } from '../../components/Notification/NotificationProvider'
 import UserCard from '../../components/UserCard/UserCard';
 import UserModal from '../../components/UserModal/UserModal';
 import { User, UserSummary } from '../../types/user';
 
 function AdminMain() {
+  const { show } = useNotification();
   useEffect(() => {
     console.log('Текущий baseURL api:', api.defaults.baseURL);
     api.get('/admin/users').catch(e => console.error('Test request error:', e));
@@ -37,7 +40,10 @@ function AdminMain() {
       const response = await api.get<User>(`/admin/users/${id}`);
       setSelectedUser(response.data);
     } catch (err) {
-      alert('Ошибка загрузки данных пользователя');
+      show({
+        type: 'error',
+        message: 'Ошибка загрузки данных пользователя'
+      });
       console.error(err);
     }
   };
@@ -52,8 +58,22 @@ function AdminMain() {
     try {
       await api.delete(`/admin/users/${id}`);
       setUsers(prev => prev.filter(user => user.id !== id));
+      show({
+        type: 'success',
+        message: 'Пользователь удалён',
+      });
     } catch (err) {
-      alert('Ошибка при удалении');
+      let detail = 'Не удалось удалить пользователя';
+
+      if (isAxiosError(err)) {
+        detail = err.response?.data?.detail || detail;
+      }
+
+      show({
+        type: 'error',
+        title: 'Ошибка',
+        message: detail,
+      });
       console.error(err);
     }
   };
@@ -89,6 +109,10 @@ function AdminMain() {
           onClose={closeUserModal}
           onUpdateRole={() => {
             fetchUsers();
+            show({
+              type: 'success',
+              message: 'Роль пользователя успешно обновлена',
+            });
           }}
         />
       )}
