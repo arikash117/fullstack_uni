@@ -20,7 +20,7 @@ export default function Schedule() {
     const { show } = useNotification();
     const [confirmDelete, setConfirmDelete] = useState<{ id: number; type: 'workout' } | null>(null);
     const { id } = useParams<{ id: string }>();
-    const [viewMode, setViewMode] = useState<'day' | 'month'>('day');
+    const [viewMode, setViewMode] = useState<'day' | 'month' | 'archive'>('day');
     const [workouts, setWorkouts] = useState<Workout[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -35,17 +35,8 @@ export default function Schedule() {
             }
 
             try {
-                const response = await api.get<Workout[]>('/workouts', {
-                    params: { trainee_id: id },
-                });
-
-                const sortedWorkouts = [...response.data].sort((a, b) => {
-                    const dateA = new Date(a.date);
-                    const dateB = new Date(b.date);
-                    return dateA.getTime() - dateB.getTime();
-                });
-
-                setWorkouts(sortedWorkouts);
+                const response = await api.get<Workout[]>('/workouts', { params: { trainee_id: id } });
+                setWorkouts(sortWorkouts(response.data));
             } catch (err) {
                 setError('Ошибка загрузки тренировок');
                 console.error('Fetch workouts error:', err);
@@ -57,8 +48,25 @@ export default function Schedule() {
         fetchWorkouts();
     }, [id]);
 
+    const sortWorkouts = (workouts: Workout[]): Workout[] => {
+        return [...workouts].sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateA.getTime() - dateB.getTime();
+        });
+    };
+
     if (loading) return <div>Загрузка...</div>;
     if (error) return <div>{error}</div>;
+
+    const now = new Date();
+
+    const futureWorkouts: Workout[] = workouts.filter(
+        (w) => new Date(w.date) > now
+    );
+    const pastWorkouts: Workout[] = workouts.filter(
+        (w) => new Date(w.date) < now
+    );
 
     const formatDate = (isoString: string): string => {
         try {
@@ -98,7 +106,7 @@ export default function Schedule() {
             };
 
             const response = await api.post<Workout>(`/workouts/trainee/${id}`, apiData);
-            setWorkouts(prev => [...prev, response.data]);
+            setWorkouts(prev => sortWorkouts([...prev, response.data]));
 
             window.dispatchEvent(new Event('traineesUpdated'));
             setIsModalOpen(false);
@@ -172,12 +180,19 @@ export default function Schedule() {
                     >
                         Месяц
                     </button>
+                    <button
+                        className={`${styles.switchBtn} ${viewMode === 'archive' ? styles.active : ''} ${styles.archiveBtn}`}
+                        onClick={() => setViewMode('archive')}
+                    >
+                        Архив
+                    </button>
+
                 </div>
             </div>
 
             {viewMode === 'day' && (
                 <div className={styles.dayList}>
-                    {workouts.map((workout) => (
+                    {futureWorkouts.map((workout) => (
                         <WorkoutCard
                             key={workout.id}
                             id={workout.id}
@@ -199,6 +214,27 @@ export default function Schedule() {
                 <div className={styles.monthPlaceholder}>
                     <p>Здесь будет календарь с тренировками за месяц.</p>
                     <p>Пока заглушка — функционал добавим позже.</p>
+                </div>
+            )}
+
+            {viewMode === 'archive' && (
+                <div className={styles.archiveList}>
+                    {pastWorkouts.length === 0 ? (
+                        <div className={styles.empty}>Нет прошедших тренировок</div>
+                    ) : (
+                        pastWorkouts.map((workout) => (
+                            <WorkoutCard
+                                key={workout.id}
+                                id={workout.id}
+                                date={formatDate(workout.date)}
+                                time={formatTime(workout.date)}
+                                name={workout.name}
+                                type={workout.type}
+                                isNew={false}
+                                onRemove={handleRemoveWorkout}
+                            />
+                        ))
+                    )}
                 </div>
             )}
 

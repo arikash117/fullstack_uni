@@ -29,7 +29,8 @@
   font-family: 'Ubuntu', Arial, sans-serif;
   padding: 10px 30px;
   background: var(--main-text-color);
-  border: none;
+  border: 0px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -40,6 +41,23 @@
 
 .switchBtn.active {
   background: #00ad82;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.switchBtn.archiveBtn {
+  
+  background: rgba(0, 189, 143, 0.1);
+  color: #00BD8F;
+}
+
+.switchBtn.archiveBtn:hover {
+  background: rgba(0, 189, 142, 0.304);
+  color: #00BD8F;
+}
+
+.switchBtn.active.archiveBtn {
+  background: #00ad82;
+  color: black;
   box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -78,4 +96,16 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.archiveList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+  padding: 40px 0;
 }

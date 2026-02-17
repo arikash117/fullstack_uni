@@ -18,6 +18,7 @@ function DashBoard() {
     const [trainees, setTrainees] = useState<Trainee[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [visibleCount, setVisibleCount] = useState(4);
 
     const fetchTrainees = async () => {
         try {
@@ -35,6 +36,7 @@ function DashBoard() {
             });
 
             setTrainees(sortedTrainees);
+            setVisibleCount(4);
         } catch (err) {
             setError('Ошибка загрузки тренирующихся');
             console.error('Fetch trainees error:', err);
@@ -110,6 +112,8 @@ function DashBoard() {
         }
     };
 
+    const visibleTrainees = trainees.slice(0, visibleCount);
+
     return (
         <main className={styles.main}>
             <span>-----------------------Мои трейни-----------------------</span>
@@ -123,7 +127,7 @@ function DashBoard() {
                     </button>
                 </div>
                 <div className={styles.trainees}>
-                    {trainees.map((trainee) => (
+                    {visibleTrainees.map((trainee) => (
                         <div
                             key={trainee.id}
                             className={styles.traineeCardWrapper}
@@ -138,6 +142,11 @@ function DashBoard() {
                             />
                         </div>
                     ))}
+                    {visibleCount < trainees.length && (
+                        <button className={styles.button} onClick={() => setVisibleCount(prev => prev + 6)}>
+                            Ещё
+                        </button>
+                    )}
                 </div>
             </div>
             <ConfirmModal
