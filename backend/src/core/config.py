@@ -5,10 +5,8 @@ import os
 load_dotenv()
 
 class Settings(BaseSettings):
-    # База данных
     DATABASE_URL: str = os.getenv("DATABASE_URL")
-    
-    # JWT
+
     SECRET_KEY: str = "your-super-secret-key-change-in-prod"  # ← поменяй!
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30

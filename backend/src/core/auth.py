@@ -7,7 +7,6 @@ from src.database.db import get_db
 from src.models.user import User
 from src.core.config import settings
 
-# Указываем, где находится эндпоинт для получения токена
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def get_current_user(

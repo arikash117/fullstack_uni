@@ -32,7 +32,7 @@ def get_all_users(
 ):
     return get_all_users_for_admin(db=db, skip=skip, limit=limit, username=username, role=role)
 
-# GET /admin/users/{user_id} → по ID конкретный пользователь
+# GET /admin/users/{user_id} -> по ID конкретный пользователь
 @admin_router.get("/users/{user_id}", response_model=UserResponse)
 def get_user(
     user_id: int,
@@ -63,7 +63,7 @@ def change_user_role(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-# DELETE /admin/users/{user_id} → удалить
+# DELETE /admin/users/{user_id} -> удалить
 @admin_router.delete("/users/{user_id}", response_model=DeleteUserResponse)
 def delete(
     user_id: int,

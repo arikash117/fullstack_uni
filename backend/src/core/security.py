@@ -3,7 +3,6 @@ import jwt
 from argon2 import PasswordHasher
 from src.core.config import settings
 
-# Создаём хешер
 ph = PasswordHasher()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
