@@ -80,7 +80,9 @@ function DashBoard() {
     };
 
     const handleTraineeClick = (id: number) => {
-        navigate(`/trainee/${id}`);
+        navigate(`/trainee/${id}`, { 
+            state: { backUrl: location.pathname + location.search } 
+        });
     };
 
     const handleRemoveTrainee = (id: number) => {

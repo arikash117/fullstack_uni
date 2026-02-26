@@ -5,14 +5,15 @@ import styles from './Header.module.css';
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, user} = useAuth();
 
   const pathname = location.pathname;
+  const backUrl = location.state?.backUrl as string | undefined;
 
-  const isEditPage = pathname.startsWith('/trainee/') && pathname.endsWith('/edit');
   const isAddPage = pathname === '/trainee/add';
   const isTraineeSubPage = pathname.match(/\/trainee\/\d+\/(health|schedule|progress)/);
   const isTraineePage = pathname.match(/\/trainee\/\d+$/) !== null;
+  const isDashboardPage = pathname === '/dashboard';
 
   const handleRegisterClick = () => {
     navigate('/register');
@@ -27,10 +28,53 @@ function Header() {
     navigate('/');
   };
 
+  const handleDashboardBack = () => {
+    if (backUrl) {
+      navigate(backUrl, { replace: true });
+    } else if (user?.role === 'admin') {
+      navigate('/admin', { replace: true });
+    } else {
+      navigate('/', { replace: true });
+    }
+  };
+
+  const handleBackToBase = () => {
+    if (user?.role === 'admin') {
+      navigate('/admin', { replace: true });
+    } else {
+      navigate('/dashboard', { replace: true });
+    }
+  };
+
+  const handleBackClick = () => {
+    if (backUrl) {
+      navigate(backUrl, { replace: true });
+    } else {
+      handleBackToBase();
+    }
+  };
+
   const isAuthPage = pathname === '/login' || pathname === '/register';
   const isHomePage = pathname === '/';
 
-  if (isEditPage || isAddPage) {
+  if (isDashboardPage) {
+    return (
+      <div className={styles.header}>
+        <button className={styles.cover} onClick={handleDashboardBack}>
+          Назад
+        </button>
+        <a className={styles.centeredLogo} href="/">
+          <img className={styles.logo} src="/label.svg" alt="Main logo" />
+          <span className={styles.text}>Train!</span>
+        </a>
+        <button className={styles.cover} onClick={handleLogoutClick}>
+          Выйти
+        </button>
+      </div>
+    );
+  }
+
+  if (isAddPage) {
     return (
       <div className={styles.header}>
         <button className={styles.cover} onClick={() => navigate(-1)}>
@@ -68,7 +112,7 @@ function Header() {
   if (isTraineePage) {
     return (
       <div className={styles.header}>
-        <button className={styles.cover} onClick={() => navigate(-1)}>
+        <button className={styles.cover} onClick={handleBackClick}>
           Назад
         </button>
         <a className={styles.centeredLogo} href="/">

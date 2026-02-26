@@ -58,7 +58,7 @@ export default function UserModal({ user, onClose, onUpdateRole }: UserModalProp
   };
 
   const handleViewTrainees = () => {
-    navigate(`/dashboard?userId=${user.id}`);
+    navigate(`/dashboard?userId=${user.id}`, { state: { backUrl: '/admin' }});
     onClose();
   };
 
