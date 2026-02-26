@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
 import { useAuth } from '../../hooks/useAuth'
+import { useNotification } from '../../components/Notification/NotificationProvider';
 
 
 export default function LogIn() {
@@ -9,6 +10,8 @@ export default function LogIn() {
     const [password, setPassword] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
+
+    const { show } = useNotification();
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -20,6 +23,13 @@ export default function LogIn() {
             } else {
                 navigate('/dashboard', { replace: true });
             }
+        } else {
+            show({
+                type: 'warning',
+                title: 'Ошибка входа',
+                message: 'Пользователь не найден или неверные данные',
+                duration: 4000
+            });
         }
     };
 
