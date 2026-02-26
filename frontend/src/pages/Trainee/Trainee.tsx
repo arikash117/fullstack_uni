@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation} from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import styles from './Trainee.module.css'
 import api from '../../api/client';
@@ -16,6 +16,8 @@ import TraineeEditModal from '../../components/EditTraineeModal/EditTraineeModal
 export default function Trainee() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
+    const backUrl = location.state?.backUrl as string | undefined;
     const [trainee, setTrainee] = useState<Trainee | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -86,9 +88,17 @@ export default function Trainee() {
 
     const formattedNextTraining = formatDateTime(trainee.next_training);
 
-    const goToHealth = () => navigate(`/trainee/${id}/health`);
-    const goToSchedule = () => navigate(`/trainee/${id}/schedule`);
-    const goToProgress = () => navigate(`/trainee/${id}/progress`);
+    const goToHealth = () => navigate(`/trainee/${id}/health`, { 
+        state: { backUrl: backUrl || `/trainee/${id}` } 
+    });
+    
+    const goToSchedule = () => navigate(`/trainee/${id}/schedule`, { 
+        state: { backUrl: backUrl || `/trainee/${id}` } 
+    });
+    
+    const goToProgress = () => navigate(`/trainee/${id}/progress`, { 
+        state: { backUrl: backUrl || `/trainee/${id}` } 
+    });
 
     return (
         <main className={styles.main}>

@@ -46,12 +46,20 @@ function Header() {
     }
   };
 
-  const handleBackClick = () => {
-    if (backUrl) {
+  const handleTraineeBack = () => {
+    if (backUrl && backUrl !== pathname) {
       navigate(backUrl, { replace: true });
     } else {
       handleBackToBase();
     }
+  };
+
+  const handleSubPageBack = () => {
+    const traineeId = pathname.split('/')[2];
+    navigate(`/trainee/${traineeId}`, {
+      replace: true,
+      state: { backUrl }
+    });
   };
 
   const isAuthPage = pathname === '/login' || pathname === '/register';
@@ -92,10 +100,9 @@ function Header() {
   }
 
   if (isTraineeSubPage) {
-    const traineeId = pathname.split('/')[2];
     return (
       <div className={styles.header}>
-        <button className={styles.cover} onClick={() => navigate(`/trainee/${traineeId}`)}>
+        <button className={styles.cover} onClick={handleSubPageBack}>
           Назад
         </button>
         <a className={styles.centeredLogo} href="/">
@@ -112,7 +119,7 @@ function Header() {
   if (isTraineePage) {
     return (
       <div className={styles.header}>
-        <button className={styles.cover} onClick={handleBackClick}>
+        <button className={styles.cover} onClick={handleTraineeBack}>
           Назад
         </button>
         <a className={styles.centeredLogo} href="/">
