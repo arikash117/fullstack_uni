@@ -15,4 +15,5 @@ class User(Base):
     role = Column(String(20), default="user", nullable=False)
 
     trainees = relationship("Trainee", back_populates="coach", passive_deletes=True)
+    refresh_tokens = relationship("RefreshToken", back_populates="user", passive_deletes=True)
  

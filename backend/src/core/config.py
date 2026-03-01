@@ -7,7 +7,7 @@ load_dotenv()
 class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL")
 
-    SECRET_KEY: str = "your-super-secret-key-change-in-prod"  # ← поменяй!
+    SECRET_KEY: str = "your-super-secret-key-change-in-prod"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
+import { useNotification } from '../../components/Notification/NotificationProvider';
 import api from '../../api/client';
 import styles from './Register.module.css';
 
@@ -10,12 +10,23 @@ export default function Register() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    
     const navigate = useNavigate();
+    const { show } = useNotification();
 
-    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsLoading(true);
+
         if (password !== confirmPassword) {
-            alert('Пароли не совпадают');
+            show({
+                type: 'error',
+                title: 'Ошибка регистрации',
+                message: 'Пароли не совпадают',
+                duration: 4000
+            });
+            setIsLoading(false);
             return;
         }
 
@@ -28,10 +39,16 @@ export default function Register() {
             });
 
             navigate('/login');
-        } catch (error) {
-            const axiosError = error as AxiosError<{ detail?: string }>;
-            const detail = axiosError.response?.data?.detail || 'Ошибка регистрации';
-            alert(detail);
+        } catch (error: any) {
+            const detail = error.response?.data?.detail || 'Ошибка регистрации';
+            show({
+                type: 'error',
+                title: 'Ошибка регистрации',
+                message: detail,
+                duration: 4000
+            });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -40,70 +57,80 @@ export default function Register() {
             <div className={styles.formBox}>
                 <h2 className={styles.title}>Регистрация</h2>
                 <form onSubmit={handleSubmit}>
-                {/* Email */}
-                <div className={styles.inputGroup}>
-                    <label htmlFor="email">Email</label>
-                    <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    />
-                </div>
+                    {/* Email */}
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="email">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
 
-                {/* Username */}
-                <div className={styles.inputGroup}>
-                    <label htmlFor="username">Логин</label>
-                    <input
-                    id="username"
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    minLength={3}
-                    pattern="[a-zA-Z0-9_]+"
-                    title="Только буквы, цифры и подчеркивания, минимум 3 символа"
-                    />
-                </div>
+                    {/* Username */}
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="username">Логин</label>
+                        <input
+                            id="username"
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                            minLength={3}
+                            maxLength={20}
+                            pattern="[a-zA-Z0-9_]+"
+                            title="Только буквы, цифры и подчеркивания, минимум 3 символа"
+                            disabled={isLoading}
+                        />
+                    </div>
 
-                {/* Password */}
-                <div className={styles.inputGroup}>
-                    <label htmlFor="password">Пароль</label>
-                    <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    />
-                </div>
+                    {/* Password */}
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="password">Пароль</label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            minLength={6}
+                            disabled={isLoading}
+                        />
+                    </div>
 
-                {/* Confirm */}
-                <div className={styles.inputGroup}>
-                    <label htmlFor="confirm">Подтвердите пароль</label>
-                    <input
-                    id="confirm"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    />
-                </div>
+                    {/* Confirm */}
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="confirm">Подтвердите пароль</label>
+                        <input
+                            id="confirm"
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
 
-                <button type="submit" className={styles.submitButton}>
-                    Зарегистрироваться
-                </button>
+                    <button 
+                        type="submit" 
+                        className={styles.submitButton}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Создание...' : 'Зарегистрироваться'}
+                    </button>
                 </form>
 
                 <p className={styles.footerText}>
-                Уже есть аккаунт?{' '}
-                <span
-                    className={styles.link}
-                    onClick={() => navigate('/login')}
-                >
-                    Войти
-                </span>
+                    Уже есть аккаунт?{' '}
+                    <span
+                        className={styles.link}
+                        onClick={() => !isLoading && navigate('/login')}
+                    >
+                        Войти
+                    </span>
                 </p>
             </div>
         </main>
