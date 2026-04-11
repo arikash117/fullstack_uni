@@ -21,7 +21,6 @@
   display: flex;
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 20px;
 }
 
 .switchBtn {
@@ -59,6 +58,30 @@
   background: #00ad82;
   color: black;
   box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.searchInput {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 15px;
+  margin: 15px 0;
+  border: 2px solid #00BD8F;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--main-text-color);
+  font-size: 15px;
+  font-family: 'Ubuntu', Arial, sans-serif;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.searchInput::placeholder {
+  color: #888;
+}
+
+.searchInput:focus {
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(0, 189, 143, 0.3);
 }
 
 .dayList {

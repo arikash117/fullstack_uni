@@ -12,6 +12,11 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     historyApiFallback: true,
+    
+    watch: {
+      usePolling: true,
+    },
+    
     proxy: {
       '/uploads': {
         target: 'http://localhost:8000',

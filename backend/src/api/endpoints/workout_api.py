@@ -31,6 +31,7 @@ workout_router = APIRouter(prefix="/workouts")
 @workout_router.get("/", response_model=List[WorkoutsResponse])
 async def get_workouts_list(
     trainee_id: int,
+    name: Optional[str] = Query(None, description="Поиск по названию (частичное совпадение)"),
     date_from: Optional[datetime] = Query(None),
     date_to: Optional[datetime] = Query(None),
     db: Session = Depends(get_db),
@@ -45,6 +46,7 @@ async def get_workouts_list(
         workouts = get_workouts_by_trainee(
             db=db,
             trainee_id=trainee_id,
+            name=name,
             date_from=date_from,
             date_to=date_to
         )

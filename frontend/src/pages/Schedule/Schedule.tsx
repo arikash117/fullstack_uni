@@ -26,6 +26,8 @@ export default function Schedule() {
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [searchTerm, setSearchTerm] = useState('');
+
     useEffect(() => {
         const fetchWorkouts = async () => {
             if (!id) {
@@ -35,7 +37,10 @@ export default function Schedule() {
             }
 
             try {
-                const response = await api.get<Workout[]>('/workouts', { params: { trainee_id: id } });
+                const params: any = { trainee_id: id };
+                if (searchTerm) params.name = searchTerm; // 👈 Добавляем параметр поиска
+
+                const response = await api.get<Workout[]>('/workouts', { params });
                 setWorkouts(sortWorkouts(response.data));
             } catch (err) {
                 setError('Ошибка загрузки тренировок');
@@ -46,7 +51,7 @@ export default function Schedule() {
         };
 
         fetchWorkouts();
-    }, [id]);
+    }, [id, searchTerm]);
 
     const sortWorkouts = (workouts: Workout[]): Workout[] => {
         return [...workouts].sort((a, b) => {
@@ -188,6 +193,14 @@ export default function Schedule() {
                     </button>
 
                 </div>
+
+                <input
+                    type="text"
+                    placeholder="Поиск по названию..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={styles.searchInput}
+                />
             </div>
 
             {viewMode === 'day' && (

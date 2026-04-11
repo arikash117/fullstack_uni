@@ -17,11 +17,16 @@ def get_workouts_by_trainee(
     trainee_id: int,
     skip: int = 0,
     limit: int = 100,
+    name: Optional[str] = None,
     date_from: Optional[datetime] = None,
     date_to: Optional[datetime] = None
 ) -> List[WorkoutsResponse]:
     
     query = db.query(Workout).filter(Workout.trainee_id == trainee_id)
+
+    # поиск
+    if name:
+        query = query.filter(Workout.name.ilike(f"%{name}%"))
 
     if date_from and date_to:
         query = query.filter(
