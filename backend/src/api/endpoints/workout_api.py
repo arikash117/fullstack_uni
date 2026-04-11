@@ -73,22 +73,26 @@ async def get_workout(
 # POST
 @workout_router.post("/trainee/{trainee_id}", response_model=WorkoutResponse)
 async def create(
-    workout_data: CreateWorkout,
     trainee_id: int,
+    workout_data: CreateWorkout,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     try:
+        trainee = get_trainee_by_id(db=db, trainee_id=trainee_id)
+        if current_user.role != "admin" and trainee.coach_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
+        
         workout = create_workout(
             db=db,
             workout_data=workout_data,
             trainee_id=trainee_id
         )
-        if current_user.role != "admin" and trainee.coach_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
         return workout
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Ошибка при создании тренировки")
+        raise HTTPException(status_code=500, detail=f"Ошибка при создании тренировки: {str(e)}")
 
 # PATCH
 @workout_router.patch("/{workout_id}", response_model=WorkoutResponse)

@@ -109,7 +109,8 @@ def update_workout(
         id=workout.id,
         trainee_id=workout.trainee_id,
         date=workout.date,
-        description=workout.description
+        name=workout.name,
+        type=workout.type,
     )
 
 # удаление тренировки (только одна за раз!!)
