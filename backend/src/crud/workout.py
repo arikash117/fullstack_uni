@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_, and_, extract, func
 from typing import List, Optional
 from datetime import datetime
 from src.models.workout import Workout
@@ -17,7 +18,13 @@ def get_workouts_by_trainee(
     trainee_id: int,
     skip: int = 0,
     limit: int = 100,
+
+    #поиск
     name: Optional[str] = None,
+    # фильтры
+    time_slots: Optional[List[str]] = None,
+    types: Optional[List[str]] = None,
+
     date_from: Optional[datetime] = None,
     date_to: Optional[datetime] = None
 ) -> List[WorkoutsResponse]:
@@ -28,6 +35,50 @@ def get_workouts_by_trainee(
     if name:
         query = query.filter(Workout.name.ilike(f"%{name}%"))
 
+    # фильтр по временным отрезкам
+    if time_slots:
+        time_conditions = []
+        
+        if "morning" in time_slots:  # 5:00 - 12:00
+            time_conditions.append(
+                and_(
+                    extract('hour', Workout.date) >= 5,
+                    extract('hour', Workout.date) < 12
+                )
+            )
+        
+        if "afternoon" in time_slots:  # 12:00 - 17:00
+            time_conditions.append(
+                and_(
+                    extract('hour', Workout.date) >= 12,
+                    extract('hour', Workout.date) < 17
+                )
+            )
+        
+        if "evening" in time_slots:  # 17:00 - 23:00
+            time_conditions.append(
+                and_(
+                    extract('hour', Workout.date) >= 17,
+                    extract('hour', Workout.date) < 23
+                )
+            )
+        
+        if "night" in time_slots:  # 23:00 - 5:00
+            time_conditions.append(
+                or_(
+                    extract('hour', Workout.date) >= 23,
+                    extract('hour', Workout.date) < 5
+                )
+            )
+        
+        if time_conditions:
+            query = query.filter(or_(*time_conditions))
+
+    # фильтр по типу
+    if types:
+        query = query.filter(Workout.type.in_(types))
+
+    # фильтр по дате (чтоб раполагались сначала ближайшие) дефолтный неизменяемый фильтр
     if date_from and date_to:
         query = query.filter(
             Workout.date >= date_from,

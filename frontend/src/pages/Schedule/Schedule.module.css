@@ -7,14 +7,163 @@
 }
 
 .header {
-  display: flex;
-  flex-direction: column  ;
-  justify-content: space-between;
-  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .header h1 {
   color: var(--main-text-color);
+  margin: 0;
+  text-align: center;
+}
+
+.layout {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+}
+
+.filtersSidebar {
+  width: 280px;
+  min-width: 280px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px solid #00BD8F;
+  border-radius: 10px;
+  padding: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(0, 189, 143, 0.3);
+}
+
+.sidebarHeader h3 {
+  color: #00BD8F;
+  margin: 0;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge {
+  background: #ff4757;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.filterSection {
+  margin-bottom: 25px;
+}
+
+.sectionTitle {
+  color: var(--main-text-color);
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  color: var(--main-text-color);
+}
+
+.checkbox:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #00BD8F;
+  flex-shrink: 0;
+}
+
+.checkbox input[type="checkbox"]:checked + span {
+  color: #00BD8F;
+  font-weight: 500;
+}
+
+.clearFiltersBtn {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 71, 87, 0.1);
+  border: 2px solid #ff4757;
+  border-radius: 8px;
+  color: #ff4757;
+  font-size: 14px;
+  font-family: 'Ubuntu', Arial, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.clearFiltersBtn:hover {
+  background: rgba(255, 71, 87, 0.2);
+  transform: translateY(-1px);
+}
+
+/* контент справа */
+.contentArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.searchInput {
+  width: 100%;
+  min-width: 700px;
+  padding: 12px 15px;
+  border: 2px solid #00BD8F;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--main-text-color);
+  font-size: 15px;
+  font-family: 'Ubuntu', Arial, sans-serif;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.searchInput::placeholder {
+  color: #888;
+}
+
+.searchInput:focus {
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(0, 189, 143, 0.3);
 }
 
 .switcher {
@@ -60,31 +209,8 @@
   box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.searchInput {
-  width: 100%;
-  max-width: 400px;
-  padding: 10px 15px;
-  margin: 15px 0;
-  border: 2px solid #00BD8F;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.2);
-  color: var(--main-text-color);
-  font-size: 15px;
-  font-family: 'Ubuntu', Arial, sans-serif;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.searchInput::placeholder {
-  color: #888;
-}
-
-.searchInput:focus {
-  background: rgba(0, 0, 0, 0.3);
-  box-shadow: 0 0 0 3px rgba(0, 189, 143, 0.3);
-}
-
 .dayList {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
