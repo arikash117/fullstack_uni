@@ -51,11 +51,7 @@ export default function AddTrainee() {
                 const photoFormData = new FormData();
                 photoFormData.append('file', formData.photo);
 
-                await api.post(`/trainees/${newTraineeId}/photo`, photoFormData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                });
+            await api.post(`/trainees/${newTraineeId}/photo`, photoFormData);
             }
 
             navigate(`/trainee/${newTraineeId}`);

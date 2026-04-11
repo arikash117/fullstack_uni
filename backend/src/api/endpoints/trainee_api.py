@@ -87,6 +87,7 @@ async def upload_trainee_photo(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    print(f"📁 Received file: {file.filename}, content_type: {file.content_type}, size: {file.size}")
     trainee = get_trainee_by_id(db, trainee_id)
     if current_user.role != "admin" and trainee.coach_id != current_user.id:
         raise HTTPException(status_code=403, detail="Нет доступа")
