@@ -22,7 +22,8 @@ class CreateTrainee(TraineeBase):
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, value: str) -> str:
-        cleaned_phone = re.sub(r'[\s\-\(\)]+', '', value)
+        cleaned_phone = re.sub(r'[^\d]+', '', value)
+        
         if not cleaned_phone.isdigit():
             raise ValueError("Номер телефона должен содержать только цифры")
         if len(cleaned_phone) < 10:
@@ -45,7 +46,7 @@ class TraineeResponse(TraineeBase):
     @property
     def photo_url(self) -> Optional[str]:
         if self.photo_path:
-            return f"/uploads/{self.photo_path}"
+            return f"http://localhost:8000/uploads/{self.photo_path}"
         return None
 
 # для отображения списком 
@@ -64,7 +65,8 @@ class UpdateTrainee(TraineeBase):
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, value: str) -> str:
-        cleaned_phone = re.sub(r'[\s\-\(\)]+', '', value)
+        cleaned_phone = re.sub(r'[^\d]+', '', value)
+        
         if not cleaned_phone.isdigit():
             raise ValueError("Номер телефона должен содержать только цифры")
         if len(cleaned_phone) < 10:

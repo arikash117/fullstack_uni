@@ -59,8 +59,15 @@ export default function AddTrainee() {
             let detail: string;
 
             if (typeof err === 'object' && err !== null && 'response' in err) {
-                const e = err as { response?: { data?: { detail?: string } } };
-                detail = e.response?.data?.detail || 'Ошибка при создании тренирующегося';
+                const e = err as { response?: { data?: { detail?: string | Array<{msg: string}> } } };
+                
+                if (Array.isArray(e.response?.data?.detail)) {
+                    detail = e.response.data.detail
+                        .map((item: {msg: string}) => item.msg)
+                        .join(', ');
+                } else {
+                    detail = e.response?.data?.detail || 'Ошибка при создании тренирующегося';
+                }
             } else if (err instanceof Error) {
                 detail = err.message;
             } else {
