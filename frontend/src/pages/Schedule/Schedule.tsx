@@ -37,6 +37,10 @@ export default function Schedule() {
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    // пагинация
+    const ITEMS_PER_PAGE = 5;
+    const [currentPage, setCurrentPage] = useState(1);
+
     // парметр для поиска
     const searchTerm = searchParams.get('search') || '';
     const debouncedSearch = useDebounce(searchTerm, 300);
@@ -172,6 +176,10 @@ export default function Schedule() {
         };
     }, [id, debouncedSearch, selectedTimeSlots, selectedTypes, sortOrder]);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [debouncedSearch, selectedTimeSlots, selectedTypes, sortOrder]);
+
     const toggleTimeSlot = (slot: TimeSlot) => {
         const updated = selectedTimeSlots.includes(slot)
             ? selectedTimeSlots.filter(s => s !== slot)
@@ -199,6 +207,14 @@ export default function Schedule() {
         updateFilters({ sort: sortOrder === 'asc' ? 'desc' : 'asc' });
     };
 
+    const goToPreviousPage = () => {
+        setCurrentPage(prev => (prev === 1 ? totalPages : prev - 1));
+    };
+
+    const goToNextPage = () => {
+        setCurrentPage(prev => (prev === totalPages ? 1 : prev + 1));
+    };
+
     if (loading) return <div>Загрузка...</div>;
     if (error) return <div>{error}</div>;
 
@@ -210,6 +226,11 @@ export default function Schedule() {
     const pastWorkouts: Workout[] = workouts.filter(
         (w) => new Date(w.date) < now
     );
+
+    const totalPages = Math.max(1, Math.ceil(futureWorkouts.length / ITEMS_PER_PAGE));
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const currentWorkouts = futureWorkouts.slice(startIndex, endIndex);
 
     const formatDate = (isoString: string): string => {
         try {
@@ -401,7 +422,7 @@ export default function Schedule() {
 
                     {viewMode === 'day' && (
                         <div className={styles.dayList}>
-                            {futureWorkouts.map((workout) => (
+                            {currentWorkouts.map((workout) => (
                                 <WorkoutCard
                                     key={workout.id}
                                     id={workout.id}
@@ -416,6 +437,28 @@ export default function Schedule() {
                             <button className={styles.addWorkoutCard} onClick={openModal}>
                                 + Добавить тренировку
                             </button>
+
+                            {totalPages > 1 && (
+                                <div className={styles.pagination}>
+                                    <button 
+                                        className={styles.paginationBtn} 
+                                        onClick={goToPreviousPage}
+                                        aria-label="Предыдущая страница"
+                                    >
+                                        ←
+                                    </button>
+                                    <span className={styles.paginationInfo}>
+                                        {currentPage}/{totalPages}
+                                    </span>
+                                    <button 
+                                        className={styles.paginationBtn} 
+                                        onClick={goToNextPage}
+                                        aria-label="Следующая страница"
+                                    >
+                                        →
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
 
