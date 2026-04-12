@@ -47,11 +47,13 @@ function Header() {
   };
 
   const handleTraineeBack = () => {
-    if (backUrl && backUrl !== pathname) {
-      navigate(backUrl, { replace: true });
-    } else {
-      handleBackToBase();
-    }
+      const stateBackUrl = location.state?.backUrl as string | undefined;
+    
+      if (stateBackUrl && stateBackUrl !== pathname && stateBackUrl.includes('/dashboard')) {
+          navigate(stateBackUrl, { replace: true });
+      } else {
+          navigate('/dashboard', { replace: true });
+      }
   };
 
   const handleSubPageBack = () => {
