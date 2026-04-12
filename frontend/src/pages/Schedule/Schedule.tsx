@@ -77,7 +77,6 @@ export default function Schedule() {
                     if (newParams.toString()) {
                         setSearchParams(newParams, { replace: true });
                         hasRestoredFilters.current = true;
-                        console.log('✅ Filters restored:', filters);
                     }
                 } catch (e) {
                     console.error('Failed to parse saved filters:', e);
@@ -97,7 +96,6 @@ export default function Schedule() {
                 sort: sortOrder,
             };
             localStorage.setItem(`schedule_filters_${id}`, JSON.stringify(filters));
-            console.log('Filters saved to localStorage:', filters);
         }
     }, [id, debouncedSearch, selectedTimeSlots, selectedTypes, sortOrder]);
 
@@ -151,7 +149,6 @@ export default function Schedule() {
                 params.sort = sortOrder;
 
                 const response = await api.get<Workout[]>('/workouts', { params });
-                console.log('✅ Received workouts:', response.data.length);
                 setWorkouts(response.data);
 
             } catch (err) {

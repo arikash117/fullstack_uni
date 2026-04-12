@@ -38,14 +38,6 @@ function Header() {
     }
   };
 
-  const handleBackToBase = () => {
-    if (user?.role === 'admin') {
-      navigate('/admin', { replace: true });
-    } else {
-      navigate('/dashboard', { replace: true });
-    }
-  };
-
   const handleTraineeBack = () => {
       const stateBackUrl = location.state?.backUrl as string | undefined;
     
