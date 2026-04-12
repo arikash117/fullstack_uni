@@ -41,6 +41,9 @@ async def get_workouts_list(
 
     date_from: Optional[datetime] = Query(None),
     date_to: Optional[datetime] = Query(None),
+
+    # сортировка
+    sort: Optional[str] = Query("asc", description="Сортировка: asc (ближайшие), desc (поздние)"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -61,7 +64,10 @@ async def get_workouts_list(
             types=types,
 
             date_from=date_from,
-            date_to=date_to
+            date_to=date_to,
+
+            # сортировка
+            sort=sort,
         )
         return workouts
     except Exception as e:

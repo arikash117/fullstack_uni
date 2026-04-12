@@ -8,6 +8,9 @@ import { Workout } from '../../types/workout';
 import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 import AddWorkoutModal from '../../components/AddWorkoutModal/AddWorkoutModal';
 import WorkoutCard from '../../components/WorkoutCard/WorkoutCard';
+import AscIcon from '../../assets/asc-sort-icon.svg';
+import DescIcon from '../../assets/desc-sort-icon.svg';
+
 
 interface NewWorkoutData {
   date: string;
@@ -17,6 +20,7 @@ interface NewWorkoutData {
 }
 type TimeSlot = 'morning' | 'afternoon' | 'evening' | 'night';
 type WorkoutType = 'Силовая' | 'Кардио' | 'Гибкость';
+type SortOrder = 'asc' | 'desc';
 
 export default function Schedule() {
     const { show } = useNotification();
@@ -35,6 +39,9 @@ export default function Schedule() {
     const [selectedTimeSlots, setSelectedTimeSlots] = useState<TimeSlot[]>([]);
     const [selectedTypes, setSelectedTypes] = useState<WorkoutType[]>([]);
 
+    // стейт для сортировки
+    const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+
     useEffect(() => {
         const fetchWorkouts = async () => {
             if (!id) {
@@ -48,9 +55,11 @@ export default function Schedule() {
                 if (searchTerm) params.name = searchTerm;
                 if (selectedTimeSlots.length > 0) params.time_slots = selectedTimeSlots.join(',');
                 if (selectedTypes.length > 0) params.types = selectedTypes.join(',');
+                params.sort = sortOrder;
 
                 const response = await api.get<Workout[]>('/workouts', { params });
-                setWorkouts(sortWorkouts(response.data));
+                setWorkouts(response.data);
+
             } catch (err) {
                 setError('Ошибка загрузки тренировок');
                 console.error('Fetch workouts error:', err);
@@ -60,7 +69,17 @@ export default function Schedule() {
         };
 
         fetchWorkouts();
-    }, [id, searchTerm, selectedTimeSlots, selectedTypes]);
+        
+        const handleTraineesUpdated = () => {
+            fetchWorkouts();
+        };
+        
+        window.addEventListener('traineesUpdated', handleTraineesUpdated);
+        
+        return () => {
+            window.removeEventListener('traineesUpdated', handleTraineesUpdated);
+        };
+    }, [id, searchTerm, selectedTimeSlots, selectedTypes, sortOrder]);
 
     const toggleTimeSlot = (slot: TimeSlot) => {
         setSelectedTimeSlots(prev => 
@@ -82,15 +101,6 @@ export default function Schedule() {
         setSelectedTimeSlots([]);
         setSelectedTypes([]);
         setSearchTerm('');
-    };
-
-    // сортировка по ближайшей дате
-    const sortWorkouts = (workouts: Workout[]): Workout[] => {
-        return [...workouts].sort((a, b) => {
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
-            return dateA.getTime() - dateB.getTime();
-        });
     };
 
     if (loading) return <div>Загрузка...</div>;
@@ -142,8 +152,7 @@ export default function Schedule() {
                 type: newWorkoutData.type,
             };
 
-            const response = await api.post<Workout>(`/workouts/trainee/${id}`, apiData);
-            setWorkouts(prev => sortWorkouts([...prev, response.data]));
+            await api.post<Workout>(`/workouts/trainee/${id}`, apiData);
 
             window.dispatchEvent(new Event('traineesUpdated'));
             setIsModalOpen(false);
@@ -292,13 +301,24 @@ export default function Schedule() {
 
 
                 <div className={styles.contentArea}>
-                    <input
-                        type="text"
-                        placeholder="Поиск по названию..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className={styles.searchInput}
-                    />
+
+                    <div className={styles.searchRow}>
+                        <input
+                            type="text"
+                            placeholder="Поиск по названию..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className={styles.searchInput}
+                        />
+                        <button
+                            className={styles.sortBtn}
+                            onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                            title={sortOrder === 'asc' ? 'Показать сначала поздние' : 'Показать сначала ближайшие'}
+                        >
+                            <img src={sortOrder === 'asc' ? AscIcon : DescIcon} alt="sort-icon" />
+                            {/* {sortOrder === 'asc' ? 'Ближайшие' : 'Поздние'} */}
+                        </button>
+                    </div>
 
                     <div className={styles.switcher}>
                         <button

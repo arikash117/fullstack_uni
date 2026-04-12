@@ -26,7 +26,10 @@ def get_workouts_by_trainee(
     types: Optional[List[str]] = None,
 
     date_from: Optional[datetime] = None,
-    date_to: Optional[datetime] = None
+    date_to: Optional[datetime] = None,
+    
+    # сортировка
+    sort: str = "asc",
 ) -> List[WorkoutsResponse]:
     
     query = db.query(Workout).filter(Workout.trainee_id == trainee_id)
@@ -89,7 +92,13 @@ def get_workouts_by_trainee(
     elif date_to:
         query = query.filter(Workout.date <= date_to)
 
-    workouts = query.order_by(Workout.date.desc()).offset(skip).limit(limit).all()
+    # сортировка
+    if sort == "desc":
+        query = query.order_by(Workout.date.desc())
+    else:
+        query = query.order_by(Workout.date.asc())
+
+    workouts = query.offset(skip).limit(limit).all()
 
     return [
         WorkoutsResponse(
