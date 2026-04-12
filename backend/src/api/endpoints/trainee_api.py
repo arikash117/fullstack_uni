@@ -1,15 +1,14 @@
 import uuid
 from fastapi import APIRouter, Depends, File, Query, HTTPException, UploadFile, status
-from pathlib import Path
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
-
-UPLOAD_DIR = Path("uploads/trainees")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+from io import BytesIO
 
 from src.models.user import User
 from src.core.auth import get_current_user
 from src.database.db import get_db
+from src.core.minio_client import get_minio_client
 from src.schemas.trainee import (
     TraineesResponse,
     TraineeResponse,
@@ -87,7 +86,7 @@ async def upload_trainee_photo(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    print(f"📁 Received file: {file.filename}, content_type: {file.content_type}, size: {file.size}")
+    print(f"Received file: {file.filename}, content_type: {file.content_type}, size: {file.size}")
     trainee = get_trainee_by_id(db, trainee_id)
     if current_user.role != "admin" and trainee.coach_id != current_user.id:
         raise HTTPException(status_code=403, detail="Нет доступа")
@@ -97,16 +96,55 @@ async def upload_trainee_photo(
 
     file_ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
     safe_filename = f"{uuid.uuid4()}.{file_ext}"
-    file_path = UPLOAD_DIR / safe_filename
+    object_name = f"trainees/{safe_filename}"
 
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
+    file_content = await file.read()
+    file_stream = BytesIO(file_content)
 
-    trainee.photo_path = f"trainees/{safe_filename}"
+    minio_client = get_minio_client()
+    try:
+        minio_client.upload_file(
+            file_stream, 
+            object_name, 
+            content_type=file.content_type
+        )
+    except Exception as e:
+        print(f"MinIO upload error: {e}")
+        raise HTTPException(status_code=500, detail="Ошибка при загрузке файла")
+
+    if trainee.photo_path:
+        try:
+            minio_client.delete_file(trainee.photo_path)
+        except:
+            pass
+        
+    trainee.photo_path = object_name
     db.commit()
     db.refresh(trainee)
 
+    print(f"✅ File uploaded to MinIO: {object_name}")
     return trainee   
+
+# GET PHOTO URL
+@trainee_router.get("/{trainee_id}/photo-url")
+async def get_trainee_photo_url(
+    trainee_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    trainee = get_trainee_by_id(db, trainee_id)
+    
+    if current_user.role != "admin" and trainee.coach_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Нет доступа")
+    
+    if not trainee.photo_path:
+        raise HTTPException(status_code=404, detail="Фото не найдено")
+    
+    minio_client = get_minio_client()
+    
+    photo_url = minio_client.get_public_url(trainee.photo_path)
+    
+    return {"photo_url": photo_url}
 
 # PATCH
 @trainee_router.patch("/{trainee_id}", response_model=TraineeResponse)

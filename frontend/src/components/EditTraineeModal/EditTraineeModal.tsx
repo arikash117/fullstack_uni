@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../api/client';
 import { Trainee, TraineeFormData } from '../../types/trainee';
 import styles from './EditTraineeModal.module.css';
@@ -21,6 +21,30 @@ export default function TraineeEditModal({ trainee, onClose, onSaved }: TraineeE
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+
+    const fetchPhotoUrl = async () => {
+        if (!trainee?.photo_path) {
+            setPhotoUrl(null);
+            return;
+        }
+        
+        try {
+            const response = await api.get<{ photo_url: string }>(`/trainees/${trainee.id}/photo-url`);
+            setPhotoUrl(response.data.photo_url);
+        } catch (err) {
+            console.error('Error fetching photo URL:', err);
+            setPhotoUrl(null);
+        }
+    };
+
+    useEffect(() => {
+        if (trainee?.photo_path) {
+            fetchPhotoUrl();
+        } else {
+            setPhotoUrl(null);
+        }
+    }, [trainee?.photo_path]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const target = e.target;
@@ -94,9 +118,9 @@ export default function TraineeEditModal({ trainee, onClose, onSaved }: TraineeE
                                     alt="preview"
                                     className={styles.avatarImg}
                                 />
-                                ) : trainee?.photo_url ? (
+                                ) : photoUrl ? (
                                 <img
-                                    src={trainee.photo_url}
+                                    src={photoUrl}
                                     alt="current photo"
                                     className={styles.avatarImg}
                                     onError={(e) => {

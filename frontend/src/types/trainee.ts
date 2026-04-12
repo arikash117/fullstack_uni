@@ -3,7 +3,7 @@ export interface Trainee {
   name: string;
   phone: string;
   goal: string;
-  photo_url?: string;
+  photo_path?: string;
   subscription_end: string;
   next_training?: string;
   isNew?: boolean;

@@ -46,7 +46,7 @@ class TraineeResponse(TraineeBase):
     @property
     def photo_url(self) -> Optional[str]:
         if self.photo_path:
-            return f"http://localhost:8000/uploads/{self.photo_path}"
+            return f"http://localhost:8000/trainees/{self.id}/photo-url"
         return None
 
 # для отображения списком 

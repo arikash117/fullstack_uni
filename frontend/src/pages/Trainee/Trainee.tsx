@@ -23,6 +23,8 @@ export default function Trainee() {
     const [error, setError] = useState<string | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
 
+    const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+
     const fetchTrainee = async () => {
         if (!id) {
             setError('ID не указан');
@@ -41,6 +43,21 @@ export default function Trainee() {
         }
     };
 
+    const fetchPhotoUrl = async () => {
+        if (!trainee?.photo_path) {
+            setPhotoUrl(null);
+            return;
+        }
+        
+        try {
+            const response = await api.get<{ photo_url: string }>(`/trainees/${id}/photo-url`);
+            setPhotoUrl(response.data.photo_url);
+        } catch (err) {
+            console.error('Error fetching photo URL:', err);
+            setPhotoUrl(null);
+        }
+    };
+
     useEffect(() => {
         fetchTrainee();
         
@@ -54,6 +71,14 @@ export default function Trainee() {
             window.removeEventListener('traineesUpdated', handleTraineesUpdated);
         };
     }, [id]);
+
+    useEffect(() => {
+        if (trainee?.photo_path) {
+            fetchPhotoUrl();
+        } else {
+            setPhotoUrl(null);
+        }
+    }, [trainee?.photo_path]);
 
     if (loading) return <div>Загрузка...</div>;
     if (error) return <div>{error}</div>;
@@ -106,9 +131,10 @@ export default function Trainee() {
                 <div className={styles.infoContainer}>
                     <div className={styles.left}>
                         <img
-                            src={trainee.photo_url || pfp}
+                            src={photoUrl || pfp}
                             alt="Фото тренирующегося"
                             className={styles.photo}
+                            onError={() => setPhotoUrl(null)}
                         />
                         <div className={styles.infoText}>
                             <p>{trainee.name}</p>
