@@ -22,8 +22,8 @@ def get_workouts_by_trainee(
     #поиск
     name: Optional[str] = None,
     # фильтры
-    time_slots: Optional[List[str]] = None,
-    types: Optional[List[str]] = None,
+    time_slots: Optional[str] = None,
+    types: Optional[str] = None,
 
     date_from: Optional[datetime] = None,
     date_to: Optional[datetime] = None,
@@ -32,6 +32,9 @@ def get_workouts_by_trainee(
     sort: str = "asc",
 ) -> List[WorkoutsResponse]:
     
+    time_slots_list = time_slots.split(',') if time_slots else []
+    types_list = types.split(',') if types else []
+
     query = db.query(Workout).filter(Workout.trainee_id == trainee_id)
 
     # поиск
@@ -39,10 +42,10 @@ def get_workouts_by_trainee(
         query = query.filter(Workout.name.ilike(f"%{name}%"))
 
     # фильтр по временным отрезкам
-    if time_slots:
+    if time_slots_list:
         time_conditions = []
         
-        if "morning" in time_slots:  # 5:00 - 12:00
+        if "morning" in time_slots_list:  # 5:00 - 12:00
             time_conditions.append(
                 and_(
                     extract('hour', Workout.date) >= 5,
@@ -50,7 +53,7 @@ def get_workouts_by_trainee(
                 )
             )
         
-        if "afternoon" in time_slots:  # 12:00 - 17:00
+        if "afternoon" in time_slots_list:  # 12:00 - 17:00
             time_conditions.append(
                 and_(
                     extract('hour', Workout.date) >= 12,
@@ -58,7 +61,7 @@ def get_workouts_by_trainee(
                 )
             )
         
-        if "evening" in time_slots:  # 17:00 - 23:00
+        if "evening" in time_slots_list:  # 17:00 - 23:00
             time_conditions.append(
                 and_(
                     extract('hour', Workout.date) >= 17,
@@ -66,7 +69,7 @@ def get_workouts_by_trainee(
                 )
             )
         
-        if "night" in time_slots:  # 23:00 - 5:00
+        if "night" in time_slots_list:  # 23:00 - 5:00
             time_conditions.append(
                 or_(
                     extract('hour', Workout.date) >= 23,
@@ -78,8 +81,8 @@ def get_workouts_by_trainee(
             query = query.filter(or_(*time_conditions))
 
     # фильтр по типу
-    if types:
-        query = query.filter(Workout.type.in_(types))
+    if types_list:
+        query = query.filter(Workout.type.in_(types_list))
 
     # фильтр по дате (чтоб раполагались сначала ближайшие) дефолтный неизменяемый фильтр
     if date_from and date_to:

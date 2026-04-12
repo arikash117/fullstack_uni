@@ -57,7 +57,6 @@ function Header() {
   const handleSubPageBack = () => {
     const traineeId = pathname.split('/')[2];
     navigate(`/trainee/${traineeId}`, {
-      replace: true,
       state: { backUrl }
     });
   };

@@ -36,8 +36,8 @@ async def get_workouts_list(
     name: Optional[str] = Query(None, description="Поиск по названию (частичное совпадение)"),
 
     # фильтры по времени и типу
-    time_slots: Optional[List[str]] = Query(None, description="Временные слоты: morning, afternoon, evening, night"),
-    types: Optional[List[str]] = Query(None, description="Типы тренировок: Силовая, Кардио, Гибкость"),
+    time_slots: Optional[str] = Query(None, description="Временные слоты: morning,afternoon,evening,night"),
+    types: Optional[str] = Query(None, description="Типы: Силовая,Кардио,Гибкость"),
 
     date_from: Optional[datetime] = Query(None),
     date_to: Optional[datetime] = Query(None),
