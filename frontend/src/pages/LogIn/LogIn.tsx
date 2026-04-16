@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
@@ -35,47 +36,54 @@ export default function LogIn() {
     };
 
     return (
-        <main className={styles.container}>
-            <div className={styles.formBox}>
-                <h2 className={styles.title}>Вход</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="identifier">Email или имя пользователя</label>
-                        <input
-                            id="identifier"
-                            type="text"
-                            value={identifier}
-                            onChange={(e) => setIdentifier(e.target.value)}
-                            required
-                        />
-                    </div>
+        <>
+            <Helmet>
+                <title>Вход в систему | Фитнес-трекер</title>
+                <meta name="robots" content="noindex, nofollow" />
+            </Helmet>
 
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="password">Пароль</label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+            <main className={styles.container}>
+                <div className={styles.formBox}>
+                    <h2 className={styles.title}>Вход</h2>
+                    <form onSubmit={handleSubmit}>
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="identifier">Email или имя пользователя</label>
+                            <input
+                                id="identifier"
+                                type="text"
+                                value={identifier}
+                                onChange={(e) => setIdentifier(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <button type="submit" className={styles.submitButton}>
-                        Войти
-                    </button>
-                </form>
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="password">Пароль</label>
+                            <input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                <p className={styles.footerText}>
-                    Нет аккаунта?{' '}
-                    <span
-                        className={styles.link}
-                        onClick={() => navigate('/register')}
-                    >
-                        Зарегистрироваться
-                    </span>
-                </p>
-            </div>
-        </main>
+                        <button type="submit" className={styles.submitButton}>
+                            Войти
+                        </button>
+                    </form>
+
+                    <p className={styles.footerText}>
+                        Нет аккаунта?{' '}
+                        <span
+                            className={styles.link}
+                            onClick={() => navigate('/register')}
+                        >
+                            Зарегистрироваться
+                        </span>
+                    </p>
+                </div>
+            </main>        
+        </>
     );
 }

@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../components/Notification/NotificationProvider';
@@ -53,86 +54,94 @@ export default function Register() {
     };
 
     return (
-        <main className={styles.container}>
-            <div className={styles.formBox}>
-                <h2 className={styles.title}>Регистрация</h2>
-                <form onSubmit={handleSubmit}>
-                    {/* Email */}
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="email">Email</label>
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
+        <>
+            <Helmet>
+                <title>Регистрация | Фитнес-трекер</title>
+                <meta name="robots" content="noindex, nofollow" />                
+            </Helmet>
+
+            <main className={styles.container}>
+                <div className={styles.formBox}>
+                    <h2 className={styles.title}>Регистрация</h2>
+                    <form onSubmit={handleSubmit}>
+                        {/* Email */}
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="email">Email</label>
+                            <input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        {/* Username */}
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="username">Логин</label>
+                            <input
+                                id="username"
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                                minLength={3}
+                                maxLength={20}
+                                pattern="[a-zA-Z0-9_]+"
+                                title="Только буквы, цифры и подчеркивания, минимум 3 символа"
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        {/* Password */}
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="password">Пароль</label>
+                            <input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                minLength={6}
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        {/* Confirm */}
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="confirm">Подтвердите пароль</label>
+                            <input
+                                id="confirm"
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            className={styles.submitButton}
                             disabled={isLoading}
-                        />
-                    </div>
+                        >
+                            {isLoading ? 'Создание...' : 'Зарегистрироваться'}
+                        </button>
+                    </form>
 
-                    {/* Username */}
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="username">Логин</label>
-                        <input
-                            id="username"
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                            minLength={3}
-                            maxLength={20}
-                            pattern="[a-zA-Z0-9_]+"
-                            title="Только буквы, цифры и подчеркивания, минимум 3 символа"
-                            disabled={isLoading}
-                        />
-                    </div>
+                    <p className={styles.footerText}>
+                        Уже есть аккаунт?{' '}
+                        <span
+                            className={styles.link}
+                            onClick={() => !isLoading && navigate('/login')}
+                        >
+                            Войти
+                        </span>
+                    </p>
+                </div>
+            </main>        
+        </>
 
-                    {/* Password */}
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="password">Пароль</label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            minLength={6}
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    {/* Confirm */}
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="confirm">Подтвердите пароль</label>
-                        <input
-                            id="confirm"
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    <button 
-                        type="submit" 
-                        className={styles.submitButton}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Создание...' : 'Зарегистрироваться'}
-                    </button>
-                </form>
-
-                <p className={styles.footerText}>
-                    Уже есть аккаунт?{' '}
-                    <span
-                        className={styles.link}
-                        onClick={() => !isLoading && navigate('/login')}
-                    >
-                        Войти
-                    </span>
-                </p>
-            </div>
-        </main>
     );
 }

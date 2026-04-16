@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import { isAxiosError } from 'axios';
 import api from '../../api/client';
@@ -83,53 +84,61 @@ function AdminMain() {
   };
 
   return (
-    <div className={styles.main}>
-      <h1>Управление пользователями</h1>
+    <>
+      <Helmet>
+        <title>Пользователи | Админ-панель</title>
+        <meta name="robots" content="noindex, nofollow" />          
+      </Helmet>
 
-      {loading ? (
-        <div>Загрузка...</div>
-      ) : (
-        <div className={styles.usersList}>
-          {users.map((user) => (
-            <div
-              key={user.id}
-              className={styles.userCardWrapper}
-              onClick={() => openUserModal(user.id)}
-            >
-              <UserCard
-                id={user.id}
-                username={user.username}
-                role={user.role}
-                onRemove={handleRemoveUser}
-              />
-            </div>
-          ))}
-        </div>
-      )}
+      <div className={styles.main}>
+        <h1>Управление пользователями</h1>
 
-      {selectedUser && (
-        <UserModal
-          user={selectedUser}
-          onClose={closeUserModal}
-          onUpdateRole={() => {
-            fetchUsers();
-            show({
-              type: 'success',
-              message: 'Роль пользователя успешно обновлена',
-            });
-          }}
+        {loading ? (
+          <div>Загрузка...</div>
+        ) : (
+          <div className={styles.usersList}>
+            {users.map((user) => (
+              <div
+                key={user.id}
+                className={styles.userCardWrapper}
+                onClick={() => openUserModal(user.id)}
+              >
+                <UserCard
+                  id={user.id}
+                  username={user.username}
+                  role={user.role}
+                  onRemove={handleRemoveUser}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {selectedUser && (
+          <UserModal
+            user={selectedUser}
+            onClose={closeUserModal}
+            onUpdateRole={() => {
+              fetchUsers();
+              show({
+                type: 'success',
+                message: 'Роль пользователя успешно обновлена',
+              });
+            }}
+          />
+        )}
+        
+        <ConfirmModal
+          isOpen={!!confirmDelete}
+          onClose={() => setConfirmDelete(null)}
+          onConfirm={handleConfirmDelete}
+          title="Удаление пользователя"
+          message="Вы уверены, что хотите удалить этого пользователя?"
+          confirmText="Удалить"
         />
-      )}
-      
-      <ConfirmModal
-        isOpen={!!confirmDelete}
-        onClose={() => setConfirmDelete(null)}
-        onConfirm={handleConfirmDelete}
-        title="Удаление пользователя"
-        message="Вы уверены, что хотите удалить этого пользователя?"
-        confirmText="Удалить"
-      />
-    </div>
+      </div>    
+    </>
+
   );
 }
 

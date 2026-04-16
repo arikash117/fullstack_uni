@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useNotification } from '../../components/Notification/NotificationProvider';
@@ -117,49 +118,57 @@ function DashBoard() {
     const visibleTrainees = trainees.slice(0, visibleCount);
 
     return (
-        <main className={styles.main}>
-            <span>-----------------------Мои трейни-----------------------</span>
-            <div className={styles.content}>
-                <div className={styles.aside}>
-                    <div className={styles.calendar}>
-                        <img src={Schedule} alt="icon" className={styles.icon}/>
-                    </div>
-                    <button className={styles.button} onClick={handleAddTrainee}>
-                        Добавить трейни
-                    </button>
-                </div>
-                <div className={styles.trainees}>
-                    {visibleTrainees.map((trainee) => (
-                        <div
-                            key={trainee.id}
-                            className={styles.traineeCardWrapper}
-                            onClick={() => handleTraineeClick(trainee.id)}
-                        >
-                            <TraineeCard
-                                id={trainee.id}
-                                name={trainee.name}
-                                date={formatDateTime(trainee.next_training)} 
-                                isNew={trainee.isNew}
-                                onRemove={handleRemoveTrainee}
-                            />
+        <>
+            <Helmet>
+                <title>Мои трейни | Дашборд</title>
+                <meta name="robots" content="noindex, nofollow" />
+            </Helmet>
+
+            <main className={styles.main}>
+                <span>-----------------------Мои трейни-----------------------</span>
+                <div className={styles.content}>
+                    <div className={styles.aside}>
+                        <div className={styles.calendar}>
+                            <img src={Schedule} alt="icon" className={styles.icon}/>
                         </div>
-                    ))}
-                    {visibleCount < trainees.length && (
-                        <button className={styles.button} onClick={() => setVisibleCount(prev => prev + 6)}>
-                            Ещё
+                        <button className={styles.button} onClick={handleAddTrainee}>
+                            Добавить трейни
                         </button>
-                    )}
+                    </div>
+                    <div className={styles.trainees}>
+                        {visibleTrainees.map((trainee) => (
+                            <div
+                                key={trainee.id}
+                                className={styles.traineeCardWrapper}
+                                onClick={() => handleTraineeClick(trainee.id)}
+                            >
+                                <TraineeCard
+                                    id={trainee.id}
+                                    name={trainee.name}
+                                    date={formatDateTime(trainee.next_training)} 
+                                    isNew={trainee.isNew}
+                                    onRemove={handleRemoveTrainee}
+                                />
+                            </div>
+                        ))}
+                        {visibleCount < trainees.length && (
+                            <button className={styles.button} onClick={() => setVisibleCount(prev => prev + 6)}>
+                                Ещё
+                            </button>
+                        )}
+                    </div>
                 </div>
-            </div>
-            <ConfirmModal
-                isOpen={!!confirmDelete}
-                onClose={() => setConfirmDelete(null)}
-                onConfirm={handleConfirmDelete}
-                title="Удаление тренирующегося"
-                message="Вы уверены, что хотите удалить этого тренирующегося?"
-                confirmText="Удалить"
-            />
-        </main>
+                <ConfirmModal
+                    isOpen={!!confirmDelete}
+                    onClose={() => setConfirmDelete(null)}
+                    onConfirm={handleConfirmDelete}
+                    title="Удаление тренирующегося"
+                    message="Вы уверены, что хотите удалить этого тренирующегося?"
+                    confirmText="Удалить"
+                />
+            </main>
+        </>
+
     )
 }
 
