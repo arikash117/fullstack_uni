@@ -39,7 +39,7 @@
 }
 
 /* Крестик — как в WorkoutCard */
-.deleteArea {
+.deleteBtn {
   position: absolute;
   top: 50%;
   right: -30px;
@@ -48,21 +48,28 @@
   height: 24px;
   border-radius: 50%;
   background: rgba(255, 0, 0, 0.2);
+  border: none;
   cursor: pointer;
-  transition: opacity 0.2s ease, background-color 0.2s ease;
+  transition: opacity 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 0;
+  padding: 0;
 }
 
-.deleteArea::after {
-  content: "✕";
+.deleteBtn.visible {
+  opacity: 1;
+}
+
+.deleteBtn:hover {
+  background: rgba(255, 0, 0, 0.4);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.deleteBtn span {
   color: white;
   font-weight: bold;
   font-size: 16px;
   line-height: 1;
-}
-
-.deleteArea:hover {
-  background: rgba(255, 0, 0, 0.4);
 }

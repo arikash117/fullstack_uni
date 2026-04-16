@@ -6,9 +6,8 @@
   flex: 1;
 }
 
-.main span {
+.heading {
   color: var(--main-text-color);
-  margin-block: 20px;
   font-size: 40px;
 }
 

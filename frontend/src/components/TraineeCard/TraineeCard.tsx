@@ -14,7 +14,7 @@ export default function TraineeCard({ id, name, date, isNew = false, onRemove }:
     const [showDelete, setShowDelete] = useState(false);
 
     return (
-        <div
+        <article
             className={clsx(styles.container, { [styles.animated]: isNew })}
             onMouseEnter={() => setShowDelete(true)}
             onMouseLeave={() => setShowDelete(false)}
@@ -25,15 +25,18 @@ export default function TraineeCard({ id, name, date, isNew = false, onRemove }:
             </div>
 
             {onRemove && (
-                <div
-                    className={styles.deleteArea}
-                    style={{ opacity: showDelete ? 1 : 0 }}
+                <button
+                    type="button"
+                    className={clsx(styles.deleteBtn, { [styles.visible]: showDelete })}
+                    aria-label={`Удалить тренирующегося ${name}`}
                     onClick={(e) => {
                         e.stopPropagation();
                         onRemove(id);
                     }}
-                />
+                >
+                    <span aria-hidden="true">✕</span>
+                </button>
             )}
-        </div>
+        </article>
     );
 }

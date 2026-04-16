@@ -163,17 +163,17 @@ function DashBoard() {
             </Helmet>
 
             <main className={styles.main}>
-                <span>-----------------------Мои трейни-----------------------</span>
+                <h1 className={styles.heading}>Мои трейни</h1>
                 <div className={styles.content}>
                     <div className={styles.aside}>
                         <div className={styles.calendar}>
-                            <img src={Schedule} alt="icon" className={styles.icon}/>
+                            <img src={Schedule} alt="Иконка календаря расписания" className={styles.icon}/>
                         </div>
                         <button className={styles.button} onClick={handleAddTrainee}>
                             Добавить трейни
                         </button>
                     </div>
-                    <div className={styles.trainees}>
+                    <section className={styles.trainees}>
                         {visibleTrainees.map((trainee) => (
                             <div
                                 key={trainee.id}
@@ -194,7 +194,7 @@ function DashBoard() {
                                 Ещё
                             </button>
                         )}
-                    </div>
+                    </section>
                 </div>
                 <ConfirmModal
                     isOpen={!!confirmDelete}

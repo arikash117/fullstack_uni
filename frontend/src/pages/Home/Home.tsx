@@ -47,15 +47,15 @@ function Home() {
 
                         <div className={styles.features}>
                             <div className={styles.featureCard}>
-                                <img src={Training} alt="goal-icon" className={styles.featureIcon}/>
+                                <img src={Training} alt="Иконка: ведение дневника тренировок" className={styles.featureIcon}/>
                                 <p>Ведите дневник ежедневных тренировок</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <img src={Tracking} alt="goal-icon" className={styles.featureIcon}/>
+                                <img src={Tracking} alt="Иконка: отслеживание здоровья и КБЖУ" className={styles.featureIcon}/>
                                 <p>Фиксируйте данные о здоровье: КБЖУ, травмы и другое</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <img src={Goal} alt="goal-icon" className={styles.featureIcon}/>
+                                <img src={Goal} alt="Иконка: достижение целей и прогресс" className={styles.featureIcon}/>
                                 <p>Отслеживайте прогресс и изменение целей</p>
                             </div>
                         </div>
