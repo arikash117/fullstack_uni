@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate, useLocation} from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import styles from './Trainee.module.css'
@@ -125,56 +126,72 @@ export default function Trainee() {
         state: { backUrl: backUrl || `/trainee/${id}` } 
     });
 
+    const getPageTitle = () => {
+        if (loading) {
+            return 'Загрузка... | Фитнес-трекер';
+        }
+        if (error || !trainee) {
+            return 'Трейни не найден | Фитнес-трекер';
+        }
+        return `Информация о трейни: ${trainee.name}`;
+    };
+
     return (
-        <main className={styles.main}>
-            <div className={styles.content}>
-                <div className={styles.infoContainer}>
-                    <div className={styles.left}>
-                        <img
-                            src={photoUrl || pfp}
-                            alt="Фото тренирующегося"
-                            className={styles.photo}
-                            onError={() => setPhotoUrl(null)}
-                        />
-                        <div className={styles.infoText}>
-                            <p>{trainee.name}</p>
-                            <p>т. {trainee.phone}</p>
-                            <p>Цель: {trainee.goal}</p>
+        <>
+            <Helmet>
+                <title>{getPageTitle()}</title>
+                <meta name="robots" content="noindex, nofollow" />
+            </Helmet>
+            <main className={styles.main}>
+                <div className={styles.content}>
+                    <div className={styles.infoContainer}>
+                        <div className={styles.left}>
+                            <img
+                                src={photoUrl || pfp}
+                                alt="Фото тренирующегося"
+                                className={styles.photo}
+                                onError={() => setPhotoUrl(null)}
+                            />
+                            <div className={styles.infoText}>
+                                <p>{trainee.name}</p>
+                                <p>т. {trainee.phone}</p>
+                                <p>Цель: {trainee.goal}</p>
+                            </div>
+                        </div>
+                        <div 
+                            className={styles.edit}
+                            onClick={() => setShowEditModal(true)}
+                            >
+                            <span>Изменить</span>
+                            <img src={editIcon} alt="Редактировать профиль" />
                         </div>
                     </div>
-                    <div 
-                        className={styles.edit}
-                        onClick={() => setShowEditModal(true)}
-                        >
-                        <span>Изменить</span>
-                        <img src={editIcon} alt="Редактировать профиль" />
+
+                    <div className={styles.textContainer}>
+                        <span>Окончание абонемента: {formattedSubscriptionEnd}</span>
+                        <span className={styles.tooltip} data-tooltip="Дата следующей тренировки">
+                            {formattedNextTraining}
+                        </span>
+                    </div>
+
+                    <div className={styles.cards}>
+                        <InfoCard icon={Health} text="Трекинг здоровья" onClick={goToHealth} />
+                        <InfoCard icon={Schedule} text="Расписание тренировок" onClick={goToSchedule} />
+                        <InfoCard icon={Progress} text="Отследить прогресс" onClick={goToProgress} />
                     </div>
                 </div>
 
-                <div className={styles.textContainer}>
-                    <span>Окончание абонемента: {formattedSubscriptionEnd}</span>
-                    <span className={styles.tooltip} data-tooltip="Дата следующей тренировки">
-                        {formattedNextTraining}
-                    </span>
-                </div>
+                {showEditModal && (
+                    <TraineeEditModal
+                    trainee={trainee}
+                    onClose={() => setShowEditModal(false)}
+                    onSaved={() => {
+                        fetchTrainee();
+                    }}
+                    />
+                )}
 
-                <div className={styles.cards}>
-                    <InfoCard icon={Health} text="Трекинг здоровья" onClick={goToHealth} />
-                    <InfoCard icon={Schedule} text="Расписание тренировок" onClick={goToSchedule} />
-                    <InfoCard icon={Progress} text="Отследить прогресс" onClick={goToProgress} />
-                </div>
-            </div>
-
-            {showEditModal && (
-                <TraineeEditModal
-                trainee={trainee}
-                onClose={() => setShowEditModal(false)}
-                onSaved={() => {
-                    fetchTrainee();
-                }}
-                />
-            )}
-
-        </main>
+            </main>        
+        </>
     );
 }

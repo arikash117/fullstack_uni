@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useNotification } from '../../components/Notification/NotificationProvider';
@@ -317,164 +318,118 @@ export default function Schedule() {
     const activeFiltersCount = selectedTimeSlots.length + selectedTypes.length + (searchTerm ? 1 : 0);
 
     return (
-        <main className={styles.main} key={id}>
-            <div className={styles.header}>
-                <h1>Расписание тренировок</h1>
-            </div>
+        <>
+            <Helmet>
+                <title>Расписание тренировок</title>
+                <meta name="robots" content="noindex, nofollow" />                
+            </Helmet>
 
-            <div className={styles.layout}>
-                <aside className={styles.filtersSidebar}>
-                    <div className={styles.sidebarHeader}>
-                        <h3>Фильтры</h3>
-                        {activeFiltersCount > 0 && (
-                            <span className={styles.badge}>{activeFiltersCount}</span>
-                        )}
-                    </div>
+            <main className={styles.main} key={id}>
+                <div className={styles.header}>
+                    <h1>Расписание тренировок</h1>
+                </div>
 
-                    <div className={styles.filterSection}>
-                        <h4 className={styles.sectionTitle}>Время</h4>
-                        <div className={styles.checkboxGroup}>
-                            {(['morning', 'afternoon', 'evening', 'night'] as TimeSlot[]).map(slot => (
-                                <label key={slot} className={styles.checkbox}>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedTimeSlots.includes(slot)}
-                                        onChange={() => toggleTimeSlot(slot)}
-                                    />
-                                    <span>
-                                        {slot === 'morning' && 'Утро (5:00 - 12:00)'}
-                                        {slot === 'afternoon' && 'День (12:00 - 17:00)'}
-                                        {slot === 'evening' && 'Вечер (17:00 - 23:00)'}
-                                        {slot === 'night' && 'Ночь (23:00 - 5:00)'}
-                                    </span>
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className={styles.filterSection}>
-                        <h4 className={styles.sectionTitle}>Тип</h4>
-                        <div className={styles.checkboxGroup}>
-                            {(['Силовая', 'Кардио', 'Гибкость'] as WorkoutType[]).map(type => (
-                                <label key={type} className={styles.checkbox}>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedTypes.includes(type)}
-                                        onChange={() => toggleType(type)}
-                                    />
-                                    <span>
-                                        {type === 'Силовая' && 'Силовая'}
-                                        {type === 'Кардио' && 'Кардио'}
-                                        {type === 'Гибкость' && 'Гибкость'}
-                                    </span>
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-
-                    {activeFiltersCount > 0 && (
-                        <button className={styles.clearFiltersBtn} onClick={clearFilters}>
-                            Сбросить все фильтры
-                        </button>
-                    )}
-                </aside>
-
-
-                <div className={styles.contentArea}>
-
-                    <div className={styles.searchRow}>
-                        <input
-                            type="text"
-                            placeholder="Поиск по названию..."
-                            value={searchTerm}
-                            onChange={(e) => handleSearchChange(e.target.value)}
-                            className={styles.searchInput}
-                        />
-                        <button
-                            className={styles.sortBtn}
-                            onClick={toggleSortOrder}
-                            title={sortOrder === 'asc' ? 'Показать сначала поздние' : 'Показать сначала ближайшие'}
-                        >
-                            <img src={sortOrder === 'asc' ? AscIcon : DescIcon} alt="sort-icon" />
-                        </button>
-                    </div>
-
-                    <div className={styles.switcher}>
-                        <button
-                            className={`${styles.switchBtn} ${viewMode === 'day' ? styles.active : ''}`}
-                            onClick={() => setViewMode('day')}
-                        >
-                            Ближайщие
-                        </button>
-                        <button
-                            className={`${styles.switchBtn} ${viewMode === 'month' ? styles.active : ''}`}
-                            onClick={() => setViewMode('month')}
-                        >
-                            Месяц
-                        </button>
-                        <button
-                            className={`${styles.switchBtn} ${viewMode === 'archive' ? styles.active : ''} ${styles.archiveBtn}`}
-                            onClick={() => setViewMode('archive')}
-                        >
-                            Архив
-                        </button>
-                    </div>
-
-                    {viewMode === 'day' && (
-                        <div className={styles.dayList}>
-                            {currentWorkouts.map((workout) => (
-                                <WorkoutCard
-                                    key={workout.id}
-                                    id={workout.id}
-                                    date={formatDate(workout.date)}
-                                    time={formatTime(workout.date)}
-                                    name={workout.name}
-                                    type={workout.type}
-                                    isNew={false}
-                                    onRemove={handleRemoveWorkout}
-                                />
-                            ))}
-                            <button className={styles.addWorkoutCard} onClick={openModal}>
-                                + Добавить тренировку
-                            </button>
-
-                            {totalPages > 1 && (
-                                <div className={styles.pagination}>
-                                    <button 
-                                        className={styles.paginationBtn} 
-                                        onClick={goToPreviousPage}
-                                        aria-label="Предыдущая страница"
-                                    >
-                                        ←
-                                    </button>
-                                    <span className={styles.paginationInfo}>
-                                        {currentPage}/{totalPages}
-                                    </span>
-                                    <button 
-                                        className={styles.paginationBtn} 
-                                        onClick={goToNextPage}
-                                        aria-label="Следующая страница"
-                                    >
-                                        →
-                                    </button>
-                                </div>
+                <div className={styles.layout}>
+                    <aside className={styles.filtersSidebar}>
+                        <div className={styles.sidebarHeader}>
+                            <h3>Фильтры</h3>
+                            {activeFiltersCount > 0 && (
+                                <span className={styles.badge}>{activeFiltersCount}</span>
                             )}
                         </div>
-                    )}
 
-                    {viewMode === 'month' && (
-                        <div className={styles.monthPlaceholder}>
-                            <p>Здесь будет календарь с тренировками за месяц.</p>
-                            <p>Пока заглушка — функционал добавим позже.</p>
+                        <div className={styles.filterSection}>
+                            <h4 className={styles.sectionTitle}>Время</h4>
+                            <div className={styles.checkboxGroup}>
+                                {(['morning', 'afternoon', 'evening', 'night'] as TimeSlot[]).map(slot => (
+                                    <label key={slot} className={styles.checkbox}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedTimeSlots.includes(slot)}
+                                            onChange={() => toggleTimeSlot(slot)}
+                                        />
+                                        <span>
+                                            {slot === 'morning' && 'Утро (5:00 - 12:00)'}
+                                            {slot === 'afternoon' && 'День (12:00 - 17:00)'}
+                                            {slot === 'evening' && 'Вечер (17:00 - 23:00)'}
+                                            {slot === 'night' && 'Ночь (23:00 - 5:00)'}
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
                         </div>
-                    )}
 
-                    {viewMode === 'archive' && (
-                        <div className={styles.archiveList}>
-                            {pastWorkouts.length === 0 ? (
-                                <div className={styles.empty}>Нет прошедших тренировок</div>
-                            ) : (
-                                pastWorkouts.map((workout) => (
+                        <div className={styles.filterSection}>
+                            <h4 className={styles.sectionTitle}>Тип</h4>
+                            <div className={styles.checkboxGroup}>
+                                {(['Силовая', 'Кардио', 'Гибкость'] as WorkoutType[]).map(type => (
+                                    <label key={type} className={styles.checkbox}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedTypes.includes(type)}
+                                            onChange={() => toggleType(type)}
+                                        />
+                                        <span>
+                                            {type === 'Силовая' && 'Силовая'}
+                                            {type === 'Кардио' && 'Кардио'}
+                                            {type === 'Гибкость' && 'Гибкость'}
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        {activeFiltersCount > 0 && (
+                            <button className={styles.clearFiltersBtn} onClick={clearFilters}>
+                                Сбросить все фильтры
+                            </button>
+                        )}
+                    </aside>
+
+
+                    <div className={styles.contentArea}>
+
+                        <div className={styles.searchRow}>
+                            <input
+                                type="text"
+                                placeholder="Поиск по названию..."
+                                value={searchTerm}
+                                onChange={(e) => handleSearchChange(e.target.value)}
+                                className={styles.searchInput}
+                            />
+                            <button
+                                className={styles.sortBtn}
+                                onClick={toggleSortOrder}
+                                title={sortOrder === 'asc' ? 'Показать сначала поздние' : 'Показать сначала ближайшие'}
+                            >
+                                <img src={sortOrder === 'asc' ? AscIcon : DescIcon} alt="sort-icon" />
+                            </button>
+                        </div>
+
+                        <div className={styles.switcher}>
+                            <button
+                                className={`${styles.switchBtn} ${viewMode === 'day' ? styles.active : ''}`}
+                                onClick={() => setViewMode('day')}
+                            >
+                                Ближайщие
+                            </button>
+                            <button
+                                className={`${styles.switchBtn} ${viewMode === 'month' ? styles.active : ''}`}
+                                onClick={() => setViewMode('month')}
+                            >
+                                Месяц
+                            </button>
+                            <button
+                                className={`${styles.switchBtn} ${viewMode === 'archive' ? styles.active : ''} ${styles.archiveBtn}`}
+                                onClick={() => setViewMode('archive')}
+                            >
+                                Архив
+                            </button>
+                        </div>
+
+                        {viewMode === 'day' && (
+                            <div className={styles.dayList}>
+                                {currentWorkouts.map((workout) => (
                                     <WorkoutCard
                                         key={workout.id}
                                         id={workout.id}
@@ -485,26 +440,79 @@ export default function Schedule() {
                                         isNew={false}
                                         onRemove={handleRemoveWorkout}
                                     />
-                                ))
-                            )}
-                        </div>
-                    )}
-                </div>
-            </div>
+                                ))}
+                                <button className={styles.addWorkoutCard} onClick={openModal}>
+                                    + Добавить тренировку
+                                </button>
 
-            <AddWorkoutModal
-                isOpen={isModalOpen}
-                onClose={closeModal}
-                onAdd={handleAddWorkout}
-            />
-            <ConfirmModal
-                isOpen={!!confirmDelete}
-                onClose={() => setConfirmDelete(null)}
-                onConfirm={handleConfirmDelete}
-                title="Удаление тренировки"
-                message="Вы уверены, что хотите удалить эту тренировку?"
-                confirmText="Удалить"
-            />
-        </main>
+                                {totalPages > 1 && (
+                                    <div className={styles.pagination}>
+                                        <button 
+                                            className={styles.paginationBtn} 
+                                            onClick={goToPreviousPage}
+                                            aria-label="Предыдущая страница"
+                                        >
+                                            ←
+                                        </button>
+                                        <span className={styles.paginationInfo}>
+                                            {currentPage}/{totalPages}
+                                        </span>
+                                        <button 
+                                            className={styles.paginationBtn} 
+                                            onClick={goToNextPage}
+                                            aria-label="Следующая страница"
+                                        >
+                                            →
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {viewMode === 'month' && (
+                            <div className={styles.monthPlaceholder}>
+                                <p>Здесь будет календарь с тренировками за месяц.</p>
+                                <p>Пока заглушка — функционал добавим позже.</p>
+                            </div>
+                        )}
+
+                        {viewMode === 'archive' && (
+                            <div className={styles.archiveList}>
+                                {pastWorkouts.length === 0 ? (
+                                    <div className={styles.empty}>Нет прошедших тренировок</div>
+                                ) : (
+                                    pastWorkouts.map((workout) => (
+                                        <WorkoutCard
+                                            key={workout.id}
+                                            id={workout.id}
+                                            date={formatDate(workout.date)}
+                                            time={formatTime(workout.date)}
+                                            name={workout.name}
+                                            type={workout.type}
+                                            isNew={false}
+                                            onRemove={handleRemoveWorkout}
+                                        />
+                                    ))
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <AddWorkoutModal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                    onAdd={handleAddWorkout}
+                />
+                <ConfirmModal
+                    isOpen={!!confirmDelete}
+                    onClose={() => setConfirmDelete(null)}
+                    onConfirm={handleConfirmDelete}
+                    title="Удаление тренировки"
+                    message="Вы уверены, что хотите удалить эту тренировку?"
+                    confirmText="Удалить"
+                />
+            </main>        
+        </>
     )
 }
