@@ -72,9 +72,31 @@ function App() {
             }
           />
 
-          <Route path="/trainee/:id/health" element={<Health />} />
-          <Route path="/trainee/:id/schedule" element={<Schedule />} />
-          <Route path="/trainee/:id/progress" element={<Progress />} />
+          <Route 
+            path="/trainee/:id/health" 
+            element={
+              <ProtectedRoute>
+                <Health />
+              </ProtectedRoute>
+            } 
+          />
+  
+          <Route 
+            path="/trainee/:id/schedule" 
+            element={
+              <ProtectedRoute>
+                <Schedule />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/trainee/:id/progress" 
+            element={
+              <ProtectedRoute>
+                <Progress />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
         <Footer />
       </NotificationProvider>
