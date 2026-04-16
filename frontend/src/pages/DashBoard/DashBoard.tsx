@@ -16,10 +16,36 @@ function DashBoard() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const userId = searchParams.get('userId');
+
+    const [coachName, setCoachName] = useState<string | null>(null);
+    const [coachLoading, setCoachLoading] = useState(false);
+
     const [trainees, setTrainees] = useState<Trainee[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [visibleCount, setVisibleCount] = useState(4);
+
+    useEffect(() => {
+        if (!userId) {
+            setCoachName(null);
+            return;
+        }
+
+        const fetchCoachName = async () => {
+            setCoachLoading(true);
+            try {
+                const response = await api.get(`/admin/users/${userId}`);
+                setCoachName(response.data.username);
+            } catch (err) {
+                console.error('Failed to fetch coach name:', err);
+                setCoachName(null);
+            } finally {
+                setCoachLoading(false);
+            }
+        };
+
+        fetchCoachName();
+    }, [userId]);
 
     const fetchTrainees = async () => {
         try {
@@ -116,11 +142,23 @@ function DashBoard() {
     };
 
     const visibleTrainees = trainees.slice(0, visibleCount);
+    const getPageTitle = () => {
+        if (!userId) {
+            return 'Мои трейни | Дашборд';
+        }
+        if (coachLoading) {
+            return 'Загрузка... | Дашборд';
+        }
+        if (coachName) {
+            return `Список трейни пользователя: ${coachName}`;
+        }
+        return `Список трейни пользователя  id:${userId}`;
+    };
 
     return (
         <>
             <Helmet>
-                <title>Мои трейни | Дашборд</title>
+                <title>{getPageTitle()}</title>
                 <meta name="robots" content="noindex, nofollow" />
             </Helmet>
 
