@@ -144,41 +144,62 @@ export default function Trainee() {
             </Helmet>
             <main className={styles.main}>
                 <div className={styles.content}>
-                    <div className={styles.infoContainer}>
+                    <section className={styles.infoContainer}>
                         <div className={styles.left}>
                             <img
                                 src={photoUrl || pfp}
-                                alt="Фото тренирующегося"
+                                alt={`Фото: ${trainee.name}`}
                                 className={styles.photo}
                                 onError={() => setPhotoUrl(null)}
                             />
                             <div className={styles.infoText}>
-                                <p>{trainee.name}</p>
-                                <p>т. {trainee.phone}</p>
-                                <p>Цель: {trainee.goal}</p>
+                                <h2 className={styles.name}>{trainee.name}</h2>
+                                <p className={styles.phone}>т. {trainee.phone}</p>
+                                <p className={styles.goal}>Цель: {trainee.goal}</p>
                             </div>
                         </div>
-                        <div 
+                        <button 
+                            type="button"
                             className={styles.edit}
                             onClick={() => setShowEditModal(true)}
-                            >
+                            aria-label={`Редактировать профиль ${trainee.name}`}
+                        >
                             <span>Изменить</span>
-                            <img src={editIcon} alt="Редактировать профиль" />
-                        </div>
-                    </div>
+                            <img src={editIcon} alt="" aria-hidden="true" />
+                        </button>
+                    </section>
 
-                    <div className={styles.textContainer}>
-                        <span>Окончание абонемента: {formattedSubscriptionEnd}</span>
-                        <span className={styles.tooltip} data-tooltip="Дата следующей тренировки">
-                            {formattedNextTraining}
-                        </span>
-                    </div>
 
-                    <div className={styles.cards}>
-                        <InfoCard icon={Health} text="Трекинг здоровья" onClick={goToHealth} />
-                        <InfoCard icon={Schedule} text="Расписание тренировок" onClick={goToSchedule} />
-                        <InfoCard icon={Progress} text="Отследить прогресс" onClick={goToProgress} />
-                    </div>
+                    <section className={styles.textContainer} aria-label="Даты и сроки">
+                        <p className={styles.subscriptionEnd}>
+                            Окончание абонемента: <time dateTime={trainee.subscription_end}>{formattedSubscriptionEnd}</time>
+                        </p>
+                        <p className={styles.nextTraining} title="Дата следующей тренировки">
+                            <time dateTime={trainee.next_training || undefined}>
+                                {formattedNextTraining}
+                            </time>
+                        </p>
+                    </section>
+                    <nav className={styles.cards} aria-label="Разделы профиля трейни">
+                        <InfoCard 
+                            icon={Health} 
+                            text="Трекинг здоровья" 
+                            onClick={goToHealth}
+                            ariaLabel="Перейти к трекингу здоровья"
+                        />
+                        <InfoCard 
+                            icon={Schedule} 
+                            text="Расписание тренировок" 
+                            onClick={goToSchedule}
+                            ariaLabel="Перейти к расписанию тренировок"
+                        />
+                        <InfoCard 
+                            icon={Progress} 
+                            text="Отследить прогресс" 
+                            onClick={goToProgress}
+                            ariaLabel="Перейти к отслеживанию прогресса"
+                        />
+                    </nav>
                 </div>
 
                 {showEditModal && (

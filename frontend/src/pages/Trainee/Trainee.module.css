@@ -11,6 +11,10 @@
   color: var(--main-text-color);
 }
 
+.main h2 {
+  color: var(--main-text-color);
+}
+
 p:hover {
   cursor: default;
 }
@@ -84,19 +88,26 @@ p:hover {
 }
 
 .edit {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    color: var(--text-color);
-    padding-block: 5px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    text-decoration: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: var(--text-color);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.edit:hover {
+  transform: translateY(1px);
 }
 
 .edit span:hover {
   text-decoration: underline;
-  cursor: pointer;
 }
 
 .edit img {
@@ -105,8 +116,9 @@ p:hover {
   height: 25px;
 }
 
-.edit:hover {
-    transform: translateY(1px);
+.edit:focus-visible {
+  outline: 2px solid var(--main-text-color);
+  border-radius: 4px;
 }
 
 .textContainer {
