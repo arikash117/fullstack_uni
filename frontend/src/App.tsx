@@ -17,6 +17,7 @@ import Schedule from './pages/Schedule/Schedule'
 import Progress from './pages/Progress/Progress'
 
 import AdminMain from './pages/AdminMain/AdminMain'
+import NotFound from './pages/NotFound/NotFound';
 
 import './App.css'
 
@@ -97,6 +98,7 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </NotificationProvider>
