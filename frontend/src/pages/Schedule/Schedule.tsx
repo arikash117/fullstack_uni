@@ -325,58 +325,62 @@ export default function Schedule() {
             </Helmet>
 
             <main className={styles.main} key={id}>
-                <div className={styles.header}>
+                <header className={styles.header}>
                     <h1>Расписание тренировок</h1>
-                </div>
+                </header>
 
                 <div className={styles.layout}>
-                    <aside className={styles.filtersSidebar}>
+                    <aside className={styles.filtersSidebar} aria-label="Фильтры тренировок">
                         <div className={styles.sidebarHeader}>
-                            <h3>Фильтры</h3>
+                            <h2>Фильтры</h2>
                             {activeFiltersCount > 0 && (
-                                <span className={styles.badge}>{activeFiltersCount}</span>
+                                <span className={styles.badge} aria-label={`${activeFiltersCount} активных фильтров`}>
+                                    {activeFiltersCount}
+                                </span>
                             )}
                         </div>
 
                         <div className={styles.filterSection}>
-                            <h4 className={styles.sectionTitle}>Время</h4>
-                            <div className={styles.checkboxGroup}>
+                            <h3 className={styles.sectionTitle}>Время</h3>
+                            <fieldset className={styles.checkboxGroup}>
                                 {(['morning', 'afternoon', 'evening', 'night'] as TimeSlot[]).map(slot => (
                                     <label key={slot} className={styles.checkbox}>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedTimeSlots.includes(slot)}
-                                            onChange={() => toggleTimeSlot(slot)}
-                                        />
-                                        <span>
-                                            {slot === 'morning' && 'Утро (5:00 - 12:00)'}
-                                            {slot === 'afternoon' && 'День (12:00 - 17:00)'}
-                                            {slot === 'evening' && 'Вечер (17:00 - 23:00)'}
-                                            {slot === 'night' && 'Ночь (23:00 - 5:00)'}
-                                        </span>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedTimeSlots.includes(slot)}
+                                        onChange={() => toggleTimeSlot(slot)}
+                                        id={`time-${slot}`}
+                                    />
+                                    <span>
+                                        {slot === 'morning' && 'Утро (5:00 - 12:00)'}
+                                        {slot === 'afternoon' && 'День (12:00 - 17:00)'}
+                                        {slot === 'evening' && 'Вечер (17:00 - 23:00)'}
+                                        {slot === 'night' && 'Ночь (23:00 - 5:00)'}
+                                    </span>
                                     </label>
                                 ))}
-                            </div>
+                            </fieldset>
                         </div>
 
                         <div className={styles.filterSection}>
-                            <h4 className={styles.sectionTitle}>Тип</h4>
-                            <div className={styles.checkboxGroup}>
+                            <h3 className={styles.sectionTitle}>Тип</h3>
+                            <fieldset className={styles.checkboxGroup}>
                                 {(['Силовая', 'Кардио', 'Гибкость'] as WorkoutType[]).map(type => (
                                     <label key={type} className={styles.checkbox}>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedTypes.includes(type)}
-                                            onChange={() => toggleType(type)}
-                                        />
-                                        <span>
-                                            {type === 'Силовая' && 'Силовая'}
-                                            {type === 'Кардио' && 'Кардио'}
-                                            {type === 'Гибкость' && 'Гибкость'}
-                                        </span>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedTypes.includes(type)}
+                                        onChange={() => toggleType(type)}
+                                        id={`type-${type}`}
+                                    />
+                                    <span>
+                                        {type === 'Силовая' && 'Силовая'}
+                                        {type === 'Кардио' && 'Кардио'}
+                                        {type === 'Гибкость' && 'Гибкость'}
+                                    </span>
                                     </label>
                                 ))}
-                            </div>
+                            </fieldset>
                         </div>
 
                         {activeFiltersCount > 0 && (
@@ -389,85 +393,107 @@ export default function Schedule() {
 
                     <div className={styles.contentArea}>
 
-                        <div className={styles.searchRow}>
-                            <input
-                                type="text"
-                                placeholder="Поиск по названию..."
-                                value={searchTerm}
-                                onChange={(e) => handleSearchChange(e.target.value)}
-                                className={styles.searchInput}
+                    <div className={styles.searchRow}>
+                        <input
+                            type="text"
+                            placeholder="Поиск по названию..."
+                            value={searchTerm}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                            className={styles.searchInput}
+                            aria-label="Поиск тренировок по названию"
+                        />
+                        <button
+                            className={styles.sortBtn}
+                            onClick={toggleSortOrder}
+                            title={sortOrder === 'asc' ? 'Сортировать по убыванию' : 'Сортировать по возрастанию'}
+                            aria-label={`Сортировка: ${sortOrder === 'asc' ? 'по возрастанию' : 'по убыванию'}`}
+                        >
+                            <img 
+                            src={sortOrder === 'asc' ? AscIcon : DescIcon} 
+                            alt={`Сортировка ${sortOrder === 'asc' ? 'по возрастанию' : 'по убыванию'}`}
                             />
-                            <button
-                                className={styles.sortBtn}
-                                onClick={toggleSortOrder}
-                                title={sortOrder === 'asc' ? 'Показать сначала поздние' : 'Показать сначала ближайшие'}
-                            >
-                                <img src={sortOrder === 'asc' ? AscIcon : DescIcon} alt="sort-icon" />
-                            </button>
-                        </div>
+                        </button>
+                    </div>
 
-                        <div className={styles.switcher}>
-                            <button
-                                className={`${styles.switchBtn} ${viewMode === 'day' ? styles.active : ''}`}
-                                onClick={() => setViewMode('day')}
-                            >
-                                Ближайщие
-                            </button>
-                            <button
-                                className={`${styles.switchBtn} ${viewMode === 'month' ? styles.active : ''}`}
-                                onClick={() => setViewMode('month')}
-                            >
-                                Месяц
-                            </button>
-                            <button
-                                className={`${styles.switchBtn} ${viewMode === 'archive' ? styles.active : ''} ${styles.archiveBtn}`}
-                                onClick={() => setViewMode('archive')}
-                            >
-                                Архив
-                            </button>
-                        </div>
+                    <div className={styles.switcher} role="tablist" aria-label="Режим просмотра расписания">
+                        <button
+                            className={`${styles.switchBtn} ${viewMode === 'day' ? styles.active : ''}`}
+                            onClick={() => setViewMode('day')}
+                            role="tab"
+                            aria-selected={viewMode === 'day'}
+                            aria-controls="day-panel"
+                            id="day-tab"
+                        >
+                            Ближайшие
+                        </button>
+                        <button
+                            className={`${styles.switchBtn} ${viewMode === 'month' ? styles.active : ''}`}
+                            onClick={() => setViewMode('month')}
+                            role="tab"
+                            aria-selected={viewMode === 'month'}
+                            aria-controls="month-panel"
+                            id="month-tab"
+                        >
+                            Месяц
+                        </button>
+                        <button
+                            className={`${styles.switchBtn} ${viewMode === 'archive' ? styles.active : ''} ${styles.archiveBtn}`}
+                            onClick={() => setViewMode('archive')}
+                            role="tab"
+                            aria-selected={viewMode === 'archive'}
+                            aria-controls="archive-panel"
+                            id="archive-tab"
+                        >
+                            Архив
+                        </button>
+                    </div>
 
-                        {viewMode === 'day' && (
-                            <div className={styles.dayList}>
+                    {viewMode === 'day' && (
+                        <div className={styles.dayList} role="tabpanel" id="day-panel" aria-labelledby="day-tab">
+                            <ul className={styles.workoutList} aria-label="Список предстоящих тренировок">
                                 {currentWorkouts.map((workout) => (
-                                    <WorkoutCard
-                                        key={workout.id}
-                                        id={workout.id}
-                                        date={formatDate(workout.date)}
-                                        time={formatTime(workout.date)}
-                                        name={workout.name}
-                                        type={workout.type}
-                                        isNew={false}
-                                        onRemove={handleRemoveWorkout}
-                                    />
+                                    <li key={workout.id} className={styles.workoutItem}>
+                                        <WorkoutCard
+                                            id={workout.id}
+                                            date={formatDate(workout.date)}
+                                            time={formatTime(workout.date)}
+                                            isoDate={workout.date}
+                                            name={workout.name}
+                                            type={workout.type}
+                                            isNew={false}
+                                            onRemove={handleRemoveWorkout}
+                                        />
+                                    </li>
                                 ))}
-                                <button className={styles.addWorkoutCard} onClick={openModal}>
-                                    + Добавить тренировку
-                                </button>
+                            </ul>
 
-                                {totalPages > 1 && (
-                                    <div className={styles.pagination}>
-                                        <button 
-                                            className={styles.paginationBtn} 
-                                            onClick={goToPreviousPage}
-                                            aria-label="Предыдущая страница"
-                                        >
-                                            ←
-                                        </button>
-                                        <span className={styles.paginationInfo}>
-                                            {currentPage}/{totalPages}
-                                        </span>
-                                        <button 
-                                            className={styles.paginationBtn} 
-                                            onClick={goToNextPage}
-                                            aria-label="Следующая страница"
-                                        >
-                                            →
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                            <button className={styles.addWorkoutCard} onClick={openModal}>
+                            + Добавить тренировку
+                            </button>
+
+                            {totalPages > 1 && (
+                                <nav className={styles.pagination} aria-label="Пагинация тренировок">
+                                    <button 
+                                        className={styles.paginationBtn} 
+                                        onClick={goToPreviousPage}
+                                        aria-label="Предыдущая страница"
+                                    >
+                                    ←
+                                    </button>
+                                    <span className={styles.paginationInfo} aria-live="polite">
+                                        {currentPage}/{totalPages}
+                                    </span>
+                                    <button 
+                                        className={styles.paginationBtn} 
+                                        onClick={goToNextPage}
+                                        aria-label="Следующая страница"
+                                    >
+                                    →
+                                    </button>
+                                </nav>
+                            )}
+                        </div>
+                    )}
 
                         {viewMode === 'month' && (
                             <div className={styles.monthPlaceholder}>

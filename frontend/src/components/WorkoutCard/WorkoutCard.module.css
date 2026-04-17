@@ -30,7 +30,7 @@
   color: var(--main-text-color);
 }
 
-.deleteArea {
+.deleteBtn {
   position: absolute;
   top: 50%;
   right: -30px;
@@ -39,21 +39,28 @@
   height: 24px;
   border-radius: 50%;
   background: rgba(255, 0, 0, 0.2);
+  border: none;
   cursor: pointer;
   transition: opacity 0.2s ease, background-color 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.deleteArea::after {
-  content: "✕";
+  opacity: 0;
+  padding: 0;
   color: white;
-  font-weight: bold;
   font-size: 16px;
   line-height: 1;
 }
 
-.deleteArea:hover {
+.deleteBtn.visible {
+  opacity: 1;
+}
+
+.deleteBtn:hover {
   background: rgba(255, 0, 0, 0.4);
+}
+
+.deleteBtn:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
 }

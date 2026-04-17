@@ -6,6 +6,7 @@ interface WorkoutCardProps {
   id: number;
   date: string;
   time: string;
+  isoDate?: string;
   name: string;
   type: string;
   isNew?: boolean;
@@ -16,6 +17,7 @@ export default function WorkoutCard({
     id,
     date,
     time,
+    isoDate,
     name,
     type,
     isNew = false,
@@ -24,26 +26,34 @@ export default function WorkoutCard({
     const [showDelete, setShowDelete] = useState(false);
 
     return (
-        <div
+        <article
             className={clsx(styles.container, { [styles.animated]: isNew })}
             onMouseEnter={() => setShowDelete(true)}
             onMouseLeave={() => setShowDelete(false)}
+            aria-label={`Тренировка: ${name}, ${type}, ${date} в ${time}`}
         >
-            <p>{date}</p>
-            <p>{time}</p>
-            <p>{name}</p>
-            <p>{type}</p>
+            <p className={styles.date}>
+              <time dateTime={isoDate || date}>{date}</time>
+            </p>
+            <p className={styles.time}>
+              <time dateTime={isoDate || time}>{time}</time>
+            </p>
+            <p className={styles.name}>{name}</p>
+            <p className={styles.type}>{type}</p>
 
             {onRemove && (
-                <div
-                    className={styles.deleteArea}
-                    style={{ opacity: showDelete ? 1 : 0 }}
+                <button
+                    type="button"
+                    className={clsx(styles.deleteBtn, { [styles.visible]: showDelete })}
+                    aria-label={`Удалить тренировку "${name}"`}
                     onClick={(e) => {
                         e.stopPropagation();
                         onRemove(id);
                     }}
-                />
+                >
+                    <span aria-hidden="true">✕</span>
+                </button>
             )}
-        </div>
+        </article>
     );
 }
