@@ -6,6 +6,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL")
+    DOMAIN: str = os.getenv("DOMAIN")
 
     SECRET_KEY: str = "your-super-secret-key-change-in-prod"
     ALGORITHM: str = "HS256"
