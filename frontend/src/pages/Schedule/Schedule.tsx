@@ -410,107 +410,107 @@ export default function Schedule() {
 
                     <div className={styles.contentArea}>
 
-                    <div className={styles.searchRow}>
-                        <input
-                            type="text"
-                            placeholder="Поиск по названию..."
-                            value={searchTerm}
-                            onChange={(e) => handleSearchChange(e.target.value)}
-                            className={styles.searchInput}
-                            aria-label="Поиск тренировок по названию"
-                        />
-                        <button
-                            className={styles.sortBtn}
-                            onClick={toggleSortOrder}
-                            title={sortOrder === 'asc' ? 'Сортировать по убыванию' : 'Сортировать по возрастанию'}
-                            aria-label={`Сортировка: ${sortOrder === 'asc' ? 'по возрастанию' : 'по убыванию'}`}
-                        >
-                            <img 
-                            src={sortOrder === 'asc' ? AscIcon : DescIcon} 
-                            alt={`Сортировка ${sortOrder === 'asc' ? 'по возрастанию' : 'по убыванию'}`}
+                        <div className={styles.searchRow}>
+                            <input
+                                type="text"
+                                placeholder="Поиск по названию..."
+                                value={searchTerm}
+                                onChange={(e) => handleSearchChange(e.target.value)}
+                                className={styles.searchInput}
+                                aria-label="Поиск тренировок по названию"
                             />
-                        </button>
-                    </div>
-
-                    <div className={styles.switcher} role="tablist" aria-label="Режим просмотра расписания">
-                        <button
-                            className={`${styles.switchBtn} ${viewMode === 'day' ? styles.active : ''}`}
-                            onClick={() => setViewMode('day')}
-                            role="tab"
-                            aria-selected={viewMode === 'day'}
-                            aria-controls="day-panel"
-                            id="day-tab"
-                        >
-                            Ближайшие
-                        </button>
-                        <button
-                            className={`${styles.switchBtn} ${viewMode === 'month' ? styles.active : ''}`}
-                            onClick={() => setViewMode('month')}
-                            role="tab"
-                            aria-selected={viewMode === 'month'}
-                            aria-controls="month-panel"
-                            id="month-tab"
-                        >
-                            Месяц
-                        </button>
-                        <button
-                            className={`${styles.switchBtn} ${viewMode === 'archive' ? styles.active : ''} ${styles.archiveBtn}`}
-                            onClick={() => setViewMode('archive')}
-                            role="tab"
-                            aria-selected={viewMode === 'archive'}
-                            aria-controls="archive-panel"
-                            id="archive-tab"
-                        >
-                            Архив
-                        </button>
-                    </div>
-
-                    {viewMode === 'day' && (
-                        <div className={styles.dayList} role="tabpanel" id="day-panel" aria-labelledby="day-tab">
-                            <ul className={styles.workoutList} aria-label="Список предстоящих тренировок">
-                                {currentWorkouts.map((workout) => (
-                                    <li key={workout.id} className={styles.workoutItem}>
-                                        <WorkoutCard
-                                            id={workout.id}
-                                            date={formatDate(workout.date)}
-                                            time={formatTime(workout.date)}
-                                            isoDate={workout.date}
-                                            name={workout.name}
-                                            type={workout.type}
-                                            isNew={false}
-                                            onRemove={handleRemoveWorkout}
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <button className={styles.addWorkoutCard} onClick={openModal}>
-                            + Добавить тренировку
+                            <button
+                                className={styles.sortBtn}
+                                onClick={toggleSortOrder}
+                                title={sortOrder === 'asc' ? 'Сортировать по убыванию' : 'Сортировать по возрастанию'}
+                                aria-label={`Сортировка: ${sortOrder === 'asc' ? 'по возрастанию' : 'по убыванию'}`}
+                            >
+                                <img 
+                                src={sortOrder === 'asc' ? AscIcon : DescIcon} 
+                                alt={`Сортировка ${sortOrder === 'asc' ? 'по возрастанию' : 'по убыванию'}`}
+                                />
                             </button>
-
-                            {totalPages > 1 && (
-                                <nav className={styles.pagination} aria-label="Пагинация тренировок">
-                                    <button 
-                                        className={styles.paginationBtn} 
-                                        onClick={goToPreviousPage}
-                                        aria-label="Предыдущая страница"
-                                    >
-                                    ←
-                                    </button>
-                                    <span className={styles.paginationInfo} aria-live="polite">
-                                        {currentPage}/{totalPages}
-                                    </span>
-                                    <button 
-                                        className={styles.paginationBtn} 
-                                        onClick={goToNextPage}
-                                        aria-label="Следующая страница"
-                                    >
-                                    →
-                                    </button>
-                                </nav>
-                            )}
                         </div>
-                    )}
+
+                        <div className={styles.switcher} role="tablist" aria-label="Режим просмотра расписания">
+                            <button
+                                className={`${styles.switchBtn} ${viewMode === 'day' ? styles.active : ''}`}
+                                onClick={() => setViewMode('day')}
+                                role="tab"
+                                aria-selected={viewMode === 'day'}
+                                aria-controls="day-panel"
+                                id="day-tab"
+                            >
+                                Ближайшие
+                            </button>
+                            <button
+                                className={`${styles.switchBtn} ${viewMode === 'month' ? styles.active : ''}`}
+                                onClick={() => setViewMode('month')}
+                                role="tab"
+                                aria-selected={viewMode === 'month'}
+                                aria-controls="month-panel"
+                                id="month-tab"
+                            >
+                                Месяц
+                            </button>
+                            <button
+                                className={`${styles.switchBtn} ${viewMode === 'archive' ? styles.active : ''} ${styles.archiveBtn}`}
+                                onClick={() => setViewMode('archive')}
+                                role="tab"
+                                aria-selected={viewMode === 'archive'}
+                                aria-controls="archive-panel"
+                                id="archive-tab"
+                            >
+                                Архив
+                            </button>
+                        </div>
+
+                        {viewMode === 'day' && (
+                            <div className={styles.dayList} role="tabpanel" id="day-panel" aria-labelledby="day-tab">
+                                <ul className={styles.workoutList} aria-label="Список предстоящих тренировок">
+                                    {currentWorkouts.map((workout) => (
+                                        <li key={workout.id} className={styles.workoutItem}>
+                                            <WorkoutCard
+                                                id={workout.id}
+                                                date={formatDate(workout.date)}
+                                                time={formatTime(workout.date)}
+                                                isoDate={workout.date}
+                                                name={workout.name}
+                                                type={workout.type}
+                                                isNew={false}
+                                                onRemove={handleRemoveWorkout}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <button className={styles.addWorkoutCard} onClick={openModal}>
+                                + Добавить тренировку
+                                </button>
+
+                                {totalPages > 1 && (
+                                    <nav className={styles.pagination} aria-label="Пагинация тренировок">
+                                        <button 
+                                            className={styles.paginationBtn} 
+                                            onClick={goToPreviousPage}
+                                            aria-label="Предыдущая страница"
+                                        >
+                                        ←
+                                        </button>
+                                        <span className={styles.paginationInfo} aria-live="polite">
+                                            {currentPage}/{totalPages}
+                                        </span>
+                                        <button 
+                                            className={styles.paginationBtn} 
+                                            onClick={goToNextPage}
+                                            aria-label="Следующая страница"
+                                        >
+                                        →
+                                        </button>
+                                    </nav>
+                                )}
+                            </div>
+                        )}
 
                         {viewMode === 'month' && (
                             <div className={styles.monthPlaceholder}>

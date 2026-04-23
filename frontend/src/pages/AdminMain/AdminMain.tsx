@@ -94,7 +94,7 @@ function AdminMain() {
         <h1>Управление пользователями</h1>
 
         {loading ? (
-          <div>Загрузка...</div>
+          <div className={styles.main}>Загрузка...</div>
         ) : (
           <div className={styles.usersList}>
             {users.map((user) => (

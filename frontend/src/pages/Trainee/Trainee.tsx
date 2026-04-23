@@ -82,21 +82,6 @@ export default function Trainee() {
         }
     };
 
-    // const fetchPhotoUrl = async () => {
-    //     if (!trainee?.photo_path) {
-    //         setPhotoUrl(null);
-    //         return;
-    //     }
-        
-    //     try {
-    //         const response = await api.get<{ photo_url: string }>(`/trainees/${id}/photo-url`);
-    //         setPhotoUrl(response.data.photo_url);
-    //     } catch (err) {
-    //         console.error('Error fetching photo URL:', err);
-    //         setPhotoUrl(null);
-    //     }
-    // };
-
     useEffect(() => {
         fetchTrainee();
         
@@ -111,16 +96,8 @@ export default function Trainee() {
         };
     }, [id]);
 
-    // useEffect(() => {
-    //     if (trainee?.photo_path) {
-    //         fetchPhotoUrl();
-    //     } else {
-    //         setPhotoUrl(null);
-    //     }
-    // }, [trainee?.photo_path]);
-
-    if (loading) return <div>Загрузка...</div>;
-    if (error) return <div>{error}</div>;
+    if (loading) return <div className={styles.main}>Загрузка...</div>;
+    if (error) return <div className={styles.main}>{error}</div>;
     if (!trainee) return null;
 
     const formattedSubscriptionEnd = new Date(trainee.subscription_end)
@@ -189,6 +166,8 @@ export default function Trainee() {
                                 alt={`Фото: ${trainee.name}`}
                                 className={styles.photo}
                                 onError={() => setPhotoUrl(null)}
+                                width="200"
+                                height="200"
                             />
                             <div className={styles.infoText}>
                                 <h2 className={styles.name}>{trainee.name}</h2>

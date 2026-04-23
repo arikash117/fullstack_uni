@@ -62,21 +62,22 @@ function Home() {
                     {JSON.stringify(jsonLd)}
                 </script>
             </Helmet>
+
             <main className={styles.main}>
                 <h1 className={styles.heading}>Попробуйте этот веб-сервис для отслеживания прогресса вашего трейни!</h1>   
                     <div className={styles.contentWrapper}>
 
                         <div className={styles.features}>
                             <div className={styles.featureCard}>
-                                <img src={Training} alt="Иконка: ведение дневника тренировок" className={styles.featureIcon}/>
+                                <img src={Training} alt="Иконка: ведение дневника тренировок" className={styles.featureIcon} width="60" height="60"/>
                                 <p>Ведите дневник ежедневных тренировок</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <img src={Tracking} alt="Иконка: отслеживание здоровья и КБЖУ" className={styles.featureIcon}/>
+                                <img src={Tracking} alt="Иконка: отслеживание здоровья и КБЖУ" className={styles.featureIcon} width="60" height="60"/>
                                 <p>Фиксируйте данные о здоровье: КБЖУ, травмы и другое</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <img src={Goal} alt="Иконка: достижение целей и прогресс" className={styles.featureIcon}/>
+                                <img src={Goal} alt="Иконка: достижение целей и прогресс" className={styles.featureIcon} width="60" height="60"/>
                                 <p>Отслеживайте прогресс и изменение целей</p>
                             </div>
                         </div>
