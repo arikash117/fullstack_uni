@@ -9,6 +9,19 @@ export default defineConfig({
       },
     }),
   ],
+
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-http': ['axios'],
+          'vendor-seo': ['react-helmet-async'],
+        },
+      },
+    },
+  },
+
   server: {
     host: '0.0.0.0',
     historyApiFallback: true,
