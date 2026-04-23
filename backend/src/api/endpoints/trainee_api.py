@@ -61,7 +61,7 @@ def get_trainee(
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
         return trainee
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 # POST
 @trainee_router.post("/", response_model=TraineeResponse)
@@ -74,9 +74,9 @@ def create(
         trainee = create_trainee(db=db, trainee_data=trainee_data, coach_id=current_user.id)
         return trainee
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Ошибка при создании тренирующегося")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Ошибка при создании тренирующегося")
     
 # UPLOAD PHOTO
 @trainee_router.post("/{trainee_id}/photo", response_model=TraineeResponse)
@@ -89,10 +89,10 @@ async def upload_trainee_photo(
     print(f"Received file: {file.filename}, content_type: {file.content_type}, size: {file.size}")
     trainee = get_trainee_by_id(db, trainee_id)
     if current_user.role != "admin" and trainee.coach_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Нет доступа")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
 
     if not file.content_type.startswith('image/'):
-        raise HTTPException(status_code=400, detail="Можно загружать только изображения")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Можно загружать только изображения")
 
     file_ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
     safe_filename = f"{uuid.uuid4()}.{file_ext}"
@@ -110,7 +110,7 @@ async def upload_trainee_photo(
         )
     except Exception as e:
         print(f"MinIO upload error: {e}")
-        raise HTTPException(status_code=500, detail="Ошибка при загрузке файла")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Ошибка при загрузке файла")
 
     if trainee.photo_path:
         try:
@@ -135,10 +135,10 @@ async def get_trainee_photo_url(
     trainee = get_trainee_by_id(db, trainee_id)
     
     if current_user.role != "admin" and trainee.coach_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Нет доступа")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
     
     if not trainee.photo_path:
-        raise HTTPException(status_code=404, detail="Фото не найдено")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Фото не найдено")
     
     minio_client = get_minio_client()
     
@@ -162,7 +162,7 @@ def update_trainee(
         updated_trainee = update_trainee_by_id(db=db, trainee_id=trainee_id, update_data=update_data)
         return updated_trainee
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 # DELETE
 @trainee_router.delete("/{trainee_id}", response_model=DeleteTraineeResponse)
@@ -179,4 +179,4 @@ def delete(
         result = delete_trainee(db=db, trainee_id=trainee_id)
         return result
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

@@ -71,7 +71,7 @@ async def get_workouts_list(
         )
         return workouts
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Ошибка при получении списка тренировок")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Ошибка при получении списка тренировок")
 
 @workout_router.get("/{workout_id}", response_model=WorkoutResponse)
 async def get_workout(
@@ -86,9 +86,9 @@ async def get_workout(
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
         return workout
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Ошибка при получении тренировки")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Ошибка при получении тренировки")
 
 
 # POST
@@ -113,7 +113,7 @@ async def create(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка при создании тренировки: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ошибка при создании тренировки: {str(e)}")
 
 # PATCH
 @workout_router.patch("/{workout_id}", response_model=WorkoutResponse)
@@ -126,15 +126,15 @@ async def update(
     try:
         workout = get_workout_by_id(db=db, workout_id=workout_id)
         trainee = get_trainee_by_id(db=db, trainee_id=workout.trainee_id)
-        if trainee.coach_id != current_user.id:
+        if current_user.role != "admin" and trainee.coach_id != current_user.id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
         
         updated_workout = update_workout(db=db, workout_id=workout_id, update_data=update_data)
         return updated_workout
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Ошибка при обновлении тренировки")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Ошибка при обновлении тренировки")
     
 # DELETE
 @workout_router.delete("/{workout_id}", response_model=DeleteWorkoutResponse)
@@ -152,6 +152,6 @@ async def delete(
         result = delete_workout(db=db, workout_id=workout_id)
         return result
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Ошибка при удалении тренировки")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Ошибка при удалении тренировки")

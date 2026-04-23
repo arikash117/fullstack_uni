@@ -15,6 +15,7 @@ async def robots_txt():
     
     content = f"""User-agent: *
 Allow: /
+Disallow: /docs
 Disallow: /api/
 Disallow: /admin/
 Disallow: /dashboard

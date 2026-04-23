@@ -42,7 +42,7 @@ def get_user(
     try:
         return get_user_by_id(db, user_id=user_id)
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 # PUTCH изменение роли пользователя
 @admin_router.patch("/users/{user_id}/role", response_model=RoleUpdateResponse)
@@ -61,7 +61,7 @@ def change_user_role(
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 # DELETE /admin/users/{user_id} -> удалить
 @admin_router.delete("/users/{user_id}", response_model=DeleteUserResponse)
@@ -73,12 +73,12 @@ def delete(
     
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Пользователь не найден")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден")
 
     if admin.id == user_id:
-        raise HTTPException(status_code=400, detail="Нельзя удалить самого себя")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Нельзя удалить самого себя")
     
     try:
         return delete_user(db, user_id, admin.id)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
