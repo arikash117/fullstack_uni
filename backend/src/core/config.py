@@ -7,6 +7,7 @@ load_dotenv()
 class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL")
     DOMAIN: str = os.getenv("DOMAIN")
+    WEATHER_API_KEY: str = os.getenv("WEATHER_API_KEY")
 
     SECRET_KEY: str = "your-super-secret-key-change-in-prod"
     ALGORITHM: str = "HS256"

@@ -8,7 +8,7 @@ from .api.endpoints.auth_api import auth_router
 # from .api.endpoints.healt_api import health_router
 from .api.endpoints.workout_api import workout_router
 from .api.endpoints.trainee_api import trainee_router
-
+from .api.endpoints.weather_api import weather_router
 
 app = FastAPI()
 
@@ -30,6 +30,7 @@ app.include_router(workout_router)
 app.include_router(trainee_router)
 app.include_router(admin_router)
 app.include_router(seo_router)
+app.include_router(weather_router)
 
 
 @app.get("/")

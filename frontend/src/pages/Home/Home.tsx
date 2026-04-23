@@ -5,6 +5,7 @@ import styles from './Home.module.css';
 import Goal from "../../assets/goal.svg";
 import Training from "../../assets/main-training.svg";
 import Tracking from "../../assets/tracking.svg";
+import { WeatherWidget } from '../../components/WeatherWidget/WeatherWidget';
 
 function Home() {
     const navigate = useNavigate();
@@ -65,29 +66,30 @@ function Home() {
 
             <main className={styles.main}>
                 <h1 className={styles.heading}>Попробуйте этот веб-сервис для отслеживания прогресса вашего трейни!</h1>   
-                    <div className={styles.contentWrapper}>
+                <div className={styles.contentWrapper}>
 
-                        <div className={styles.features}>
-                            <div className={styles.featureCard}>
-                                <img src={Training} alt="Иконка: ведение дневника тренировок" className={styles.featureIcon} width="60" height="60"/>
-                                <p>Ведите дневник ежедневных тренировок</p>
-                            </div>
-                            <div className={styles.featureCard}>
-                                <img src={Tracking} alt="Иконка: отслеживание здоровья и КБЖУ" className={styles.featureIcon} width="60" height="60"/>
-                                <p>Фиксируйте данные о здоровье: КБЖУ, травмы и другое</p>
-                            </div>
-                            <div className={styles.featureCard}>
-                                <img src={Goal} alt="Иконка: достижение целей и прогресс" className={styles.featureIcon} width="60" height="60"/>
-                                <p>Отслеживайте прогресс и изменение целей</p>
-                            </div>
+                    <div className={styles.features}>
+                        <div className={styles.featureCard}>
+                            <img src={Training} alt="Иконка: ведение дневника тренировок" className={styles.featureIcon} width="60" height="60"/>
+                            <p>Ведите дневник ежедневных тренировок</p>
                         </div>
-                        
-                        <button className={styles.startButton} onClick={handleStartClick} disabled={loading}>
-                            Начать работу
-                        </button>
-
+                        <div className={styles.featureCard}>
+                            <img src={Tracking} alt="Иконка: отслеживание здоровья и КБЖУ" className={styles.featureIcon} width="60" height="60"/>
+                            <p>Фиксируйте данные о здоровье: КБЖУ, травмы и другое</p>
+                        </div>
+                        <div className={styles.featureCard}>
+                            <img src={Goal} alt="Иконка: достижение целей и прогресс" className={styles.featureIcon} width="60" height="60"/>
+                            <p>Отслеживайте прогресс и изменение целей</p>
+                        </div>
                     </div>
+                    
+                    <button className={styles.startButton} onClick={handleStartClick} disabled={loading}>
+                        Начать работу
+                    </button>
+
+                </div>
             </main>
+            <WeatherWidget />
         </>
 
     )
