@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate, useLocation} from 'react-router-dom';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
 import React from 'react';
 import styles from './Trainee.module.css'
 import api from '../../api/client';
@@ -19,6 +19,14 @@ const TraineeEditModal = React.lazy(() =>
 );
 
 export default function Trainee() {
+
+    const dataCache = useRef<{
+        trainee: Trainee | null;
+        photoUrl: string | null;
+        fetchedAt: number;
+    }>({ trainee: null, photoUrl: null, fetchedAt: 0 });
+    const CACHE_TTL = 5 * 60 * 1000;
+
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const location = useLocation();
@@ -37,9 +45,35 @@ export default function Trainee() {
             return;
         }
 
+        const now = Date.now();
+        if (dataCache.current.trainee && (now - dataCache.current.fetchedAt) < CACHE_TTL) {
+            setTrainee(dataCache.current.trainee);
+            if (dataCache.current.photoUrl) setPhotoUrl(dataCache.current.photoUrl);
+            setLoading(false);
+            return;
+        }
+
         try {
             const response = await api.get<Trainee>(`/trainees/${id}`);
-            setTrainee(response.data);
+            const traineeData = response.data;
+
+            dataCache.current = {
+                trainee: traineeData,
+                photoUrl: null,
+                fetchedAt: Date.now()
+            };
+            setTrainee(traineeData);
+
+            if (traineeData.photo_path && !dataCache.current.photoUrl) {
+                try {
+                    const photoRes = await api.get<{ photo_url: string }>(`/trainees/${id}/photo-url`);
+                    dataCache.current.photoUrl = photoRes.data.photo_url;
+                    setPhotoUrl(photoRes.data.photo_url);
+                } catch (err) {
+                    console.error('Error fetching photo URL:', err);
+                }
+            }
+
         } catch (err) {
             setError('Тренирующийся не найден');
             console.error('Fetch trainee error:', err);
@@ -48,20 +82,20 @@ export default function Trainee() {
         }
     };
 
-    const fetchPhotoUrl = async () => {
-        if (!trainee?.photo_path) {
-            setPhotoUrl(null);
-            return;
-        }
+    // const fetchPhotoUrl = async () => {
+    //     if (!trainee?.photo_path) {
+    //         setPhotoUrl(null);
+    //         return;
+    //     }
         
-        try {
-            const response = await api.get<{ photo_url: string }>(`/trainees/${id}/photo-url`);
-            setPhotoUrl(response.data.photo_url);
-        } catch (err) {
-            console.error('Error fetching photo URL:', err);
-            setPhotoUrl(null);
-        }
-    };
+    //     try {
+    //         const response = await api.get<{ photo_url: string }>(`/trainees/${id}/photo-url`);
+    //         setPhotoUrl(response.data.photo_url);
+    //     } catch (err) {
+    //         console.error('Error fetching photo URL:', err);
+    //         setPhotoUrl(null);
+    //     }
+    // };
 
     useEffect(() => {
         fetchTrainee();
@@ -77,13 +111,13 @@ export default function Trainee() {
         };
     }, [id]);
 
-    useEffect(() => {
-        if (trainee?.photo_path) {
-            fetchPhotoUrl();
-        } else {
-            setPhotoUrl(null);
-        }
-    }, [trainee?.photo_path]);
+    // useEffect(() => {
+    //     if (trainee?.photo_path) {
+    //         fetchPhotoUrl();
+    //     } else {
+    //         setPhotoUrl(null);
+    //     }
+    // }, [trainee?.photo_path]);
 
     if (loading) return <div>Загрузка...</div>;
     if (error) return <div>{error}</div>;

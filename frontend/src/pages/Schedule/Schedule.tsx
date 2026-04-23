@@ -36,6 +36,8 @@ export default function Schedule() {
     const hasRestoredFilters = useRef(false);
 
     const [searchParams, setSearchParams] = useSearchParams();
+    const workoutsCache = useRef<Map<string, { data: Workout[]; timestamp: number }>>(new Map());
+    const CACHE_TTL = 2 * 60 * 1000;
 
     const [viewMode, setViewMode] = useState<'day' | 'month' | 'archive'>('day');
     const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -145,20 +147,30 @@ export default function Schedule() {
                 return;
             }
 
+            const cacheKey = `${id}_${debouncedSearch}_${selectedTimeSlots.join(',')}_${selectedTypes.join(',')}_${sortOrder}`;
+            const now = Date.now();
+
+            const cached = workoutsCache.current.get(cacheKey);
+            if (cached && (now - cached.timestamp) < CACHE_TTL) {
+                setWorkouts(cached.data);
+                setLoading(false);
+                return;
+            }
+
             try {
                 const params: any = { trainee_id: id };
                 if (debouncedSearch) params.name = debouncedSearch;
-                
-                if (selectedTimeSlots.length > 0) {
-                    params.time_slots = selectedTimeSlots.join(',');
-                }
-                if (selectedTypes.length > 0) {
-                    params.types = selectedTypes.join(',');
-                }
-                
+                if (selectedTimeSlots.length > 0) params.time_slots = selectedTimeSlots.join(',');
+                if (selectedTypes.length > 0) params.types = selectedTypes.join(',');
                 params.sort = sortOrder;
 
                 const response = await api.get<Workout[]>('/workouts', { params });
+
+                workoutsCache.current.set(cacheKey, {
+                    data: response.data,
+                    timestamp: Date.now()
+                });
+
                 setWorkouts(response.data);
 
             } catch (err) {
