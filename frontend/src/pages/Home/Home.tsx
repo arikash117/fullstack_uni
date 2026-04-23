@@ -22,6 +22,24 @@ function Home() {
         }
     };
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Фитнес-трекер",
+        "url": window.location.origin,
+        "description": "Веб-сервис для тренеров: ведите дневник тренировок, фиксируйте КБЖУ и отслеживайте прогресс ваших трейни",
+        "inLanguage": "ru-RU",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Фитнес-трекер",
+            "logo": {
+                "@type": "ImageObject",
+                "url": `${window.location.origin}/logo.png`
+            }
+        },
+    };
+
+
     return (
         <>
             <Helmet>
@@ -40,6 +58,9 @@ function Home() {
                 <meta property="og:image" content={`${window.location.origin}/og-image.png`} />
                 <meta property="og:locale" content="ru_RU" />
 
+                <script type="application/ld+json">
+                    {JSON.stringify(jsonLd)}
+                </script>
             </Helmet>
             <main className={styles.main}>
                 <h1 className={styles.heading}>Попробуйте этот веб-сервис для отслеживания прогресса вашего трейни!</h1>   
