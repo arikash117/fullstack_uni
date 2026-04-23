@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate, useLocation} from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import React from 'react';
 import styles from './Trainee.module.css'
 import api from '../../api/client';
 import type { Trainee } from '../../types/trainee';
@@ -12,7 +13,10 @@ import Schedule from '../../assets/schedule.svg'
 import Health from '../../assets/health.svg'
 
 import InfoCard from '../../components/InfoCard/InfoCard'
-import TraineeEditModal from '../../components/EditTraineeModal/EditTraineeModal';
+
+const TraineeEditModal = React.lazy(() => 
+    import('../../components/EditTraineeModal/EditTraineeModal')
+);
 
 export default function Trainee() {
     const { id } = useParams<{ id: string }>();
@@ -202,15 +206,17 @@ export default function Trainee() {
                     </nav>
                 </div>
 
-                {showEditModal && (
-                    <TraineeEditModal
-                    trainee={trainee}
-                    onClose={() => setShowEditModal(false)}
-                    onSaved={() => {
-                        fetchTrainee();
-                    }}
-                    />
-                )}
+                <Suspense fallback={null}>
+                    {showEditModal && (
+                        <TraineeEditModal
+                            trainee={trainee}
+                            onClose={() => setShowEditModal(false)}
+                            onSaved={() => {
+                                fetchTrainee();
+                            }}
+                        />
+                    )}
+                </Suspense>
 
             </main>        
         </>

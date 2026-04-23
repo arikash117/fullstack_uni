@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef, Suspense } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useNotification } from '../../components/Notification/NotificationProvider';
 import { isAxiosError } from 'axios';
@@ -7,12 +7,17 @@ import api from '../../api/client';
 import { useDebounce } from '../../hooks/useDebounce';
 import styles from './Schedule.module.css'
 import { Workout } from '../../types/workout';
-import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
-import AddWorkoutModal from '../../components/AddWorkoutModal/AddWorkoutModal';
 import WorkoutCard from '../../components/WorkoutCard/WorkoutCard';
 import AscIcon from '../../assets/asc-sort-icon.svg';
 import DescIcon from '../../assets/desc-sort-icon.svg';
+import React from 'react';
 
+const AddWorkoutModal = React.lazy(() => 
+    import('../../components/AddWorkoutModal/AddWorkoutModal')
+);
+const ConfirmModal = React.lazy(() => 
+    import('../../components/ConfirmModal/ConfirmModal')
+);
 
 interface NewWorkoutData {
   date: string;
@@ -525,19 +530,21 @@ export default function Schedule() {
                     </div>
                 </div>
 
-                <AddWorkoutModal
-                    isOpen={isModalOpen}
-                    onClose={closeModal}
-                    onAdd={handleAddWorkout}
-                />
-                <ConfirmModal
-                    isOpen={!!confirmDelete}
-                    onClose={() => setConfirmDelete(null)}
-                    onConfirm={handleConfirmDelete}
-                    title="Удаление тренировки"
-                    message="Вы уверены, что хотите удалить эту тренировку?"
-                    confirmText="Удалить"
-                />
+                <Suspense fallback={null}>
+                    <AddWorkoutModal
+                        isOpen={isModalOpen}
+                        onClose={closeModal}
+                        onAdd={handleAddWorkout}
+                    />
+                    <ConfirmModal
+                        isOpen={!!confirmDelete}
+                        onClose={() => setConfirmDelete(null)}
+                        onConfirm={handleConfirmDelete}
+                        title="Удаление тренировки"
+                        message="Вы уверены, что хотите удалить эту тренировку?"
+                        confirmText="Удалить"
+                    />
+                </Suspense>
             </main>        
         </>
     )
