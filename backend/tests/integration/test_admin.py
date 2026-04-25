@@ -1,3 +1,10 @@
+from src.crud.user import create_user
+from src.crud.trainee import create_trainee
+from src.crud.workout import create_workout
+from src.schemas.trainee import CreateTrainee
+from src.schemas.workout import CreateWorkout
+from datetime import datetime
+
 class TestAdminUserManagement:
     """Тесты управления пользователями (только для админа)"""
     
@@ -77,3 +84,69 @@ class TestAdminAccessToTrainees:
         # Админ удаляет
         response = client.delete(f"/trainees/{trainee['id']}", headers=admin_auth_headers)
         assert response.status_code == 200
+    
+    def test_admin_can_view_other_workouts(self, client, admin_auth_headers, db, trainee_data):
+        """ Админ видит тренировки чужого трейни"""
+        
+        other_user = create_user(db=db, email="c@example.com", username="c", password="C123!")
+        other_trainee = create_trainee(
+            db=db,
+            trainee_data=CreateTrainee(name="Трейни", phone="79991112233", goal="Т", subscription_end="2026-12-31"),
+            coach_id=other_user.id
+        )
+        workout = create_workout(
+            db=db,
+            workout_data=CreateWorkout(date=datetime(2026, 5, 1, 10, 0), name="Чужая тренировка", type="Силовая"),
+            trainee_id=other_trainee.id
+        )
+        db.commit()
+        
+        response = client.get(
+            f"/workouts/?trainee_id={other_trainee.id}",
+            headers=admin_auth_headers
+        )
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert any(w["id"] == workout.id for w in data)
+    
+    def test_admin_can_update_other_trainee(self, client, admin_auth_headers, db, trainee_data):
+        """ Админ может обновить чужого trainee"""
+        
+        other_user = create_user(db=db, email="x@example.com", username="x", password="X123!")
+        other_trainee = create_trainee(
+            db=db,
+            trainee_data=CreateTrainee(**trainee_data),
+            coach_id=other_user.id
+        )
+        db.commit()
+        
+        response = client.patch(
+            f"/trainees/{other_trainee.id}",
+            json={"goal": "Обновлено админом"},
+            headers=admin_auth_headers
+        )
+        
+        assert response.status_code == 200
+        assert response.json()["goal"] == "Обновлено админом"
+    
+    def test_admin_can_delete_other_workout(self, client, admin_auth_headers, db, trainee_data):
+        """ Админ может удалить чужую тренировку"""
+        
+        other_user = create_user(db=db, email="y@example.com", username="y", password="Y123!")
+        other_trainee = create_trainee(
+            db=db,
+            trainee_data=CreateTrainee(name="Трейни", phone="79990001111", goal="Г", subscription_end="2026-12-31"),
+            coach_id=other_user.id
+        )
+        workout = create_workout(
+            db=db,
+            workout_data=CreateWorkout(date=datetime(2026, 5, 1, 10, 0), name="Удалить", type="Кардио"),
+            trainee_id=other_trainee.id
+        )
+        db.commit()
+        
+        response = client.delete(f"/workouts/{workout.id}", headers=admin_auth_headers)
+        
+        assert response.status_code == 200
+        assert response.json()["success"] is True
