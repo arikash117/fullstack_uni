@@ -60,7 +60,7 @@ function Header() {
 
   if (isDashboardPage) {
     return (
-      <div className={styles.header}>
+      <header className={styles.header}>
         <button className={styles.cover} onClick={handleDashboardBack}>
           Назад
         </button>
@@ -71,13 +71,13 @@ function Header() {
         <button className={styles.cover} onClick={handleLogoutClick}>
           Выйти
         </button>
-      </div>
+      </header>
     );
   }
 
   if (isAddPage) {
     return (
-      <div className={styles.header}>
+      <header className={styles.header}>
         <button className={styles.cover} onClick={() => navigate(-1)}>
           Назад
         </button>
@@ -88,13 +88,13 @@ function Header() {
         <button className={styles.cover} onClick={handleLogoutClick}>
           Выйти
         </button>
-      </div>
+      </header>
     );
   }
 
   if (isTraineeSubPage) {
     return (
-      <div className={styles.header}>
+      <header className={styles.header}>
         <button className={styles.cover} onClick={handleSubPageBack}>
           Назад
         </button>
@@ -105,13 +105,13 @@ function Header() {
         <button className={styles.cover} onClick={handleLogoutClick}>
           Выйти
         </button>
-      </div>
+      </header>
     );
   }
 
   if (isTraineePage) {
     return (
-      <div className={styles.header}>
+      <header className={styles.header}>
         <button className={styles.cover} onClick={handleTraineeBack}>
           Назад
         </button>
@@ -122,23 +122,23 @@ function Header() {
         <button className={styles.cover} onClick={handleLogoutClick}>
           Выйти
         </button>
-      </div>
+      </header>
     );
   }
 
   if (isAuthPage) {
     return (
-      <div className={styles.header}>
+      <header className={styles.header}>
         <a className={styles.link} href="/">
           <img className={styles.logo} src="/label.svg" alt="Main logo" />
           <span className={styles.text}>Train!</span>
         </a>
-      </div>
+      </header>
     );
   }
 
   return (
-    <div className={styles.header}>
+    <header className={styles.header}>
       <a className={styles.link} href="/">
         <img className={styles.logo} src="/label.svg" alt="Main logo" />
         <span className={styles.text}>Train!</span>
@@ -160,7 +160,7 @@ function Header() {
           </button>
         </div>
       )}
-    </div>
+    </header>
   );
 }
 
