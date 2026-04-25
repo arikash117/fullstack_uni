@@ -1,7 +1,3 @@
-import pytest
-from fastapi.testclient import TestClient
-
-
 class TestAuthSignup:
     
     def test_signup_success(self, client, test_user_data, db):

@@ -1,20 +1,16 @@
 import pytest
 import os
+from unittest.mock import MagicMock, patch
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
-from datetime import datetime, timezone
 
-# Импорты из твоего приложения
+from src.crud.user import create_user
 from src.main import app
 from src.database.db import Base
 from src.database.db import get_db
-from src.models.user import User
-from src.models.trainee import Trainee
-from src.models.workout import Workout
-from src.models.refresh_token import RefreshToken
-from src.core.security import get_password_hash, create_access_token, create_refresh_token
 
 # ===== БАЗА ДАННЫХ =====
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_TEST_URL", "sqlite:///:memory:")
@@ -101,8 +97,7 @@ def test_admin_data():
 @pytest.fixture
 def registered_user(client, test_user_data, db):
     """Зарегистрированный пользователь в БД"""
-    from src.crud.user import create_user
-    
+
     user = create_user(
         db=db,
         email=test_user_data["email"],
@@ -133,7 +128,6 @@ def auth_tokens(client, test_user_data, registered_user):
 @pytest.fixture
 def admin_user(client, test_admin_data, db):
     """Создать админа"""
-    from src.crud.user import create_user
     
     user = create_user(
         db=db,
@@ -183,6 +177,25 @@ def created_trainee(client, db, trainee_data, auth_tokens):
     trainee = response.json()
     
     return trainee
+
+# ===== ФИКСТУРЫ ДЛЯ MinIO ===== 'src.api.trainee.get_minio_client'
+@pytest.fixture
+def mock_minio():
+    patch_path = 'src.api.endpoints.trainee_api.get_minio_client'
+    
+    with patch(patch_path) as mock_get_client:
+        minio_mock = MagicMock()
+        
+        # Настраиваем возвраты
+        minio_mock.upload_file.return_value = None
+        minio_mock.delete_file.return_value = None
+        minio_mock.get_public_url.side_effect = lambda object_name: f"http://mocked.local/trainees/{object_name}"
+        minio_mock.get_presigned_url.return_value = "http://mocked.local/signed/test-photo.jpg"
+        minio_mock.ensure_bucket_exists.return_value = None
+        
+        mock_get_client.return_value = minio_mock
+        
+        yield minio_mock
 
 
 # ===== ФИКСТУРЫ ДЛЯ WORKOUT =====
