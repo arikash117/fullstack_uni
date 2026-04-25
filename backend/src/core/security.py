@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from http.client import HTTPException
+from fastapi import HTTPException
 import jwt
 import hashlib
 from argon2 import PasswordHasher
