@@ -1,12 +1,26 @@
-# Virtual environment
-venv/
-.venv/
+# ===== БАЗЫ ДАННЫХ =====
+*.db
+*.sqlite
+*.sqlite3
+test.db
+test.sqlite
 
-# Python cache
+# ===== КЭШ И АРТЕФАКТЫ =====
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
 
-# Environment
-.env
+# ===== ОКРУЖЕНИЕ =====
+.venv/
+env/
+venv/
+*.env
+!.env.example
+
+# ===== ЛОГИ =====
+*.log
+logs/
