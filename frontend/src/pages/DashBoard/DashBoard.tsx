@@ -9,6 +9,7 @@ import { Trainee } from '../../types/trainee';
 import styles from './DashBoard.module.css';
 import Schedule from '../../assets/schedule.svg'
 import TraineeCard from '../../components/TraineeCard/TraineeCard';
+import { formatDateTime } from '../../utils/formatDateTime';
 
 function DashBoard() {
     const { show } = useNotification();
@@ -80,27 +81,6 @@ function DashBoard() {
         window.addEventListener('traineesUpdated', handleTraineesUpdated);
         return () => window.removeEventListener('traineesUpdated', handleTraineesUpdated);
     }, [userId]); 
-
-    const formatDateTime = (isoString: string | undefined): string => {
-        if (!isoString) {
-            return '--.--.--';
-        }
-        
-        try {
-            const date = new Date(isoString);
-            if (isNaN(date.getTime()) || date.getFullYear() < 1970) {
-                return '--.--.--';
-            }
-            
-            return date.toLocaleDateString('ru-RU', {
-                day: '2-digit',
-                month: '2-digit',
-                year: '2-digit',
-            });
-        } catch {
-            return '--.--.--';
-        }
-    };
 
     const handleAddTrainee = () => {
         navigate('/trainee/add');
