@@ -1,5 +1,5 @@
 import api from './client';
-import { User, PaginatedResponse } from '../types/api';
+import { UserForAdmin as User, PaginatedResponse } from '../types/api';
 
 const adminAPI = {
   getUsers: async (
