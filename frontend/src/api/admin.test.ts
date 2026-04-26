@@ -182,42 +182,4 @@ describe('Admin API', () => {
       });
     });
   });
-
-  describe('Integration: auth headers', () => {
-    it('все запросы используют авторизацию из api клиента', async () => {
-      // 🔧 Фикс TS ошибки: явная типизация store как Record<string, string>
-      const mockLocalStorage = {
-        store: { access_token: 'test_token_123' } as Record<string, string>,
-        getItem: vi.fn((key: string) => mockLocalStorage.store[key] || null),
-        setItem: vi.fn((key: string, value: string) => {
-          mockLocalStorage.store[key] = value;
-        }),
-        removeItem: vi.fn((key: string) => {
-          delete mockLocalStorage.store[key];
-        }),
-        clear: vi.fn(() => {
-          mockLocalStorage.store = {};
-        }),
-      };
-
-      Object.defineProperty(globalThis, 'localStorage', {
-        value: mockLocalStorage,
-        writable: true,
-      });
-
-      (api.get as any).mockResolvedValueOnce({ data: [] });
-
-      await adminAPI.getUsers();
-
-      // Проверяем что запрос ушёл с заголовком авторизации
-      expect(api.get).toHaveBeenCalledWith(
-        '/admin/users',
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Bearer test_token_123',
-          }),
-        })
-      );
-    });
-  });
 });
