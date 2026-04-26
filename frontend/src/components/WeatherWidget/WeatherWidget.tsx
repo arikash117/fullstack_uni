@@ -76,7 +76,7 @@ export const WeatherWidget = () => {
 
   if (loading) {
     return (
-      <div className={styles.widget} style={{ left: position.x, top: position.y }} ref={widgetRef}>
+      <div data-testid="weather-widget" className={styles.widget} style={{ left: position.x, top: position.y }} ref={widgetRef}>
         <div className={styles.loading}>Загрузка...</div>
       </div>
     );
@@ -84,7 +84,7 @@ export const WeatherWidget = () => {
 
   if (error || !weather) {
     return (
-      <div className={styles.widget} style={{ left: position.x, top: position.y }} ref={widgetRef}>
+      <div data-testid="weather-widget" className={styles.widget} style={{ left: position.x, top: position.y }} ref={widgetRef}>
         <div className={styles.error}>
           <p>⚠️ {error}</p>
           <button onClick={fetchWeather}>Повторить</button>
@@ -94,7 +94,8 @@ export const WeatherWidget = () => {
   }
 
   return (
-    <div 
+    <div
+      data-testid="weather-widget" 
       className={`${styles.widget} ${isDragging ? styles.dragging : ''}`} 
       style={{ left: position.x, top: position.y }} 
       ref={widgetRef}

@@ -108,10 +108,10 @@ export default function TraineeEditModal({ trainee, onClose, onSaved }: TraineeE
 
                 <form onSubmit={handleSubmit} className={styles.form}>
                     
-                    <label>Изменить фото:</label>
+                    <label htmlFor="photoInput">Изменить фото:</label>
                     <div className={styles.wrap}>
                         <div className={styles.pfp}>
-                            <label htmlFor="photoInput" className={styles.avatarLabel}>
+                            <div className={styles.avatarLabel}>
                                 {formData.photo ? (
                                 <img
                                     src={URL.createObjectURL(formData.photo)}
@@ -135,7 +135,7 @@ export default function TraineeEditModal({ trainee, onClose, onSaved }: TraineeE
                                 />
                                 )}
                                 <img src={editPhoto} alt="edit-photo" className={styles.photoIcon} />
-                            </label>
+                            </div>
                             <input
                                 id="photoInput"
                                 type="file"
@@ -148,8 +148,9 @@ export default function TraineeEditModal({ trainee, onClose, onSaved }: TraineeE
                     </div>
                     
                     <div className={styles.formGroup}>
-                        <label>Имя:</label>
+                        <label htmlFor="name">Имя:</label>
                         <input
+                            id="name"
                             type="text"
                             name="name"
                             value={formData.name}
@@ -160,8 +161,9 @@ export default function TraineeEditModal({ trainee, onClose, onSaved }: TraineeE
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label>Телефон:</label>
+                        <label htmlFor="phone">Телефон:</label>
                         <input
+                            id="phone"
                             type="tel"
                             name="phone"
                             value={formData.phone}
@@ -172,8 +174,8 @@ export default function TraineeEditModal({ trainee, onClose, onSaved }: TraineeE
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label>Цель:</label>
-                        <select name="goal" value={formData.goal} onChange={handleChange}>
+                        <label htmlFor="goal">Цель:</label>
+                        <select id="goal" name="goal" value={formData.goal} onChange={handleChange}>
                             <option value="Набрать мышечную массу">Набрать мышечную массу</option>
                             <option value="Похудеть">Похудеть</option>
                             <option value="Поддержание формы">Поддержание формы</option>
@@ -182,8 +184,9 @@ export default function TraineeEditModal({ trainee, onClose, onSaved }: TraineeE
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label>Дата окончания подписки:</label>
+                        <label htmlFor="subscriptionEnd">Дата окончания подписки:</label>
                         <input
+                            id="subscriptionEnd"
                             type="date"
                             name="subscriptionEnd"
                             value={formData.subscriptionEnd}
@@ -198,7 +201,7 @@ export default function TraineeEditModal({ trainee, onClose, onSaved }: TraineeE
                         <button type="button" onClick={onClose} disabled={loading}>
                             Отмена
                         </button>
-                        <button type="submit">
+                        <button type="submit" disabled={loading}>
                             Сохранить изменения
                         </button>
                     </div>
