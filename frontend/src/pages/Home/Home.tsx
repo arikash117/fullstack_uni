@@ -15,7 +15,7 @@ function Home() {
         if (loading) return;
 
         if (!isLoggedIn) {
-            navigate('/register');
+            navigate('/login');
         } else if (user?.role === 'admin') {
             navigate('/admin');
         } else {
