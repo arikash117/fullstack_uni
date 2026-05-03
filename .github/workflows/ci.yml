@@ -61,58 +61,41 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
       
-      - name: Install dependencies
-        run: |
-          cd frontend
-          npm ci
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
       
       - name: Run Unit & Integration Tests
-        run: |
-          cd frontend
-          npm run test -- --run
-      
-      - name: Setup Backend for E2E
+        run: cd frontend && npm run test -- --run
+
+      - name: Setup Backend
         run: |
           cd backend
           pip install -r requirements.txt
+          pip install alembic  # если нет в requirements.txt
+      
+      - name: Run Migrations
+        run: |
+          cd backend
           export DATABASE_URL="mysql+pymysql://root:root@localhost:3306/test_db"
           export SECRET_KEY="test-secret"
           export DOMAIN="http://localhost:5173"
-          export WEATHER_API_KEY="${{ secrets.WEATHER_API_KEY }}"
-          # Запусти бэкенд в фоне
-          uvicorn src.main:app --host 0.0.0.0 --port 8000 &
-          # Подожди пока поднимется
-          sleep 10
+          alembic upgrade head
         env:
           DATABASE_URL: mysql+pymysql://root:root@localhost:3306/test_db
           SECRET_KEY: test-secret
           DOMAIN: http://localhost:5173
-          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
-      
-      - name: Wait for backend
-        run: |
-          for i in {1..30}; do
-            if curl -f http://localhost:8000/docs > /dev/null 2>&1; then
-              echo "Backend is ready!"
-              exit 0
-            fi
-            echo "Waiting for backend... ($i/30)"
-            sleep 2
-          done
-          echo "Backend failed to start"
-          exit 1
       
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-        working-directory: frontend
+        run: cd frontend && npx playwright install --with-deps chromium
       
       - name: Run E2E Tests
-        run: |
-          cd frontend
-          npx playwright test e2e/
+        run: cd frontend && npx playwright test e2e/
         env:
           CI: true
-          BASE_URL: http://localhost:8000  # или http://localhost:8000 если тесты к API
+          BASE_URL: http://localhost:5173
+          DATABASE_URL: mysql+pymysql://root:root@localhost:3306/test_db
+          SECRET_KEY: test-secret
+          DOMAIN: http://localhost:5173
       
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
