@@ -37,7 +37,6 @@ jobs:
   frontend-tests:
     runs-on: ubuntu-latest
     
-    # 👇 Добавь сервисы (бэкенд + БД)
     services:
       mysql:
         image: mysql:8.0
@@ -72,7 +71,6 @@ jobs:
           cd frontend
           npm run test -- --run
       
-      # 👇 1. Установи и запусти бэкенд
       - name: Setup Backend for E2E
         run: |
           cd backend
@@ -91,7 +89,6 @@ jobs:
           DOMAIN: http://localhost:5173
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
       
-      # 👇 2. Проверь что бэкенд жив
       - name: Wait for backend
         run: |
           for i in {1..30}; do
@@ -109,14 +106,13 @@ jobs:
         run: npx playwright install --with-deps chromium
         working-directory: frontend
       
-      # 👇 3. Запусти E2E с правильным baseURL
       - name: Run E2E Tests
         run: |
           cd frontend
           npx playwright test e2e/
         env:
           CI: true
-          BASE_URL: http://localhost:5173  # или http://localhost:8000 если тесты к API
+          BASE_URL: http://localhost:8000  # или http://localhost:8000 если тесты к API
       
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
