@@ -9,7 +9,6 @@ from src.database.db import Base
 from src.models.user import User
 from src.models.trainee import Trainee
 from src.models.workout import Workout
-from src.models.health import Health
 from src.models.refresh_token import RefreshToken
 from src.core.config import settings
 
