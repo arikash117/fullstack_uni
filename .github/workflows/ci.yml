@@ -37,6 +37,21 @@ jobs:
   frontend-tests:
     runs-on: ubuntu-latest
     
+    # 👇 Добавь сервисы (бэкенд + БД)
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 3306:3306
+    
     steps:
       - uses: actions/checkout@v4
       
@@ -57,16 +72,51 @@ jobs:
           cd frontend
           npm run test -- --run
       
+      # 👇 1. Установи и запусти бэкенд
+      - name: Setup Backend for E2E
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          export DATABASE_URL="mysql+pymysql://root:root@localhost:3306/test_db"
+          export SECRET_KEY="test-secret"
+          export DOMAIN="http://localhost:5173"
+          export WEATHER_API_KEY="${{ secrets.WEATHER_API_KEY }}"
+          # Запусти бэкенд в фоне
+          uvicorn src.main:app --host 0.0.0.0 --port 8000 &
+          # Подожди пока поднимется
+          sleep 10
+        env:
+          DATABASE_URL: mysql+pymysql://root:root@localhost:3306/test_db
+          SECRET_KEY: test-secret
+          DOMAIN: http://localhost:5173
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+      
+      # 👇 2. Проверь что бэкенд жив
+      - name: Wait for backend
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:8000/docs > /dev/null 2>&1; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
+          done
+          echo "Backend failed to start"
+          exit 1
+      
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
         working-directory: frontend
       
+      # 👇 3. Запусти E2E с правильным baseURL
       - name: Run E2E Tests
         run: |
           cd frontend
           npx playwright test e2e/
         env:
           CI: true
+          BASE_URL: http://localhost:5173  # или http://localhost:8000 если тесты к API
       
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
