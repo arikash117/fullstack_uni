@@ -27,6 +27,8 @@ jobs:
       - name: Run Backend Tests
         run: |
           cd backend
+          export DATABASE_URL=mysql+pymysql://root:root@mysql:3306/database_coach
+          export DOMAIN=http://localhost:5173
           export DATABASE_TEST_URL="sqlite:///:memory:"
           export SECRET_KEY="test-secret-key-for-ci"
           export WEATHER_API_KEY="${{ secrets.WEATHER_API_KEY }}"
