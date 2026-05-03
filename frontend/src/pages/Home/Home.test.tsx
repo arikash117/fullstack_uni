@@ -58,7 +58,7 @@ describe('Home Page - Integration', () => {
   });
 
   describe('Кнопка "Начать работу" - логика навигации', () => {
-    it('редиректит на /register если пользователь не авторизован', async () => {
+    it('редиректит на /login если пользователь не авторизован', async () => {
       (api.get as any).mockRejectedValue(new Error('No auth'));
       
       render(<Home />);
@@ -71,7 +71,7 @@ describe('Home Page - Integration', () => {
       fireEvent.click(screen.getByRole('button', { name: /начать работу/i }));
       
       await waitFor(() => {
-        expect(window.location.pathname).toBe('/register');
+        expect(window.location.pathname).toBe('/login');
       });
     });
 
