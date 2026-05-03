@@ -21,6 +21,6 @@
     },
     "baseUrl": "."
   },
-  "include": ["src", "playwright.config.ts", "tests", "tests"],
+  "include": ["src", "playwright.config.ts", "e2e", "e2e"],
   "exclude": ["node_modules", "dist", "public"]
 }

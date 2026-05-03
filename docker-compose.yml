@@ -1,3 +1,4 @@
+version: '3.8'
 
 services:
   # MySQL база данных
@@ -8,6 +9,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: database_coach
+      MYSQL_USER: coach_user
+      MYSQL_PASSWORD: coach_password
     ports:
       - "3307:3306"
     volumes:
@@ -17,22 +20,22 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     networks:
       - app-network
 
-
-  # MinIO Object Storage
+  # MinIO
   minio:
     image: quay.io/minio/minio:latest
     container_name: coach_minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
     ports:
-      - "9000:9000"  # API
-      - "9001:9001"  # Web Console
+      - "9000:9000"
+      - "9001:9001"
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin123
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
     volumes:
       - minio_data:/data
     healthcheck:
@@ -43,53 +46,73 @@ services:
     networks:
       - app-network
 
-  # Backend (FastAPI)
+  # Backend
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
     container_name: coach_backend
     restart: unless-stopped
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/app
+    env_file:
+    - .env 
     environment:
-      - DATABASE_URL=mysql+pymysql://root:root@mysql:3306/database_coach
-      - SECRET_KEY=your-super-secret-key-change-in-prod
-
-      - MINIO_ENDPOINT=minio
-      - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin123
-      - MINIO_BUCKET=trainee-photos
-      - MINIO_PUBLIC_URL=http://localhost:9000 
+      DATABASE_URL: mysql+pymysql://root:root@mysql:3306/database_coach
+      DATABASE_TEST_URL: "sqlite:///:memory:"  # ← ДОБАВИТЬ
+      SECRET_KEY: ${SECRET_KEY:-your-super-secret-key-change-in-prod}
+      WEATHER_API_KEY: ${WEATHER_API_KEY:-f82576fc29fcecfc4de725b713d42600}  # ← ДОБАВИТЬ
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      MINIO_BUCKET: trainee-photos
+      MINIO_PUBLIC_URL: http://localhost:9000
+      DOMAIN: ${DOMAIN:-http://localhost}
     depends_on:
       mysql:
         condition: service_healthy
       minio:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - app-network
+    volumes:
+      - backend_logs:/app/logs
 
-  # Frontend (React + Vite)
+  # Frontend
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
     container_name: coach_frontend
     restart: unless-stopped
     ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - "5173:80" 
     environment:
-      - VITE_API_URL=http://localhost:8000
+      VITE_API_URL: http://localhost:8000
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - app-network
 
 volumes:
   mysql_data:
   minio_data:
+  backend_logs:
 
 networks:
   app-network:

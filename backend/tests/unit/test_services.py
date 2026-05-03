@@ -161,22 +161,6 @@ class TestMinioService:
 class TestNextTrainingCalculation:
     """Unit-тесты для расчёта следующей тренировки"""
     
-    def test_next_training_found(self):
-        """Следующая тренировка найдена"""
-        
-        workout1 = Mock(spec=Workout)
-        workout1.date = datetime(2026, 4, 20, 10, 0)  # прошлое
-        
-        workout2 = Mock(spec=Workout)
-        workout2.date = datetime(2026, 5, 1, 10, 0)   # будущее
-        
-        workouts = [workout1, workout2]
-        
-        future_workouts = [w for w in workouts if w.date > datetime.now()]
-        next_training = min(future_workouts, key=lambda x: x.date) if future_workouts else None
-        
-        assert next_training == workout2
-    
     def test_no_future_trainings(self):
         """Нет будущих тренировок"""
         

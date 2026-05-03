@@ -1,17 +1,28 @@
-FROM node:20-alpine
-
+# frontend/Dockerfile
+FROM node:20-alpine as base
 WORKDIR /app
 
-# Копируем package.json и устанавливаем зависимости
+# Копируем package файлы
 COPY package.json package-lock.json* ./
+
+# Stage для зависимостей
+FROM base as dependencies
 RUN npm ci
 
-# Копируем исходный код
+# Stage для тестов
+FROM dependencies as test
 COPY . .
+RUN npm install -D vitest @vitest/coverage-v8 playwright @playwright/test
+CMD ["npm", "run", "test"]
 
-# Открываем порт для Vite
-EXPOSE 5173
+# Stage для build
+FROM dependencies as build
+COPY . .
+RUN npm run build
 
-# Запуск dev-сервера с hot-reload
-# host 0.0.0.0 нужен для доступа извне контейнера
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Production stage с Nginx
+FROM nginx:alpine as production
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
